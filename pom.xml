@@ -15,6 +15,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
+    <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -25,4 +26,5 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+    </dependencies>
 </project>
