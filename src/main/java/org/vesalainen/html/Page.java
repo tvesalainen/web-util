@@ -34,9 +34,18 @@ public class Page
 
     public Page()
     {
+        this(null);
+    }
+    public Page(String title)
+    {
         html = new Tag("html");
         head = html.addTag("head");
         body = html.addTag("body");
+        if (title != null)
+        {
+            head.addTag("title")
+                    .addText(title);
+        }
     }
 
     public void use(Framework framework)
