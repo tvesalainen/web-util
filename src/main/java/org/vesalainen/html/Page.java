@@ -18,8 +18,8 @@ package org.vesalainen.html;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -30,6 +30,7 @@ public class Page
     protected Tag html;
     protected Tag head;
     protected Tag body;
+    protected Set<Framework> frameworks;
 
     public Page()
     {
@@ -38,6 +39,23 @@ public class Page
         body = html.addTag("body");
     }
 
+    public void use(Framework framework)
+    {
+        if (frameworks == null)
+        {
+            frameworks = new HashSet<>();
+        }
+        frameworks.add(framework);
+        for (Framework depends : framework.dependencies())
+        {
+            if (!frameworks.contains(depends))
+            {
+                use(depends);
+            }
+        }
+        framework.useIn(this);
+    }
+    
     public Tag getHtml()
     {
         return html;

@@ -18,33 +18,33 @@ package org.vesalainen.html;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.vesalainen.html.bootstrap.Bootstrap;
 
 /**
  *
  * @author tkv
  */
-public class TagTest
+public class AbstractFrameworkTest
 {
     
-    public TagTest()
+    public AbstractFrameworkTest()
     {
     }
 
     @Test
-    public void test()
+    public void test1()
     {
-        Tag html = new Tag("html");
-        assertEquals("<html></html>", html.toString());
-        html.addAttr("lang", "fi");
-        assertEquals("<html lang=\"fi\"></html>", html.toString());
-        html.addAttr("test", true);
-        assertEquals("<html lang=\"fi\" test=\"true\"></html>", html.toString());
-        Tag head = html.addTag("head");
-        assertEquals("<html lang=\"fi\" test=\"true\"><head></head></html>", html.toString());
-        Tag div = head.addTag("div").addAttr("id", 13);
-        assertEquals("<html lang=\"fi\" test=\"true\"><head><div id=\"13\"></div></head></html>", html.toString());
-        div.addText("Hello <There>");
-        assertEquals("<html lang=\"fi\" test=\"true\"><head><div id=\"13\">Hello &lt;There&gt;</div></head></html>", html.toString());
+        Page page = new Page();
+        Bootstrap bs = new Bootstrap();
+        page.use(bs);
+        assertEquals("<!DOCTYPE HTML>\n" +
+            "<html><head>"+
+                "<script src=\"/jquery-1.12.0.min.js\"></script>"+
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></meta>"+
+                "<link rel=\"stylesheet\" href=\"/bootstrap-3.3.6-dist/css/bootstrap.min.css\"></link>"+
+                "<script src=\"/bootstrap-3.3.6-dist/js/bootstrap.min.js\"></script>"+
+                "</head><body></body></html>", 
+                page.toString());
     }
     
 }
