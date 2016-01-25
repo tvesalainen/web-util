@@ -24,22 +24,59 @@ import java.util.List;
  *
  * @author tkv
  */
-public class Tag implements Content
+public class Element implements Content
 {
     protected String name;
     protected List<Attribute<?>> attributes;
+    protected List<Content> content;
 
-    public Tag(String name)
+    public Element(String name)
     {
         this.name = name;
     }
 
-    public <T> Tag addAttr(String name, T value)
+    public void addText(String text)
+    {
+        addContent(new Text(text));
+    }
+    
+    public Tag addTag(String tagName)
+    {
+        return addTag(new Tag(tagName));
+    }
+    
+    public Tag addTag(Tag tag)
+    {
+        addContent(tag);
+        return tag;
+    }
+    
+    public Element addElement(String element)
+    {
+        return addElement(new Element(element));
+    }
+    
+    public Element addElement(Element element)
+    {
+        addContent(element);
+        return element;
+    }
+    
+    public void addContent(Content c)
+    {
+        if (content == null)
+        {
+            content = new ArrayList<>();
+        }
+        content.add(c);
+    }
+    
+    public <T> Element addAttr(String name, T value)
     {
         return addAttr(new Attribute<>(name, value));
     }
 
-    public <T> Tag addAttr(Attribute<T> attr)
+    public <T> Element addAttr(Attribute<T> attr)
     {
         if (attributes == null)
         {
@@ -76,6 +113,16 @@ public class Tag implements Content
                 attr.append(out);
             }
         }
+        out.append('>');
+        if (content != null)
+        {
+            for (Content c : content)
+            {
+                c.append(out);
+            }
+        }
+        out.append("</");
+        out.append(name);
         out.append('>');
     }
     

@@ -33,15 +33,15 @@ public class TagTest
     @Test
     public void test()
     {
-        Tag html = new Tag("html");
+        Element html = new Element("html");
         assertEquals("<html></html>", html.toString());
         html.addAttr("lang", "fi");
         assertEquals("<html lang=\"fi\"></html>", html.toString());
         html.addAttr("test", true);
         assertEquals("<html lang=\"fi\" test=\"true\"></html>", html.toString());
-        Tag head = html.addTag("head");
+        Element head = html.addElement("head");
         assertEquals("<html lang=\"fi\" test=\"true\"><head></head></html>", html.toString());
-        Tag div = head.addTag("div").addAttr("id", 13);
+        Element div = head.addElement("div").addAttr("id", 13);
         assertEquals("<html lang=\"fi\" test=\"true\"><head><div id=\"13\"></div></head></html>", html.toString());
         div.addText("Hello <There>");
         assertEquals("<html lang=\"fi\" test=\"true\"><head><div id=\"13\">Hello &lt;There&gt;</div></head></html>", html.toString());

@@ -47,5 +47,15 @@ public class Attribute<T>
         sb.append(value.toString());
         sb.append("\"");
     }
+
+    public T getValue()
+    {
+        return value;
+    }
+
+    public void setValue(T value)
+    {
+        this.value = value;
+    }
     
 }

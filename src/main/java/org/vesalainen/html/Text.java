@@ -28,11 +28,43 @@ public class Text implements Content
 
     public Text(String text)
     {
-        this.text = text
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
+        this.text = encode(text);
     }
-    
+    /**
+     * Changes HTML special characters to entity references
+     * @param text
+     * @return 
+     */
+    public static final String encode(String text)
+    {
+        StringBuilder sb = new StringBuilder();
+        int len = text.length();
+        for (int ii=0;ii<len;ii++)
+        {
+            char cc = text.charAt(ii);
+            switch (cc)
+            {
+                case '"':
+                    sb.append("&quot;");
+                    break;
+                case '\'':
+                    sb.append("&apos;");
+                    break;
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                default:
+                    sb.append(cc);
+            }
+        }
+        return sb.toString();
+    }
     @Override
     public void append(Appendable out) throws IOException
     {

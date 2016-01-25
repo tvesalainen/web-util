@@ -17,9 +17,8 @@
 package org.vesalainen.html.jquery;
 
 import org.vesalainen.html.AbstractFramework;
-import org.vesalainen.html.Framework;
 import org.vesalainen.html.Page;
-import org.vesalainen.html.Tag;
+import org.vesalainen.html.Element;
 
 /**
  *
@@ -42,8 +41,8 @@ public class JQuery extends AbstractFramework
     @Override
     public void useIn(Page page)
     {
-        Tag head = page.getHead();
-        head.addTag("script")
+        Element head = page.getHead();
+        head.addElement("script")
                 .addAttr("src", path(version));
     }
 

@@ -17,7 +17,12 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,10 +32,11 @@ import java.util.Set;
  */
 public class Page 
 {
-    protected Tag html;
-    protected Tag head;
-    protected Tag body;
+    protected Element html;
+    protected Element head;
+    protected Element body;
     protected Set<Framework> frameworks;
+    private final Attribute<Charset> charset;
 
     public Page()
     {
@@ -38,14 +44,17 @@ public class Page
     }
     public Page(String title)
     {
-        html = new Tag("html");
-        head = html.addTag("head");
-        body = html.addTag("body");
+        html = new Element("html");
+        head = html.addElement("head");
+        charset = new Attribute<>("charset", StandardCharsets.UTF_8);
+        head.addTag("meta")
+                .addAttr(charset);
         if (title != null)
         {
-            head.addTag("title")
+            head.addElement("title")
                     .addText(title);
         }
+        body = html.addElement("body");
     }
 
     public void use(Framework framework)
@@ -64,26 +73,48 @@ public class Page
         }
         framework.useIn(this);
     }
+    /**
+     * Sets charset. Using charset other than default UTF-8 affects performance.
+     * @param charset 
+     */
+    public void setCharset(Charset charset)
+    {
+        this.charset.setValue(charset);
+    }
     
-    public Tag getHtml()
+    public Charset getCharset()
+    {
+        return this.charset.getValue();
+    }
+    
+    public Element getHtml()
     {
         return html;
     }
 
-    public Tag getHead()
+    public Element getHead()
     {
         return head;
     }
 
-    public Tag getBody()
+    public Element getBody()
     {
         return body;
     }
 
-    public void write(Writer writer) throws IOException
+    public void write(OutputStream os) throws IOException
     {
-        writer.append("<!DOCTYPE HTML>\n");
-        html.append(writer);
+        Charset cs = getCharset();
+        if (StandardCharsets.UTF_8.contains(cs))
+        {
+            OutputStreamWriter writer = new OutputStreamWriter(os, cs);
+            writer.append("<!DOCTYPE HTML>\n");
+            html.append(writer);
+        }
+        else
+        {
+            EntityReferences.write(os, toString(), cs);
+        }
     }
     
     @Override

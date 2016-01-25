@@ -34,17 +34,20 @@ public class AbstractFrameworkTest
     @Test
     public void test1()
     {
-        Page page = new Page();
+        Page page = new Page("Test");
         Bootstrap bs = new Bootstrap();
         page.use(bs);
-        assertEquals("<!DOCTYPE HTML>\n" +
+        String exp = "<!DOCTYPE HTML>\n" +
             "<html><head>"+
+                "<meta charset=\"UTF-8\">"+
+                "<title>Test</title>"+
                 "<script src=\"/jquery-1.12.0.min.js\"></script>"+
-                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></meta>"+
-                "<link rel=\"stylesheet\" href=\"/bootstrap-3.3.6-dist/css/bootstrap.min.css\"></link>"+
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"+
+                "<link rel=\"stylesheet\" href=\"/bootstrap-3.3.6-dist/css/bootstrap.min.css\">"+
                 "<script src=\"/bootstrap-3.3.6-dist/js/bootstrap.min.js\"></script>"+
-                "</head><body></body></html>", 
-                page.toString());
+                "</head><body></body></html>";
+        String got = page.toString();
+        assertEquals(exp, got);
     }
     
 }

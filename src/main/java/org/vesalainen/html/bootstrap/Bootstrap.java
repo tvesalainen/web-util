@@ -19,7 +19,7 @@ package org.vesalainen.html.bootstrap;
 import org.vesalainen.html.AbstractFramework;
 import org.vesalainen.html.Framework;
 import org.vesalainen.html.Page;
-import org.vesalainen.html.Tag;
+import org.vesalainen.html.Element;
 import org.vesalainen.html.jquery.JQuery;
 
 /**
@@ -45,14 +45,14 @@ public class Bootstrap extends AbstractFramework
     @Override
     public void useIn(Page page)
     {
-        Tag head = page.getHead();
+        Element head = page.getHead();
         head.addTag("meta")
                 .addAttr("name", "viewport")
                 .addAttr("content", "width=device-width, initial-scale=1");
         head.addTag("link")
                 .addAttr("rel", "stylesheet")
                 .addAttr("href", String.format(CSS, version));
-        head.addTag("script")
+        head.addElement("script")
                 .addAttr("src", String.format(Min, version));
     }
 
