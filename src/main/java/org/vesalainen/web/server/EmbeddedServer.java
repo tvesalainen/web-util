@@ -16,6 +16,7 @@
  */
 package org.vesalainen.web.server;
 
+import org.vesalainen.web.servlet.JarServlet;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

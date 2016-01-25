@@ -70,9 +70,9 @@ public class EmbeddedServerT
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
         {
             resp.setContentType("text/html");
-            PrintWriter writer = resp.getWriter();
-            page.write(writer);
-            writer.flush();
+            ServletOutputStream outputStream = resp.getOutputStream();
+            page.write(outputStream);
+            outputStream.flush();
         }
         
     }
