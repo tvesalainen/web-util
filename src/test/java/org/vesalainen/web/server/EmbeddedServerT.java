@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.Page;
 import org.vesalainen.html.bootstrap.Bootstrap;
 
@@ -63,13 +64,16 @@ public class EmbeddedServerT
         public TestServlet()
         {
             page = new Page("Test");
-            page.use(new Bootstrap());
+            page.use(Frameworks.Bootstrap);
+            page.getHtml().addText("Hello");
         }
 
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
         {
             resp.setContentType("text/html");
+            resp.setStatus(HttpServletResponse.SC_OK);
+            //resp.getWriter().println("<h1>Hello from HelloServlet</h1>");
             ServletOutputStream outputStream = resp.getOutputStream();
             page.write(outputStream);
             outputStream.flush();

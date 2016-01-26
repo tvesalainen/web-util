@@ -18,11 +18,14 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Semaphore;
-import javax.servlet.http.HttpServletRequest;
+import org.vesalainen.html.Content;
+import org.vesalainen.html.Element;
+import org.vesalainen.html.Page;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
 
@@ -30,32 +33,47 @@ import org.vesalainen.util.MapList;
  *
  * @author tkv
  */
-public class SSESource
+public abstract class AbstractSSESource
 {
-    private static final SSESource source = new SSESource();
-
     private final MapList<String,SSEObserver> eventMap = new HashMapList<>();
     
-    private SSESource()
+    protected String urlPattern;
+    protected Set<String> allEvents;
+    protected Page page;
+
+    protected AbstractSSESource(String urlPattern, String... allEvents)
     {
-    }
-    
-    public static SSESource getSource()
-    {
-        return source;
-    }
-    
-    public SSEObserver register(HttpServletRequest req)
-    {
-        SSEObserver sseo = new SSEObserverImpl();
-        Enumeration<String> parameterNames = req.getParameterNames();
-        while (parameterNames.hasMoreElements())
+        this.urlPattern = urlPattern;
+        this.allEvents = new TreeSet<>();
+        for (String ev : allEvents)
         {
-            String event = parameterNames.nextElement();
+            this.allEvents.add(ev);
+        }
+        this.page = new Page("SSE");
+        Element head = page.getHead();
+        head.addElement("script")
+                .addContent(new Script());
+    }
+
+    public Page getPage()
+    {
+        return page;
+    }
+    
+    public SSEObserver register(String events)
+    {
+        String[] evs = events.split(",");
+        SSEObserver sseo = new SSEObserverImpl();
+        for (String event : evs)
+        {
             sseo.addEvent(event);
         }
         return sseo;
     }
+
+    protected abstract void addEvent(String event);
+    
+    protected abstract void removeEvent(String event);
     
     public void fireEvent(String event, String data)
     {
@@ -68,7 +86,12 @@ public class SSESource
     {
         for (String ev : sseo.events)
         {
+            List<SSEObserver> list = eventMap.get(ev);
             eventMap.add(ev, sseo);
+            if (list.isEmpty())
+            {
+                addEvent(ev);
+            }
         }
     }
     
@@ -76,13 +99,20 @@ public class SSESource
     {
         for (String ev : sseo.events)
         {
-            eventMap.removeItem(ev, sseo);
+            if (eventMap.removeItem(ev, sseo))
+            {
+                List<SSEObserver> list = eventMap.get(ev);
+                if (list.isEmpty())
+                {
+                    removeEvent(ev);
+                }
+            }
         }
     }
     
     public class SSEObserverImpl implements SSEObserver
     {
-        private final List<String> events = new ArrayList<>();
+        private final Set<String> events = new HashSet<>();
         private Writer writer;
         private Semaphore semaphore = new Semaphore(0);
         
@@ -125,6 +155,29 @@ public class SSESource
                 removeObserver(this);
                 semaphore.release();
             }
+        }
+        
+    }
+    public class Script implements Content
+    {
+
+        @Override
+        public void append(Appendable out) throws IOException
+        {
+            out.append("if (localStorage.org_vesalainen_html_events) {");
+            out.append("var url = '");
+            out.append(urlPattern);
+            out.append("'+'?events='+localStorage.org_vesalainen_html_events;");
+            out.append("var eventSource = new EventSource(url);");
+            for (String ev : allEvents)
+            {
+                out.append("eventSource.addEventListener('");
+                out.append(ev);
+                out.append("', function(event) {document.getElementById('");
+                out.append(ev);
+                out.append("').innerHTML = event.data;}, false);");
+            }
+            out.append("}");
         }
         
     }

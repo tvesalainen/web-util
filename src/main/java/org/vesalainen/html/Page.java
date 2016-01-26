@@ -110,6 +110,7 @@ public class Page
             OutputStreamWriter writer = new OutputStreamWriter(os, cs);
             writer.append("<!DOCTYPE HTML>\n");
             html.append(writer);
+            writer.flush();
         }
         else
         {

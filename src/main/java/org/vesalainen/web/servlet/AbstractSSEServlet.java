@@ -17,27 +17,42 @@
 package org.vesalainen.web.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.vesalainen.html.Page;
 
 /**
  *
  * @author tkv
  */
-public class SSEServlet extends HttpServlet
+public abstract class AbstractSSEServlet extends HttpServlet
 {
-    private static final SSESource source = SSESource.getSource();
+    protected AbstractSSESource source;
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        resp.setContentType("text/event-stream");
-        resp.setCharacterEncoding("UTF-8");
-        SSEObserver sseo = source.register(req);
-        sseo.observe(resp.getWriter());
+        String events = req.getParameter("events");
+        if (events != null)
+        {
+            resp.setContentType("text/event-stream");
+            resp.setCharacterEncoding("UTF-8");
+            SSEObserver sseo = source.register(events);
+            sseo.observe(resp.getWriter());
+        }
+        else
+        {
+            resp.setContentType("text/html");
+            resp.setCharacterEncoding("UTF-8");
+            resp.setStatus(HttpServletResponse.SC_OK);
+            ServletOutputStream os = resp.getOutputStream();
+            Page page = source.getPage();
+            page.write(os);
+            os.flush();
+        }
     }
     
 }
