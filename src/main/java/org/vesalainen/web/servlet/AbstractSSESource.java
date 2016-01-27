@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import java.util.concurrent.Semaphore;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
+import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.Page;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
@@ -49,7 +50,8 @@ public abstract class AbstractSSESource
         {
             this.allEvents.add(ev);
         }
-        this.page = new Page("SSE");
+        this.page = new Page();
+        page.use(Frameworks.JQuery);
         Element head = page.getHead();
         head.addElement("script")
                 .addContent(new Script());
