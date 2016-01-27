@@ -17,6 +17,8 @@
 package org.vesalainen.web.servlet;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,6 +29,7 @@ import java.util.TimerTask;
 public class SSESource extends AbstractSSESource
 {
     private Timer timer = new Timer();
+    private Map<String,TimerTask> map = new HashMap<>();
     
     public SSESource(String urlPattern)
     {
@@ -34,7 +37,7 @@ public class SSESource extends AbstractSSESource
     }
 
     @Override
-    protected void addEvent(String event)
+    protected void addEvent(final String event)
     {
         System.err.println("addEvent(" + event + ")");
         TimerTask tt = new TimerTask() {
@@ -42,17 +45,19 @@ public class SSESource extends AbstractSSESource
             @Override
             public void run()
             {
-                fireEvent("ev1", new Date().toString());
+                fireEvent(event, new Date().toString());
             }
         };
         timer.schedule(tt, 1000, 1000);
+        map.put(event, tt);
     }
 
     @Override
     protected void removeEvent(String event)
     {
         System.err.println("removeEvent(" + event + ")");
-        timer.cancel();
+        TimerTask tt = map.get(event);
+        tt.cancel();
     }
     
 }

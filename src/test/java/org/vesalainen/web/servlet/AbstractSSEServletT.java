@@ -16,12 +16,9 @@
  */
 package org.vesalainen.web.servlet;
 
-import java.util.Date;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.vesalainen.web.server.EmbeddedServer;
 import org.vesalainen.web.server.EmbeddedServerT;
 
@@ -60,7 +57,13 @@ public class AbstractSSEServletT
             source.getPage()
                     .getBody()
                     .addElement("div")
-                    .addAttr("id", "ev1");
+                    .addAttr("id", "ev1")
+                    .addAttr("class", "server_sent_event");
+            source.getPage()
+                    .getBody()
+                    .addElement("div")
+                    .addAttr("id", "ev2")
+                    .addAttr("class", "server_sent_event");
         }
         
     }

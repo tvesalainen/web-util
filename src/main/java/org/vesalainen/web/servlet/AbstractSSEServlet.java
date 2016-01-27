@@ -38,6 +38,7 @@ public abstract class AbstractSSEServlet extends HttpServlet
         String events = req.getParameter("events");
         if (events != null)
         {
+            System.err.println(req.getRemoteHost());
             resp.setContentType("text/event-stream");
             resp.setCharacterEncoding("UTF-8");
             SSEObserver sseo = source.register(events);

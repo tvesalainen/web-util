@@ -30,11 +30,20 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JarServlet extends HttpServlet
 {
+    private static final String eTag = String.valueOf(System.currentTimeMillis());
+    
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException,
             IOException
     {
+        String ifNoneMatch = request.getHeader("If-None-Match");
+        if (eTag.equals(ifNoneMatch))
+        {
+            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+        response.setHeader("ETag", eTag);
         String pathInfo = request.getPathInfo();
         System.err.println(pathInfo);
         InputStream is = JarServlet.class.getResourceAsStream(pathInfo);

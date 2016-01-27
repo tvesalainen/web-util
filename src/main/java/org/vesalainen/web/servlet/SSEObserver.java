@@ -27,5 +27,5 @@ public interface SSEObserver
 {
     void observe(Writer writer) throws IOException;
     void addEvent(String event);
-    void fireEvent(String event, String value);
+    boolean fireEvent(String event, String value);
 }

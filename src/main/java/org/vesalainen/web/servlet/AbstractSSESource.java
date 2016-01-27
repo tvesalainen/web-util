@@ -18,15 +18,20 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Semaphore;
-import org.vesalainen.html.Content;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.Page;
+import org.vesalainen.html.ScriptElement;
+import org.vesalainen.html.jquery.DocumentReadyEvent;
+import org.vesalainen.html.jquery.SelectorFunction;
+import org.vesalainen.js.Script;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
 
@@ -41,6 +46,9 @@ public abstract class AbstractSSESource
     protected String urlPattern;
     protected Set<String> allEvents;
     protected Page page;
+    protected ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+    protected ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
+    protected ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
 
     protected AbstractSSESource(String urlPattern, String... allEvents)
     {
@@ -53,10 +61,28 @@ public abstract class AbstractSSESource
         this.page = new Page();
         page.use(Frameworks.JQuery);
         Element head = page.getHead();
-        head.addElement("script")
-                .addContent(new Script());
+        ScriptElement script = new ScriptElement(createScript());
+        head.addContent(script);
     }
 
+    private Script createScript()
+    {
+        DocumentReadyEvent ready = new DocumentReadyEvent();
+        ready.addCode("var events;");
+        SelectorFunction sf = new SelectorFunction(".server_sent_event", "each");
+        sf.addCode("if (events) events=events+','+$(this).attr('id'); else events=$(this).attr('id');");
+        ready.addScript(sf);
+        ready.addCode("localStorage.org_vesalainen_html_events=events;");
+        ready.addCode("if (events) {");
+        ready.addCode("var url = '");
+        ready.addCode(urlPattern);
+        ready.addCode("'+'?events='+events;");
+        ready.addCode("var eventSource = new EventSource(url);");
+        ready.addScript(new Events());
+        ready.addCode("}");
+        return ready;
+    }
+    
     public Page getPage()
     {
         return page;
@@ -79,36 +105,79 @@ public abstract class AbstractSSESource
     
     public void fireEvent(String event, String data)
     {
-        for (SSEObserver sseo : eventMap.get(event))
+        List<SSEObserver> trash = null;
+        
+        readLock.lock();
+        try
         {
-            sseo.fireEvent(event, data);
+            for (SSEObserver sseo : eventMap.get(event))
+            {
+                if (!sseo.fireEvent(event, data))
+                {
+                    if (trash == null)
+                    {
+                        trash = new ArrayList<>();
+                    }
+                    trash.add(sseo);
+                }
+            }
+        }
+        finally
+        {
+            readLock.unlock();
+        }
+        if (trash != null)
+        {
+            for (SSEObserver sseo : trash)
+            {
+                removeObserver((SSEObserverImpl) sseo);
+            }
+            trash = null;
         }
     }
     private void addObserver(SSEObserverImpl sseo)
     {
-        for (String ev : sseo.events)
+        System.err.println("addObserver");
+        writeLock.lock();
+        try
         {
-            List<SSEObserver> list = eventMap.get(ev);
-            eventMap.add(ev, sseo);
-            if (list.isEmpty())
+            for (String ev : sseo.events)
             {
-                addEvent(ev);
+                List<SSEObserver> list = eventMap.get(ev);
+                eventMap.add(ev, sseo);
+                if (list.isEmpty())
+                {
+                    addEvent(ev);
+                }
             }
+        }
+        finally
+        {
+            writeLock.unlock();
         }
     }
     
     private void removeObserver(SSEObserverImpl sseo)
     {
-        for (String ev : sseo.events)
+        System.err.println("removeObserver");
+        writeLock.lock();
+        try
         {
-            if (eventMap.removeItem(ev, sseo))
+            for (String ev : sseo.events)
             {
-                List<SSEObserver> list = eventMap.get(ev);
-                if (list.isEmpty())
+                if (eventMap.removeItem(ev, sseo))
                 {
-                    removeEvent(ev);
+                    List<SSEObserver> list = eventMap.get(ev);
+                    if (list.isEmpty())
+                    {
+                        removeEvent(ev);
+                    }
                 }
             }
+        }
+        finally
+        {
+            writeLock.unlock();
         }
     }
     
@@ -140,7 +209,7 @@ public abstract class AbstractSSESource
         }
 
         @Override
-        public void fireEvent(String event, String data)
+        public boolean fireEvent(String event, String data)
         {
             try
             {
@@ -151,26 +220,22 @@ public abstract class AbstractSSESource
                 writer.write(data);
                 writer.write("\n\n");
                 writer.flush();
+                return true;
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
-                removeObserver(this);
                 semaphore.release();
+                return false;
             }
         }
-        
+
     }
-    public class Script implements Content
+    public class Events implements Script
     {
 
         @Override
         public void append(Appendable out) throws IOException
         {
-            out.append("if (localStorage.org_vesalainen_html_events) {");
-            out.append("var url = '");
-            out.append(urlPattern);
-            out.append("'+'?events='+localStorage.org_vesalainen_html_events;");
-            out.append("var eventSource = new EventSource(url);");
             for (String ev : allEvents)
             {
                 out.append("eventSource.addEventListener('");
@@ -179,7 +244,6 @@ public abstract class AbstractSSESource
                 out.append(ev);
                 out.append("').innerHTML = event.data;}, false);");
             }
-            out.append("}");
         }
         
     }
