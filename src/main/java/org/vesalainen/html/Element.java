@@ -29,12 +29,26 @@ public class Element implements Content
     protected String name;
     protected List<Attribute<?>> attributes;
     protected List<Content> content;
+    protected ClassAttribute classes;
 
     public Element(String name)
     {
         this.name = name;
     }
 
+    public void addClasses(String... cls)
+    {
+        if (classes == null)
+        {
+            classes = new ClassAttribute(cls);
+            addAttr(classes);
+        }
+        else
+        {
+            classes.addClasses(cls);
+        }
+    }
+    
     public void addText(String text)
     {
         addContent(new Text(text));

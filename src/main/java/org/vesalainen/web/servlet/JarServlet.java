@@ -23,6 +23,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.vesalainen.util.MimeTypes;
 
 /**
  *
@@ -49,7 +50,7 @@ public class JarServlet extends HttpServlet
         InputStream is = JarServlet.class.getResourceAsStream(pathInfo);
         if (is != null)
         {
-            String mimeType = getServletContext().getMimeType(pathInfo);
+            String mimeType = MimeTypes.getMimeType(pathInfo);
             System.err.println(mimeType);
             response.setContentType(mimeType);
             response.setStatus(HttpServletResponse.SC_OK);
