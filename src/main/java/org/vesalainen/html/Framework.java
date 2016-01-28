@@ -22,6 +22,6 @@ package org.vesalainen.html;
  */
 public interface Framework
 {
-    void useIn(Page page);
+    void useIn(Document page);
     Framework[] dependencies();
 }

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.vesalainen.html.Frameworks;
-import org.vesalainen.html.Page;
+import org.vesalainen.html.Document;
 import org.vesalainen.html.bootstrap.Bootstrap;
 
 /**
@@ -59,11 +59,11 @@ public class EmbeddedServerT
     
     public static class TestServlet extends HttpServlet
     {
-        private Page page;
+        private Document page;
 
         public TestServlet()
         {
-            page = new Page("Test");
+            page = new Document("Test");
             page.use(Frameworks.Bootstrap);
             page.getHtml().addText("Hello");
         }

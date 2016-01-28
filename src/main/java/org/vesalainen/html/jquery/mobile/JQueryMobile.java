@@ -18,7 +18,7 @@ package org.vesalainen.html.jquery.mobile;
 
 import org.vesalainen.html.AbstractFramework;
 import org.vesalainen.html.Framework;
-import org.vesalainen.html.Page;
+import org.vesalainen.html.Document;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.JQuery;
@@ -44,7 +44,7 @@ public class JQueryMobile extends AbstractFramework
     }
     
     @Override
-    public void useIn(Page page)
+    public void useIn(Document page)
     {
         Element head = page.getHead();
         head.addTag("meta")

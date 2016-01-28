@@ -19,8 +19,6 @@ package org.vesalainen.html;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -30,7 +28,7 @@ import java.util.Set;
  *
  * @author tkv
  */
-public class Page 
+public class Document 
 {
     protected Element html;
     protected Element head;
@@ -38,11 +36,11 @@ public class Page
     protected Set<Framework> frameworks;
     private final Attribute<Charset> charset;
 
-    public Page()
+    public Document()
     {
         this(null);
     }
-    public Page(String title)
+    public Document(String title)
     {
         html = new Element("html");
         head = html.addElement("head");

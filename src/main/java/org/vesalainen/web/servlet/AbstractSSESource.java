@@ -27,7 +27,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Frameworks;
-import org.vesalainen.html.Page;
+import org.vesalainen.html.Document;
 import org.vesalainen.html.ScriptElement;
 import org.vesalainen.html.jquery.DocumentReadyEvent;
 import org.vesalainen.html.jquery.SelectorFunction;
@@ -45,7 +45,7 @@ public abstract class AbstractSSESource
     
     protected String urlPattern;
     protected Set<String> allEvents;
-    protected Page page;
+    protected Document page;
     protected ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
     protected ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
     protected ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
@@ -58,7 +58,7 @@ public abstract class AbstractSSESource
         {
             this.allEvents.add(ev);
         }
-        this.page = new Page();
+        this.page = new Document();
         page.use(Frameworks.JQuery);
         Element head = page.getHead();
         ScriptElement script = new ScriptElement(createScript());
@@ -83,7 +83,7 @@ public abstract class AbstractSSESource
         return ready;
     }
     
-    public Page getPage()
+    public Document getPage()
     {
         return page;
     }

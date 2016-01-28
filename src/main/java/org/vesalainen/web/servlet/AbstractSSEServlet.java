@@ -22,7 +22,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.vesalainen.html.Page;
+import org.vesalainen.html.Document;
 
 /**
  *
@@ -50,7 +50,7 @@ public abstract class AbstractSSEServlet extends HttpServlet
             resp.setCharacterEncoding("UTF-8");
             resp.setStatus(HttpServletResponse.SC_OK);
             ServletOutputStream os = resp.getOutputStream();
-            Page page = source.getPage();
+            Document page = source.getPage();
             page.write(os);
             os.flush();
         }

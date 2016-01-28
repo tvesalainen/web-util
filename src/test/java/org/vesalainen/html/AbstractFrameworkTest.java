@@ -34,7 +34,7 @@ public class AbstractFrameworkTest
     @Test
     public void test1()
     {
-        Page page = new Page("Test");
+        Document page = new Document("Test");
         Bootstrap bs = new Bootstrap();
         page.use(bs);
         String exp = "<!DOCTYPE HTML>\n" +
