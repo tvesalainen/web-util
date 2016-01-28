@@ -18,6 +18,7 @@ package org.vesalainen.html;
 
 import org.vesalainen.html.bootstrap.Bootstrap;
 import org.vesalainen.html.jquery.JQuery;
+import org.vesalainen.html.jquery.mobile.JQueryMobile;
 
 /**
  *
@@ -27,4 +28,5 @@ public class Frameworks
 {
     public static final Bootstrap Bootstrap = new Bootstrap();
     public static final JQuery JQuery = new JQuery();
+    public static final JQueryMobile JQueryMobile = new JQueryMobile();
 }

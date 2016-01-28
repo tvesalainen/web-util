@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html.bootstrap;
+package org.vesalainen.html.jquery.mobile;
 
 import org.vesalainen.html.AbstractFramework;
 import org.vesalainen.html.Framework;
@@ -27,18 +27,18 @@ import org.vesalainen.html.jquery.JQuery;
  *
  * @author tkv
  */
-public class Bootstrap extends AbstractFramework
+public class JQueryMobile extends AbstractFramework
 {
-    private static final String Dir = "/bootstrap-%s-dist/";
-    private static final String Min = Dir+"js/bootstrap.min.js";
-    private static final String CSS = Dir+"css/bootstrap.min.css";
+    private static final String Dir = "/jquery.mobile-%1$s-dist/";
+    private static final String Min = Dir+"jquery.mobile-%1$s.min.js";
+    private static final String CSS = Dir+"jquery.mobile-%1$s.min.css";
 
-    public Bootstrap()
+    public JQueryMobile()
     {
-        super("3.3.6", Frameworks.JQuery);
+        super("1.4.5", Frameworks.JQuery);
     }
 
-    public Bootstrap(String version, Framework... dependencies)
+    public JQueryMobile(String version, Framework... dependencies)
     {
         super(version, Frameworks.JQuery);
     }
