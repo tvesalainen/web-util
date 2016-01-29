@@ -24,11 +24,10 @@ import java.util.List;
  *
  * @author tkv
  */
-public class Element implements Content
+public class Element extends Container
 {
     protected String name;
     protected List<Attribute<?>> attributes;
-    protected List<Content> content;
     protected ClassAttribute classes;
 
     public Element(String name)
@@ -49,41 +48,6 @@ public class Element implements Content
         }
     }
     
-    public void addText(String text)
-    {
-        addContent(new Text(text));
-    }
-    
-    public Tag addTag(String tagName)
-    {
-        return addTag(new Tag(tagName));
-    }
-    
-    public Tag addTag(Tag tag)
-    {
-        addContent(tag);
-        return tag;
-    }
-    
-    public Element addElement(String element)
-    {
-        return addElement(new Element(element));
-    }
-    
-    public Element addElement(Element element)
-    {
-        addContent(element);
-        return element;
-    }
-    
-    public void addContent(Content c)
-    {
-        if (content == null)
-        {
-            content = new ArrayList<>();
-        }
-        content.add(c);
-    }
     
     public <T> Element addAttr(String name, T value)
     {
@@ -101,20 +65,6 @@ public class Element implements Content
     }
 
     @Override
-    public String toString()
-    {
-        try
-        {
-            StringBuilder sb = new StringBuilder();
-            append(sb);
-            return sb.toString();
-        }
-        catch (IOException ex)
-        {
-            throw new IllegalArgumentException(ex);
-        }
-    }
-    @Override
     public void append(Appendable out) throws IOException
     {
         out.append('<');
@@ -128,13 +78,7 @@ public class Element implements Content
             }
         }
         out.append('>');
-        if (content != null)
-        {
-            for (Content c : content)
-            {
-                c.append(out);
-            }
-        }
+        super.append(out);
         out.append("</");
         out.append(name);
         out.append('>');
