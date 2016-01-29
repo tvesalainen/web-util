@@ -35,8 +35,7 @@ public class AbstractFrameworkTest
     public void test1()
     {
         Document page = new Document("Test");
-        Bootstrap bs = new Bootstrap();
-        page.use(bs);
+        page.use(Frameworks.Bootstrap);
         String exp = "<!DOCTYPE HTML>\n" +
             "<html><head>"+
                 "<meta charset=\"UTF-8\">"+

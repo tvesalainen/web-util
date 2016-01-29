@@ -20,7 +20,7 @@ package org.vesalainen.html;
  *
  * @author tkv
  */
-public class Input extends Tag
+public final class Input extends Tag
 {
 
     public Input(String type, String name)
@@ -28,6 +28,20 @@ public class Input extends Tag
         super("input");
         addAttr("type", type);
         addAttr("name", name);
+    }
+
+    @Override
+    public <T> Input addAttr(Attribute<T> attr)
+    {
+        super.addAttr(attr);
+        return this;
+    }
+
+    @Override
+    public <T> Input addAttr(String name, T value)
+    {
+        super.addAttr(name, value);
+        return this;
     }
     
 }

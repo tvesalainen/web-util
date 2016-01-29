@@ -24,21 +24,43 @@ import java.util.List;
  *
  * @author tkv
  */
-public class Tag implements Content
+public class Tag implements AttributedContent
 {
     protected String name;
     protected List<Attribute<?>> attributes;
+    protected ClassAttribute classes;
 
     public Tag(String name)
     {
         this.name = name;
     }
 
+    /**
+     * Add entr(y/ies) to clas attribute
+     * @param cls
+     * @return this
+     */
+    @Override
+    public Tag addClasses(String... cls)
+    {
+        if (classes == null)
+        {
+            classes = new ClassAttribute(cls);
+            addAttr(classes);
+        }
+        else
+        {
+            classes.addClasses(cls);
+        }
+        return this;
+    }
+    @Override
     public <T> Tag addAttr(String name, T value)
     {
         return addAttr(new Attribute<>(name, value));
     }
 
+    @Override
     public <T> Tag addAttr(Attribute<T> attr)
     {
         if (attributes == null)

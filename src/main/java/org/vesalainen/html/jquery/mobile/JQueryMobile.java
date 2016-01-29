@@ -35,12 +35,12 @@ public class JQueryMobile extends AbstractFramework
 
     public JQueryMobile()
     {
-        super("1.4.5", Frameworks.JQuery);
+        super("1.4.5", new JQuery());
     }
 
     public JQueryMobile(String version, Framework... dependencies)
     {
-        super(version, Frameworks.JQuery);
+        super(version, new JQuery());
     }
     
     @Override

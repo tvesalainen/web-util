@@ -16,6 +16,7 @@
  */
 package org.vesalainen.html;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -31,7 +32,7 @@ public class TagTest
     }
 
     @Test
-    public void test()
+    public void test1()
     {
         Element html = new Element("html");
         assertEquals("<html></html>", html.toString());
@@ -47,4 +48,11 @@ public class TagTest
         assertEquals("<html lang=\"fi\" test=\"true\"><head><div id=\"13\">Hello &lt;There&gt;</div></head></html>", html.toString());
     }
     
+    @Test
+    public void test2()
+    {
+        Tag meta = new Tag("meta")
+                .addAttr("charset", StandardCharsets.UTF_8);
+        assertEquals("<meta charset=\"UTF-8\">", meta.toString());
+    }
 }

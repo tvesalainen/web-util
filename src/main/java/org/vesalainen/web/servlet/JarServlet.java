@@ -66,6 +66,7 @@ public class JarServlet extends HttpServlet
         }
         else
         {
+            System.err.println(pathInfo+" not found");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }

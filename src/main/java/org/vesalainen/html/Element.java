@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author tkv
  */
-public class Element extends Container
+public class Element extends ContainerContent implements AttributedContent
 {
     protected String name;
     protected List<Attribute<?>> attributes;
@@ -35,7 +35,45 @@ public class Element extends Container
         this.name = name;
     }
 
-    public void addClasses(String... cls)
+    @Override
+    public Element addContent(Content c)
+    {
+        super.addContent(c);
+        return this;
+    }
+
+    @Override
+    public Element addElement(Element element)
+    {
+        super.addElement(element);
+        return this;
+    }
+
+    @Override
+    public Element addTag(Tag tag)
+    {
+        return (Element) super.addTag(tag);
+    }
+
+    @Override
+    public Tag addTag(String tagName)
+    {
+        return super.addTag(tagName);
+    }
+
+    @Override
+    public Element addText(String text)
+    {
+        return (Element) super.addText(text);
+    }
+    
+    /**
+     * Add entr(y/ies) to clas attribute
+     * @param cls
+     * @return this
+     */
+    @Override
+    public Element addClasses(String... cls)
     {
         if (classes == null)
         {
@@ -46,14 +84,27 @@ public class Element extends Container
         {
             classes.addClasses(cls);
         }
+        return this;
     }
-    
-    
+    /**
+     * Add Attribute
+     * @param <T>
+     * @param name
+     * @param value
+     * @return this
+     */
+    @Override
     public <T> Element addAttr(String name, T value)
     {
         return addAttr(new Attribute<>(name, value));
     }
-
+    /**
+     * Add Attribute
+     * @param <T>
+     * @param attr
+     * @return this
+     */
+    @Override
     public <T> Element addAttr(Attribute<T> attr)
     {
         if (attributes == null)
@@ -83,6 +134,5 @@ public class Element extends Container
         out.append(name);
         out.append('>');
     }
-    
-    
+
 }

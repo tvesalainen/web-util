@@ -20,44 +20,12 @@ package org.vesalainen.html;
  *
  * @author tkv
  */
-public interface Container extends Content
+public interface AttributedContent extends Content
 {
 
-    ContainerContent addContent(Content c);
+    <T> AttributedContent addAttr(String name, T value);
 
-    /**
-     * Add Element
-     * @param element
-     * @return new Element
-     */
-    Element addElement(String element);
-
-    /**
-     * Add Element
-     * @param element
-     * @return this
-     */
-    ContainerContent addElement(Element element);
-
-    /**
-     * Add new Tag
-     * @param tagName
-     * @return this
-     */
-    Tag addTag(String tagName);
-
-    /**
-     * Add Tag
-     * @param tag
-     * @return this
-     */
-    ContainerContent addTag(Tag tag);
-
-    /**
-     * Add text
-     * @param text
-     * @return this
-     */
-    ContainerContent addText(String text);
+    <T> AttributedContent addAttr(Attribute<T> attr);
     
+    AttributedContent addClasses(String... cls);
 }

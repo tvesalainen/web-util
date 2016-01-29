@@ -17,6 +17,7 @@
 package org.vesalainen.web.servlet;
 
 import java.io.IOException;
+import java.util.Locale;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -48,5 +49,22 @@ public abstract class AbstractDocumentServlet<D> extends HttpServlet
         document.write(os);
         os.flush();
     }
-    protected abstract Document getDocument(D data) throws IOException;
+    protected abstract Document getDocument(D datagetPlaceholdergetPlaceholdergetLabelgetLabelgetLabel) throws IOException;
+    
+    protected String getLabel(String key) throws IOException
+    {
+        return getLabel(Locale.getDefault(), key);
+    }
+    protected String getLabel(Locale locale, String key) throws IOException
+    {
+        return "["+key+"]";
+    }
+    protected String getPlaceholder(String key) throws IOException
+    {
+        return getPlaceholder(Locale.getDefault(), key);
+    }
+    protected String getPlaceholder(Locale locale, String key) throws IOException
+    {
+        return "{"+key+"}";
+    }
 }

@@ -29,18 +29,19 @@ import org.vesalainen.html.jquery.JQuery;
  */
 public class Bootstrap extends AbstractFramework
 {
+    public static final Bootstrap Bootstrap = new Bootstrap();
     private static final String Dir = "/bootstrap-%s-dist/";
     private static final String Min = Dir+"js/bootstrap.min.js";
     private static final String CSS = Dir+"css/bootstrap.min.css";
 
     public Bootstrap()
     {
-        super("3.3.6", Frameworks.JQuery);
+        super("3.3.6", new JQuery());
     }
 
     public Bootstrap(String version, Framework... dependencies)
     {
-        super(version, Frameworks.JQuery);
+        super(version, new JQuery());
     }
     
     @Override
