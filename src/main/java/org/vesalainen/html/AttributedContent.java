@@ -28,4 +28,8 @@ public interface AttributedContent extends Content
     <T> AttributedContent addAttr(Attribute<T> attr);
     
     AttributedContent addClasses(String... cls);
+    
+    boolean hasAttr(String name);
+    
+    Attribute<?> getAttr(String name);
 }

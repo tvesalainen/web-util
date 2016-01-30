@@ -16,14 +16,18 @@
  */
 package org.vesalainen.web.servlet;
 
+import java.awt.Color;
 import java.io.IOException;
-import java.util.Locale;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.AttributedContent;
+import org.vesalainen.html.BooleanAttribute;
 import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Document;
@@ -44,6 +48,8 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 {
     public static final HTML5Datetime parser = HTML5Datetime.getInstance();
     public static final String DateFormat = "yyyy-MM-dd'T'HH:mm";
+    
+    private Map<String,String> typeMap = new HashMap<>();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
@@ -60,19 +66,26 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             else
             {
                 String[] arr = e.getValue();
-                if (arr == null || arr.length == 0)
+                if (EnumSet.class.equals(type))
                 {
-                    BeanHelper.setFieldValue(data, field, true);
+                    setEnumSetValue(data, field, arr);
                 }
                 else
                 {
-                    if (arr.length == 1)
+                    if (arr == null || arr.length == 0)
                     {
-                        BeanHelper.setFieldValue(data, field, arr[0]);
+                        BeanHelper.setFieldValue(data, field, true);
                     }
                     else
                     {
-                        BeanHelper.setFieldValue(data, field, arr);
+                        if (arr.length == 1)
+                        {
+                            BeanHelper.setFieldValue(data, field, arr[0]);
+                        }
+                        else
+                        {
+                            BeanHelper.setFieldValue(data, field, arr);
+                        }
                     }
                 }
             }
@@ -90,12 +103,12 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 
     protected abstract D createData() throws IOException;
     
-    public Content createInput(Object ob, String field) throws IOException
+    public Content createInput(D data, String field) throws IOException
     {
         String inputType = "text";
-        Class type = BeanHelper.getType(ob, field);
-        Object value = BeanHelper.getFieldValue(ob, field);
-        InputType inputTypeAnnotation = BeanHelper.getAnnotation(ob, field, InputType.class);
+        Class type = BeanHelper.getType(data, field);
+        Object value = BeanHelper.getFieldValue(data, field);
+        InputType inputTypeAnnotation = BeanHelper.getAnnotation(data, field, InputType.class);
         if (inputTypeAnnotation != null)
         {
             inputType = inputTypeAnnotation.value();
@@ -114,9 +127,16 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 }
                 else
                 {
-                    if (isBoolean(type))
+                    if (isBoolean(type) || EnumSet.class.equals(type))
                     {
                         inputType = "checkbox";
+                    }
+                    else
+                    {
+                        if (Color.class.equals(type))
+                        {
+                            inputType = "color";
+                        }
                     }
                 }
             }
@@ -140,7 +160,16 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             case "radio":
                 return radioContainer(field, inputType, type, value, labelText, placeholder, inputTypeAnnotation);
             case "checkbox":
-                return checkboxContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
+                if (isBoolean(type))
+                {
+                    return singleCheckboxContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
+                }
+                else
+                {
+                    return multiCheckboxContainer(field, inputType, type, value, labelText, placeholder, inputTypeAnnotation);
+                }
+            case "select":
+                return selectContainer(field, inputType, type, value, labelText, placeholder, inputTypeAnnotation);
             case "color":
             case "date":
             case "datetime":
@@ -181,12 +210,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 Long.class.equals(type);
     }
 
-    private boolean isEnum(Class type)
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private Content textContainer(String field, String inputType, Object value, String labelText,String placeholder,  InputType inputTypeAnnotation)
+    protected ContainerContent textContainer(String field, String inputType, Object value, String labelText,String placeholder,  InputType inputTypeAnnotation)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label")
@@ -205,7 +229,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         return container;
     }
 
-    private Content textAreaContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    protected ContainerContent textAreaContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
         ContainerContent textAreaContainer = new ContainerContent();
         Element textAreaLabel = new Element("label")
@@ -225,7 +249,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         return textAreaContainer;
     }
 
-    private Content buttonContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    private Tag buttonContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
         Tag button = new Tag("input")
                 .addAttr("type", inputType)
@@ -234,15 +258,15 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         return button;
     }
 
-    private Content radioContainer(String field, String inputType, Class<?> type, Object value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    protected Element radioContainer(String field, String inputType, Class<?> type, Object value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
     {
         Object[] constants = type.getEnumConstants();
         if (constants == null)
         {
             throw new IllegalArgumentException(field+" not enum");
         }
-        Element fieldSet = new Element("fieldset")
-                .addElement("legend")
+        Element fieldSet = new Element("fieldset");
+        fieldSet.addElement("legend")
                 .addText(labelText);
         for (Object c : constants)
         {
@@ -256,14 +280,14 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                     .addAttr("value", n);
             if (c.equals(value))
             {
-                radioInput.addAttr("checked", true);
+                radioInput.addAttr(new BooleanAttribute("checked", true));
             }
             fieldSet.addTag(radioInput);
         }
         return fieldSet;
     }
 
-    private Content checkboxContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    protected ContainerContent singleCheckboxContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label")
@@ -280,7 +304,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             boolean checked = ConvertUtility.convert(boolean.class, value);
             if (checked)
             {
-                input.addAttr("checked", checked);
+                input.addAttr(new BooleanAttribute("checked", checked));
             }
         }
         return container;
@@ -289,5 +313,164 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
     private boolean isBoolean(Class type)
     {
         return boolean.class.equals(type) || Boolean.class.equals(type); 
+    }
+
+    protected Element multiCheckboxContainer(String field, String inputType, Class type, Object value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    {
+        if (!EnumSet.class.equals(type))
+        {
+            throw new UnsupportedOperationException(type+" not supported for multi selection");
+        }
+        if (inputTypeAnnotation == null)
+        {
+            throw new IllegalArgumentException("@InputType missing from "+field);
+        }
+        Class<? extends Enum> enumType = inputTypeAnnotation.enumType();
+        if (Enum.class.equals(enumType))
+        {
+            throw new IllegalArgumentException("enumType missing from "+field);
+        }
+        Element fieldSet = new Element("fieldset");
+        fieldSet.addElement("legend")
+                .addText(labelText);
+        Enum[] constants = enumType.getEnumConstants();
+        EnumSet es = (EnumSet) value;
+        for (Enum c : constants)
+        {
+            String n = c.toString();
+            String d = getLabel(n);
+            fieldSet.addElement("label")
+                    .addAttr("for", n)
+                    .addText(d);
+            Input input = new Input(inputType, field)
+                    .addAttr("id", n)
+                    .addAttr("value", n);
+            if (es.contains(c))
+            {
+                input.addAttr(new BooleanAttribute("checked", true));
+            }
+            fieldSet.addTag(input);
+        }
+        return fieldSet;
+    }
+
+    private void setEnumSetValue(D data, String field, String[] arr)
+    {
+        Class type = BeanHelper.getType(data, field);
+        if (!EnumSet.class.equals(type))
+        {
+            throw new IllegalArgumentException(type+" is not EnumSet<E> in "+field);
+        }
+        Object value = BeanHelper.getFieldValue(data, field);
+        if (value == null)
+        {
+            throw new IllegalArgumentException("EnumSet<E> is null in "+field);
+        }
+        EnumSet es = (EnumSet) value;
+        InputType inputTypeAnnotation = BeanHelper.getAnnotation(data, field, InputType.class);
+        if  (inputTypeAnnotation == null || Enum.class.equals(inputTypeAnnotation.enumType()))
+        {
+            throw new IllegalArgumentException("@InputType or @InputType.enumType() missing in "+field);
+        }
+        Class<? extends Enum> enumType = inputTypeAnnotation.enumType();
+        Enum[] constants = enumType.getEnumConstants();
+        for (String a : arr)
+        {
+            for (Enum en : constants)
+            {
+                if (en.name().equals(a))
+                {
+                    es.add(en);
+                }
+            }
+        }
+    }
+
+    protected Element selectContainer(String field, String inputType, Class type, Object value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    {
+        if (type.isEnum())
+        {
+            return singleSelectContainer(field, inputType, type, (Enum)value, labelText, placeholder, inputTypeAnnotation);
+        }
+        else
+        {
+            if (EnumSet.class.equals(type))
+            {
+                return multiSelectContainer(field, inputType, type, (EnumSet)value, labelText, placeholder, inputTypeAnnotation);
+            }
+            else
+            {
+                throw new IllegalArgumentException(field+" not Enum or EnumSet");
+            }
+        }
+    }
+
+    private Element singleSelectContainer(String field, String inputType, Class type, Enum value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    {
+        Object[] constants = type.getEnumConstants();
+        if (constants == null)
+        {
+            throw new IllegalArgumentException(field+" not enum");
+        }
+        Element fieldSet = new Element("fieldset");
+        fieldSet.addElement("label")
+                .addAttr("for", field)
+                .addText(labelText);
+        Element select = fieldSet.addElement("select")
+                .addAttr("name", field)
+                .addAttr("id", field);
+        for (Object c : constants)
+        {
+            String n = c.toString();
+            String d = getLabel(n);
+            Element option = select.addElement("option")
+                    .addAttr("value", n)
+                    .addText(d);
+            if (c.equals(value))
+            {
+                option.addAttr(new BooleanAttribute("selected", true));
+            }
+        }
+        return fieldSet;
+    }
+
+    private Element multiSelectContainer(String field, String inputType, Class type, EnumSet value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    {
+        if (!EnumSet.class.equals(type))
+        {
+            throw new UnsupportedOperationException(type+" not supported for multi selection");
+        }
+        if (inputTypeAnnotation == null)
+        {
+            throw new IllegalArgumentException("@InputType missing from "+field);
+        }
+        Class<? extends Enum> enumType = inputTypeAnnotation.enumType();
+        if (Enum.class.equals(enumType))
+        {
+            throw new IllegalArgumentException("enumType missing from "+field);
+        }
+        Element fieldSet = new Element("fieldset");
+        fieldSet.addElement("label")
+                .addText(labelText);
+        Element select = fieldSet.addElement("select")
+                .addAttr("name", field)
+                .addAttr("id", field)
+                .addAttr("multiple", true)
+                .addAttr("data-native-menu", false);
+        Enum[] constants = enumType.getEnumConstants();
+        EnumSet es = (EnumSet) value;
+        for (Enum c : constants)
+        {
+            String n = c.toString();
+            String d = getLabel(n);
+            Element option = select.addElement("option")
+                    .addAttr("value", n)
+                    .addText(d);
+            if (es.contains(c))
+            {
+                option.addAttr(new BooleanAttribute("selected", true));
+            }
+        }
+        return fieldSet;
     }
 }

@@ -14,22 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.vesalainen.html;
 
 /**
  *
  * @author tkv
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface InputType
+public interface Changeable
 {
-    String value();
-    Class<? extends Enum> enumType() default Enum.class;
-    Attr[] attrs() default {};
+    /**
+     * Set new value
+     * @param value 
+     */
+    void change(Object value);
 }

@@ -22,8 +22,18 @@ package org.vesalainen.html;
  */
 public interface Container extends Content
 {
-
+    /**
+     * Add Content at the end
+     * @param c
+     * @return 
+     */
     ContainerContent addContent(Content c);
+    /**
+     * Add Content at the start
+     * @param c
+     * @return 
+     */
+    ContainerContent insertContent(Content c);
 
     /**
      * Add Element

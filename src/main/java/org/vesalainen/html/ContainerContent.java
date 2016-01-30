@@ -99,6 +99,17 @@ public class ContainerContent implements Container
         content.add(c);
         return this;
     }
+
+    @Override
+    public ContainerContent insertContent(Content c)
+    {
+        if (content == null)
+        {
+            content = new ArrayList<>();
+        }
+        content.add(0, c);
+        return this;
+    }
     
     @Override
     public String toString()

@@ -21,55 +21,29 @@ import java.io.IOException;
 /**
  *
  * @author tkv
- * @param <T>
  */
-public class Attribute<T> implements Changeable
+public class BooleanAttribute extends Attribute<Boolean>
 {
-    protected final String name;
-    protected T value;
-
-    public Attribute(String name, T value)
+    private boolean v;
+    public BooleanAttribute(String name, boolean value)
     {
-        this.name = name;
-        this.value = value;
+        super(name, null);
+        v = value;
     }
-
+    
     @Override
-    public String toString()
+    public void append(Appendable out) throws IOException
     {
-        return name + "=\"" + value + "\"";
-    }
-
-    void append(Appendable sb) throws IOException
-    {
-        sb.append(name);
-        sb.append("=\"");
-        if (value != null)
+        if (v)
         {
-            sb.append(value.toString());
+            out.append(name);
         }
-        sb.append("\"");
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public T getValue()
-    {
-        return value;
-    }
-
-    public void setValue(T value)
-    {
-        this.value = value;
     }
 
     @Override
     public void change(Object value)
     {
-        this.value = (T) value;
+        v = (Boolean) value;
     }
     
 }

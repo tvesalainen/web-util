@@ -17,13 +17,21 @@
 package org.vesalainen.web.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.vesalainen.html.Attribute;
+import org.vesalainen.html.Content;
 import org.vesalainen.html.Document;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Frameworks;
+import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
+import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.server.EmbeddedServer;
@@ -55,7 +63,7 @@ public class AbstractBeanServletT
             Logger.getLogger(EmbeddedServerT.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public static class BeanServletImpl extends AbstractBeanServlet<Data>
+    public static class BeanServletImpl extends JQueryMobileBeanServlet<Data>
     {
 
         @Override
@@ -67,24 +75,21 @@ public class AbstractBeanServletT
         @Override
         protected Document getDocument(Data data) throws IOException
         {
-            Document doc = new Document("BeanServletTest");
-            doc.use(Frameworks.JQueryMobile);
-            Element page = doc.getBody().addElement("div")
-                    .addAttr("data-role", "page");
-            Element main = page.addElement("div")
-                    .addAttr("data-role", "main")
-                    .addClasses("ui-content");
+            JQueryMobileDocument doc = new JQueryMobileDocument("BeanServletTest");
+            Element main = doc.getPage("page1");
             Element form = main.addElement("form")
                     .addAttr("method", "post");
+            form.addContent(createInput(data, "submit"));
+
+            form.addContent(createInput(data, "mul"));
+            form.addContent(createInput(data, "sel"));
             form.addContent(createInput(data, "text"));
             form.addContent(createInput(data, "number"));
             form.addContent(createInput(data, "area"));
-            Element fs = (Element) createInput(data, "en");
-            fs.addAttr("data-role", "controlgroup");
-            form.addContent(fs);
+            form.addContent(createInput(data, "en"));
             form.addContent(createInput(data, "on"));
+            form.addContent(createInput(data, "es"));
             
-            form.addContent(createInput(data, "submit"));
             return doc;
         }
         
@@ -98,6 +103,42 @@ public class AbstractBeanServletT
         String text;
         int number;
         boolean on;
+        EnumSet<En> es = EnumSet.noneOf(En.class);
+        En sel;
+        EnumSet<En> mul = EnumSet.noneOf(En.class);
+
+        @InputType(value="select", enumType=En.class)
+        public EnumSet<En> getMul()
+        {
+            return mul;
+        }
+
+        public void setMul(EnumSet<En> mul)
+        {
+            this.mul = mul;
+        }
+
+        @InputType(value="select")
+        public En getSel()
+        {
+            return sel;
+        }
+
+        public void setSel(En sel)
+        {
+            this.sel = sel;
+        }
+        
+        @InputType(value="checkbox", enumType=En.class)
+        public EnumSet<En> getEs()
+        {
+            return es;
+        }
+
+        public void setEs(EnumSet<En> es)
+        {
+            this.es = es;
+        }
 
         public boolean isOn()
         {

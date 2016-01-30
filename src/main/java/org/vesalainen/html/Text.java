@@ -22,9 +22,9 @@ import java.io.IOException;
  *
  * @author tkv
  */
-public class Text implements Content
+public class Text implements Content, Changeable
 {
-    private final String text;
+    private String text;
 
     public Text(String text)
     {
@@ -69,6 +69,12 @@ public class Text implements Content
     public void append(Appendable out) throws IOException
     {
         out.append(text);
+    }
+
+    @Override
+    public void change(Object value)
+    {
+        this.text = encode(value.toString());
     }
     
 }

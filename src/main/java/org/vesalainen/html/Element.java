@@ -17,8 +17,8 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -27,7 +27,7 @@ import java.util.List;
 public class Element extends ContainerContent implements AttributedContent
 {
     protected String name;
-    protected List<Attribute<?>> attributes;
+    protected Map<String,Attribute<?>> attributes;
     protected ClassAttribute classes;
 
     public Element(String name)
@@ -109,9 +109,9 @@ public class Element extends ContainerContent implements AttributedContent
     {
         if (attributes == null)
         {
-            attributes = new ArrayList<>();
+            attributes = new HashMap<>();
         }
-        attributes.add(attr);
+        attributes.put(attr.getName(), attr);
         return this;
     }
 
@@ -122,7 +122,7 @@ public class Element extends ContainerContent implements AttributedContent
         out.append(name);
         if (attributes != null)
         {
-            for (Attribute<?> attr : attributes)
+            for (Attribute<?> attr : attributes.values())
             {
                 out.append(' ');
                 attr.append(out);
@@ -133,6 +133,18 @@ public class Element extends ContainerContent implements AttributedContent
         out.append("</");
         out.append(name);
         out.append('>');
+    }
+
+    @Override
+    public boolean hasAttr(String name)
+    {
+        return attributes.containsKey(name);
+    }
+
+    @Override
+    public Attribute<?> getAttr(String name)
+    {
+        return attributes.get(name);
     }
 
 }
