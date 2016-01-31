@@ -14,17 +14,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html;
+package org.vesalainen.web.servlet.bean;
+
+import org.vesalainen.bean.ThreadLocalBeanField;
 
 /**
  *
  * @author tkv
+ * @param <T>
  */
-public interface Changeable
+public class BooleanInput<T> extends ThreadLocalBeanField<T,Boolean>
 {
-    /**
-     * Set new value
-     * @param value 
-     */
-    void change(Object value);
+
+    public BooleanInput(ThreadLocal<T> local, Class<? extends T> cls, String fieldname)
+    {
+        super(local, cls, fieldname);
+    }
+
+    @Override
+    public void set(Object value)
+    {
+        super.set(true);
+    }
+    
+    @Override
+    public String toString()
+    {
+        Object value = get();
+        if (value != null)
+        {
+            return value.toString();
+        }
+        else
+        {
+            return "";
+        }
+    }
+    
 }

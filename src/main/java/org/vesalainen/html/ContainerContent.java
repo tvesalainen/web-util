@@ -37,7 +37,7 @@ public class ContainerContent implements Container
      * @return this
      */
     @Override
-    public ContainerContent addText(String text)
+    public <T> ContainerContent addText(T text)
     {
         addContent(new Text(text));
         return this;

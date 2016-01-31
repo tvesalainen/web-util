@@ -19,31 +19,25 @@ package org.vesalainen.html;
 import java.io.IOException;
 
 /**
- *
+ * Implements HTML boolean attribute. Boolean attribute shows only name when
+ * value != null and value.toString() == 'true'
  * @author tkv
+ * @param <T>
  */
-public class BooleanAttribute extends Attribute<Boolean>
+public class BooleanAttribute<T> extends Attribute<T>
 {
-    private boolean v;
-    public BooleanAttribute(String name, boolean value)
+    public BooleanAttribute(String name, T value)
     {
-        super(name, null);
-        v = value;
+        super(name, value);
     }
     
     @Override
     public void append(Appendable out) throws IOException
     {
-        if (v)
+        if (value != null && "true".equals(value.toString()))
         {
             out.append(name);
         }
     }
 
-    @Override
-    public void change(Object value)
-    {
-        v = (Boolean) value;
-    }
-    
 }

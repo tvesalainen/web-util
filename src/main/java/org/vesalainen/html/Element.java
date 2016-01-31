@@ -62,7 +62,7 @@ public class Element extends ContainerContent implements AttributedContent
     }
 
     @Override
-    public Element addText(String text)
+    public <T> Element addText(T text)
     {
         return (Element) super.addText(text);
     }

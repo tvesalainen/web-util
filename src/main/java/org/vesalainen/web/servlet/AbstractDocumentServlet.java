@@ -32,11 +32,22 @@ import org.vesalainen.html.Document;
  */
 public abstract class AbstractDocumentServlet<D> extends HttpServlet
 {
+    protected Document document;
+    
+    public AbstractDocumentServlet()
+    {
+    }
+
+    @Override
+    public void init() throws ServletException
+    {
+        super.init();
+        document = createDocument();
+    }
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        Document document = getDocument(null);
         response(resp, document);
     }
 
@@ -49,22 +60,22 @@ public abstract class AbstractDocumentServlet<D> extends HttpServlet
         document.write(os);
         os.flush();
     }
-    protected abstract Document getDocument(D datagetPlaceholdergetPlaceholdergetLabelgetLabelgetLabel) throws IOException;
-    
-    protected String getLabel(String key) throws IOException
+    protected String getLabel(String key)
     {
         return getLabel(Locale.getDefault(), key);
     }
-    protected String getLabel(Locale locale, String key) throws IOException
+    protected String getLabel(Locale locale, String key)
     {
         return "["+key+"]";
     }
-    protected String getPlaceholder(String key) throws IOException
+    protected String getPlaceholder(String key)
     {
         return getPlaceholder(Locale.getDefault(), key);
     }
-    protected String getPlaceholder(Locale locale, String key) throws IOException
+    protected String getPlaceholder(Locale locale, String key)
     {
         return "{"+key+"}";
     }
+
+    protected abstract Document createDocument();
 }

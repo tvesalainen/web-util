@@ -17,64 +17,28 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import static org.vesalainen.html.Encoder.encode;
 
 /**
  *
  * @author tkv
+ * @param <T>
  */
-public class Text implements Content, Changeable
+public class Text<T> implements Content
 {
-    private String text;
+    private final T text;
 
-    public Text(String text)
+    public Text(T text)
     {
-        this.text = encode(text);
-    }
-    /**
-     * Changes HTML special characters to entity references
-     * @param text
-     * @return 
-     */
-    public static final String encode(String text)
-    {
-        StringBuilder sb = new StringBuilder();
-        int len = text.length();
-        for (int ii=0;ii<len;ii++)
-        {
-            char cc = text.charAt(ii);
-            switch (cc)
-            {
-                case '"':
-                    sb.append("&quot;");
-                    break;
-                case '\'':
-                    sb.append("&apos;");
-                    break;
-                case '&':
-                    sb.append("&amp;");
-                    break;
-                case '<':
-                    sb.append("&lt;");
-                    break;
-                case '>':
-                    sb.append("&gt;");
-                    break;
-                default:
-                    sb.append(cc);
-            }
-        }
-        return sb.toString();
+        this.text = text;
     }
     @Override
     public void append(Appendable out) throws IOException
     {
-        out.append(text);
+        if (text != null)
+        {
+            encode(out, text.toString());
+        }
     }
 
-    @Override
-    public void change(Object value)
-    {
-        this.text = encode(value.toString());
-    }
-    
 }

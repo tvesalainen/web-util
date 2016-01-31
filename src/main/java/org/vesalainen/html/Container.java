@@ -68,6 +68,6 @@ public interface Container extends Content
      * @param text
      * @return this
      */
-    ContainerContent addText(String text);
+    <T> ContainerContent addText(T text);
     
 }

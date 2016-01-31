@@ -17,13 +17,14 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import static org.vesalainen.html.Encoder.encode;
 
 /**
  *
  * @author tkv
  * @param <T>
  */
-public class Attribute<T> implements Changeable
+public class Attribute<T>
 {
     protected final String name;
     protected T value;
@@ -40,15 +41,15 @@ public class Attribute<T> implements Changeable
         return name + "=\"" + value + "\"";
     }
 
-    void append(Appendable sb) throws IOException
+    void append(Appendable out) throws IOException
     {
-        sb.append(name);
-        sb.append("=\"");
+        out.append(name);
+        out.append("=\"");
         if (value != null)
         {
-            sb.append(value.toString());
+            encode(out, value.toString());
         }
-        sb.append("\"");
+        out.append("\"");
     }
 
     public String getName()
@@ -66,10 +67,4 @@ public class Attribute<T> implements Changeable
         this.value = value;
     }
 
-    @Override
-    public void change(Object value)
-    {
-        this.value = (T) value;
-    }
-    
 }

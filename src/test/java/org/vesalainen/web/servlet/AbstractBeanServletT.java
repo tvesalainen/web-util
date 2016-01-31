@@ -17,19 +17,13 @@
 package org.vesalainen.web.servlet;
 
 import java.io.IOException;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.vesalainen.html.Attribute;
-import org.vesalainen.html.Content;
 import org.vesalainen.html.Document;
 import org.vesalainen.html.Element;
-import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
 import org.vesalainen.web.Attr;
@@ -67,14 +61,15 @@ public class AbstractBeanServletT
     {
 
         @Override
-        protected Data createData() throws IOException
+        protected Data createData()
         {
             return new Data();
         }
 
         @Override
-        protected Document getDocument(Data data) throws IOException
+        protected Document createDocument()
         {
+            Data data = createData();
             JQueryMobileDocument doc = new JQueryMobileDocument("BeanServletTest");
             Element main = doc.getPage("page1");
             Element form = main.addElement("form")
@@ -92,7 +87,7 @@ public class AbstractBeanServletT
             
             return doc;
         }
-        
+
     }
     public static class Data
     {

@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.vesalainen.html.Attribute;
 import org.vesalainen.html.Element;
 import org.vesalainen.web.InputType;
-import org.vesalainen.web.servlet.AbstractBeanServlet;
+import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 
 /**
  *
@@ -32,23 +32,23 @@ public abstract class JQueryMobileBeanServlet<D> extends AbstractBeanServlet<D>
     private static final Attribute<String> ControlGroup = new Attribute<>("data-role", "controlgroup");
     
     @Override
-    protected Element multiCheckboxContainer(String field, String inputType, Class type, Object value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    protected Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
-        return super.multiCheckboxContainer(field, inputType, type, value, labelText, placeholder, inputTypeAnnotation)
+        return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
                 .addAttr(ControlGroup);
     }
 
     @Override
-    protected Element radioContainer(String field, String inputType, Class type, Object value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    protected Element radioContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
-        return super.radioContainer(field, inputType, type, value, labelText, placeholder, inputTypeAnnotation)
+        return super.radioContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
                 .addAttr(ControlGroup);
     }
 
     @Override
-    protected Element selectContainer(String field, String inputType, Class type, Object value, String labelText, String placeholder, InputType inputTypeAnnotation) throws IOException
+    protected Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
-        return super.selectContainer(field, inputType, type, value, labelText, placeholder, inputTypeAnnotation)
+        return super.selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
                 .addAttr(ControlGroup);
     }
     
