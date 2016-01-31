@@ -19,6 +19,7 @@ package org.vesalainen.html;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -109,7 +110,7 @@ public class Element extends ContainerContent implements AttributedContent
     {
         if (attributes == null)
         {
-            attributes = new HashMap<>();
+            attributes = new TreeMap<>();
         }
         attributes.put(attr.getName(), attr);
         return this;

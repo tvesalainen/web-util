@@ -16,7 +16,10 @@
  */
 package org.vesalainen.web.servlet;
 
+import java.awt.Color;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +79,14 @@ public class AbstractBeanServletT
                     .addAttr("method", "post");
             form.addContent(createInput(data, "submit"));
 
+            form.addContent(createInput(data, "range"));
+            form.addContent(createInput(data, "url"));
+            form.addContent(createInput(data, "week"));
+            form.addContent(createInput(data, "month"));
+            form.addContent(createInput(data, "datetimelocal"));
+            form.addContent(createInput(data, "time"));
+            form.addContent(createInput(data, "date"));
+            form.addContent(createInput(data, "color"));
             form.addContent(createInput(data, "mul"));
             form.addContent(createInput(data, "sel"));
             form.addContent(createInput(data, "text"));
@@ -101,6 +112,106 @@ public class AbstractBeanServletT
         EnumSet<En> es = EnumSet.noneOf(En.class);
         En sel;
         EnumSet<En> mul = EnumSet.noneOf(En.class);
+        Color color;
+        Date date;
+        Date time;
+        Date datetimelocal;
+        Date month;
+        Date week;
+        URL url;
+        int range;
+
+        @InputType(value="range",attrs={
+            @Attr(name="min", value="3"),
+            @Attr(name="max", value="40")
+        })
+        public int getRange()
+        {
+            return range;
+        }
+
+        public void setRange(int range)
+        {
+            this.range = range;
+        }
+
+        public URL getUrl()
+        {
+            return url;
+        }
+
+        public void setUrl(URL url)
+        {
+            this.url = url;
+        }
+        
+
+        @InputType("week")
+        public Date getWeek()
+        {
+            return week;
+        }
+
+        public void setWeek(Date week)
+        {
+            this.week = week;
+        }
+
+        @InputType("month")
+        public Date getMonth()
+        {
+            return month;
+        }
+
+        public void setMonth(Date month)
+        {
+            this.month = month;
+        }
+
+        @InputType("datetime-local")
+        public Date getDatetimelocal()
+        {
+            return datetimelocal;
+        }
+
+        public void setDatetimelocal(Date datetimelocal)
+        {
+            this.datetimelocal = datetimelocal;
+        }
+
+        @InputType("time")
+        public Date getTime()
+        {
+            return time;
+        }
+
+        public void setTime(Date time)
+        {
+            this.time = time;
+        }
+
+        @InputType("date")
+        public Date getDate()
+        {
+            return date;
+        }
+
+        public void setDate(Date date)
+        {
+            this.date = date;
+        }
+        
+
+        public Color getColor()
+        {
+            return color;
+        }
+
+        public void setColor(Color color)
+        {
+            this.color = color;
+        }
+        
 
         @InputType(value="select", enumType=En.class)
         public EnumSet<En> getMul()

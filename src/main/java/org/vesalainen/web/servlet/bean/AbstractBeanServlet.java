@@ -18,6 +18,8 @@ package org.vesalainen.web.servlet.bean;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +37,6 @@ import org.vesalainen.html.Element;
 import org.vesalainen.html.Input;
 import org.vesalainen.html.Tag;
 import org.vesalainen.web.Attr;
-import org.vesalainen.web.HTML5Datetime;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.servlet.AbstractDocumentServlet;
 
@@ -46,8 +47,6 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
  */
 public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 {
-    public static final HTML5Datetime parser = HTML5Datetime.getInstance();
-    public static final String DateFormat = "yyyy-MM-dd'T'HH:mm";
     private final ThreadLocal<D> threadLocal;
     private final Map<String,BeanField> fieldMap;
     private final D empty = createData();
@@ -97,7 +96,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         }
         else
         {
-            if (isInteger(type))
+            if (NumberInput.isInteger(type))
             {
                 inputType = "number";
             }
@@ -119,6 +118,20 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                         {
                             inputType = "color";
                         }
+                        else
+                        {
+                            if (Date.class.equals(type))
+                            {
+                                inputType = "datetime-local";
+                            }
+                            else
+                            {
+                                if (URL.class.equals(type))
+                                {
+                                    inputType = "url";
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -129,10 +142,15 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         {
             case "text":
             case "password":
-            case "number":
             case "email":
             case "search":
+            case "tel":
                 return textContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+            case "url":
+                return urlContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+            case "number":
+            case "range":
+                return numberContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
             case "textarea":
                 return textAreaContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
             case "button":
@@ -153,15 +171,14 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             case "select":
                 return selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
             case "color":
+                return colorContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
             case "date":
             case "datetime":
             case "datetime-local":
             case "month":
-            case "range":
-            case "tel":
             case "time":
-            case "url":
             case "week":
+                return dateContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
             case "datalist":
             case "keygen":
             case "output":
@@ -181,17 +198,6 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             }
         }
     }
-    private boolean isInteger(Class type)
-    {
-        return 
-                int.class.equals(type) ||
-                long.class.equals(type) ||
-                short.class.equals(type) ||
-                Short.class.equals(type) ||
-                Integer.class.equals(type) ||
-                Long.class.equals(type);
-    }
-
     protected ContainerContent textContainer(String field, String inputType, String labelText,String placeholder,  InputType inputTypeAnnotation)
     {
         ContainerContent container = new ContainerContent();
@@ -393,5 +399,77 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             option.addAttr(new BooleanAttribute("selected", enumSetInput.getValue(e)));
         }
         return fieldSet;
+    }
+
+    protected Content colorContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        ContainerContent container = new ContainerContent();
+        Element label = new Element("label")
+                .addAttr("for", field)
+                .addText(labelText);
+        container.addElement(label);
+        Input input = new Input(inputType, field)
+                .addAttr("id", field)
+                .addAttr("placeholder", placeholder);
+        addAttrs(input, inputTypeAnnotation);
+        container.addTag(input);
+        ColorInput colorInput = new ColorInput(threadLocal, dataType, field);
+        fieldMap.put(field, colorInput);
+        input.addAttr("value", colorInput);
+        return container;
+    }
+
+    private Content dateContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        ContainerContent container = new ContainerContent();
+        Element label = new Element("label")
+                .addAttr("for", field)
+                .addText(labelText);
+        container.addElement(label);
+        Input input = new Input(inputType, field)
+                .addAttr("id", field)
+                .addAttr("placeholder", placeholder);
+        addAttrs(input, inputTypeAnnotation);
+        container.addTag(input);
+        DateInput dateInput = new DateInput(threadLocal, dataType, field, inputType);
+        fieldMap.put(field, dateInput);
+        input.addAttr("value", dateInput);
+        return container;
+    }
+
+    protected Content numberContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        ContainerContent container = new ContainerContent();
+        Element textLabel = new Element("label")
+                .addAttr("for", field)
+                .addText(labelText);
+        container.addElement(textLabel);
+        Input input = new Input(inputType, field)
+                .addAttr("id", field)
+                .addAttr("placeholder", placeholder);
+        addAttrs(input, inputTypeAnnotation);
+        container.addTag(input);
+        NumberInput w = new NumberInput(threadLocal, dataType, field);
+        fieldMap.put(field, w);
+        input.addAttr("value", w);
+        return container;
+    }
+
+    private Content urlContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        ContainerContent container = new ContainerContent();
+        Element textLabel = new Element("label")
+                .addAttr("for", field)
+                .addText(labelText);
+        container.addElement(textLabel);
+        Input input = new Input(inputType, field)
+                .addAttr("id", field)
+                .addAttr("placeholder", placeholder);
+        addAttrs(input, inputTypeAnnotation);
+        container.addTag(input);
+        URLInput w = new URLInput(threadLocal, dataType, field);
+        fieldMap.put(field, w);
+        input.addAttr("value", w);
+        return container;
     }
 }
