@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.html.Document;
+import org.vesalainen.web.StupidI18n;
 
 /**
  *
@@ -34,6 +35,7 @@ import org.vesalainen.html.Document;
 public abstract class AbstractDocumentServlet<D> extends HttpServlet implements I18n
 {
     protected Document document;
+    protected I18n i18n = new StupidI18n();
     
     public AbstractDocumentServlet()
     {
@@ -61,26 +63,31 @@ public abstract class AbstractDocumentServlet<D> extends HttpServlet implements 
         document.write(os);
         os.flush();
     }
+
     @Override
     public String getLabel(Object key)
     {
-        return getLabel(Locale.getDefault(), key);
+        return i18n.getLabel(key);
     }
+
     @Override
     public String getLabel(Locale locale, Object key)
     {
-        return "["+key+"]";
+        return i18n.getLabel(locale, key);
     }
+
     @Override
     public String getPlaceholder(Object key)
     {
-        return getPlaceholder(Locale.getDefault(), key);
+        return i18n.getPlaceholder(key);
     }
+
     @Override
     public String getPlaceholder(Locale locale, Object key)
     {
-        return "{"+key+"}";
+        return i18n.getPlaceholder(locale, key);
     }
 
+    
     protected abstract Document createDocument();
 }

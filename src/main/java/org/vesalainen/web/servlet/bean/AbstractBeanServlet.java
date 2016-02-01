@@ -53,13 +53,21 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 {
     private final ThreadLocal<D> threadLocal;
     private final Map<String,BeanField> fieldMap;
-    private final D empty = createData();
-    private final Class<D> dataType = (Class<D>) empty.getClass();
+    private D empty;
+    private Class<D> dataType;
 
     public AbstractBeanServlet()
     {
         threadLocal = new ThreadLocal<>();
         fieldMap = new HashMap<>();
+    }
+
+    @Override
+    public void init() throws ServletException
+    {
+        super.init();
+        empty = createData();
+        dataType = (Class<D>) empty.getClass();
     }
 
     @Override

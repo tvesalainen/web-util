@@ -29,6 +29,7 @@ import org.vesalainen.html.Document;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
+import org.vesalainen.html.jquery.mobile.JQueryMobileDocument.Page;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelector;
@@ -76,7 +77,7 @@ public class AbstractBeanServletT
         {
             Data data = createData();
             JQueryMobileDocument doc = new JQueryMobileDocument("BeanServletTest");
-            Element main = doc.getPage("page1");
+            Page main = doc.getPage("page1");
             Element form = main.addElement("form")
                     .addAttr("method", "post");
             form.addContent(createInput(data, "submit"));
