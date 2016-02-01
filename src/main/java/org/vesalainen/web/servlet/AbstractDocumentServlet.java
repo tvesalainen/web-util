@@ -16,6 +16,7 @@
  */
 package org.vesalainen.web.servlet;
 
+import org.vesalainen.web.I18n;
 import java.io.IOException;
 import java.util.Locale;
 import javax.servlet.ServletException;
@@ -30,7 +31,7 @@ import org.vesalainen.html.Document;
  * @author tkv
  * @param <D>
  */
-public abstract class AbstractDocumentServlet<D> extends HttpServlet
+public abstract class AbstractDocumentServlet<D> extends HttpServlet implements I18n
 {
     protected Document document;
     
@@ -60,19 +61,23 @@ public abstract class AbstractDocumentServlet<D> extends HttpServlet
         document.write(os);
         os.flush();
     }
-    protected String getLabel(String key)
+    @Override
+    public String getLabel(Object key)
     {
         return getLabel(Locale.getDefault(), key);
     }
-    protected String getLabel(Locale locale, String key)
+    @Override
+    public String getLabel(Locale locale, Object key)
     {
         return "["+key+"]";
     }
-    protected String getPlaceholder(String key)
+    @Override
+    public String getPlaceholder(Object key)
     {
         return getPlaceholder(Locale.getDefault(), key);
     }
-    protected String getPlaceholder(Locale locale, String key)
+    @Override
+    public String getPlaceholder(Locale locale, Object key)
     {
         return "{"+key+"}";
     }

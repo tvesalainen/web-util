@@ -18,6 +18,7 @@ package org.vesalainen.html.jquery.mobile;
 
 import java.io.IOException;
 import org.vesalainen.html.Attribute;
+import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
@@ -49,7 +50,21 @@ public abstract class JQueryMobileBeanServlet<D> extends AbstractBeanServlet<D>
     protected Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
         return super.selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
-                .addAttr(ControlGroup);
+                .addClasses("ui-field-contain");
+    }
+
+    @Override
+    protected Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        return super.singleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation)
+                .addClasses("ui-field-contain");
+    }
+
+    @Override
+    protected Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        return super.multipleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation)
+                .addClasses("ui-field-contain");
     }
     
 }

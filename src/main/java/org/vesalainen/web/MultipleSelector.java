@@ -14,34 +14,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html;
+package org.vesalainen.web;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.vesalainen.util.Lists;
 
 /**
  *
  * @author tkv
+ * @param <T>
  */
-public final class Input extends Tag
+public class MultipleSelector<T>
 {
+    private final Set<T> values;
+    private final List<T> options;
 
-    public Input(String type, String name)
+    public MultipleSelector(T... options)
     {
-        super("input");
-        addAttr("type", type);
-        addAttr("name", name);
+        this(new HashSet<T>(), Lists.create(options));
     }
 
-    @Override
-    public <T> Input addAttr(Attribute<T> attr)
+    public MultipleSelector(List<T> options)
     {
-        super.addAttr(attr);
-        return this;
+        this(new HashSet<T>(), options);
     }
 
-    @Override
-    public <T> Input addAttr(String name, T value)
+    public MultipleSelector(Set<T> values, List<T> options)
     {
-        super.addAttr(name, value);
-        return this;
+        this.options = options;
+        this.values = values;
+    }
+
+    public Set<T> getValues()
+    {
+        return values;
+    }
+
+    public List<T> getOptions()
+    {
+        return options;
     }
     
 }

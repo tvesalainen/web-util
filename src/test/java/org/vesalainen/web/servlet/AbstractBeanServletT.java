@@ -31,6 +31,8 @@ import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
+import org.vesalainen.web.MultipleSelector;
+import org.vesalainen.web.SingleSelector;
 import org.vesalainen.web.server.EmbeddedServer;
 import org.vesalainen.web.server.EmbeddedServerT;
 
@@ -79,6 +81,8 @@ public class AbstractBeanServletT
                     .addAttr("method", "post");
             form.addContent(createInput(data, "submit"));
 
+            form.addContent(createInput(data, "selector2"));
+            form.addContent(createInput(data, "selector"));
             form.addContent(createInput(data, "range"));
             form.addContent(createInput(data, "url"));
             form.addContent(createInput(data, "week"));
@@ -120,6 +124,28 @@ public class AbstractBeanServletT
         Date week;
         URL url;
         int range;
+        MultipleSelector<Integer> selector = new MultipleSelector<>(1, 2, 3, 4);
+        SingleSelector<Double> selector2 = new SingleSelector<>(1.0, 2.0, 3.0, 4.0);
+
+        public SingleSelector<Double> getSelector2()
+        {
+            return selector2;
+        }
+
+        public void setSelector2(SingleSelector<Double> selector2)
+        {
+            this.selector2 = selector2;
+        }
+
+        public MultipleSelector<Integer> getSelector()
+        {
+            return selector;
+        }
+
+        public void setSelector(MultipleSelector<Integer> selector)
+        {
+            this.selector = selector;
+        }
 
         @InputType(value="range",attrs={
             @Attr(name="min", value="3"),

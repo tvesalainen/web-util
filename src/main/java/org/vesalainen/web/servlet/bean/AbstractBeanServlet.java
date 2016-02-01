@@ -22,8 +22,10 @@ import java.net.URL;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,10 +36,12 @@ import org.vesalainen.html.BooleanAttribute;
 import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
-import org.vesalainen.html.Input;
+import org.vesalainen.html.InputTag;
 import org.vesalainen.html.Tag;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
+import org.vesalainen.web.MultipleSelector;
+import org.vesalainen.web.SingleSelector;
 import org.vesalainen.web.servlet.AbstractDocumentServlet;
 
 /**
@@ -89,6 +93,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
     {
         String inputType = "text";
         Class type = BeanHelper.getType(data, field);
+        Object value = BeanHelper.getFieldValue(data, field);
         InputType inputTypeAnnotation = BeanHelper.getAnnotation(data, field, InputType.class);
         if (inputTypeAnnotation != null)
         {
@@ -130,6 +135,20 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                                 {
                                     inputType = "url";
                                 }
+                                else
+                                {
+                                    if (MultipleSelector.class.equals(type))
+                                    {
+                                        inputType = "select";
+                                    }
+                                    else
+                                    {
+                                        if (SingleSelector.class.equals(type))
+                                        {
+                                            inputType = "select";
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -169,7 +188,21 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                     return multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
                 }
             case "select":
-                return selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                if (MultipleSelector.class.equals(type))
+                {
+                    return multipleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
+                }
+                else
+                {
+                    if (SingleSelector.class.equals(type))
+                    {
+                        return singleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
+                    }
+                    else
+                    {
+                        return selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                    }
+                }
             case "color":
                 return colorContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
             case "date":
@@ -205,7 +238,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("for", field)
                 .addText(labelText);
         container.addElement(textLabel);
-        Input input = new Input(inputType, field)
+        InputTag input = new InputTag(inputType, field)
                 .addAttr("id", field)
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
@@ -258,7 +291,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             fieldSet.addElement("label")
                     .addAttr("for", n)
                     .addText(d);
-            Input radioInput = new Input(inputType, field)
+            InputTag radioInput = new InputTag(inputType, field)
                     .addAttr("id", n)
                     .addAttr("value", n);
             radioInput.addAttr(new BooleanAttribute("checked", enumInput.getValue(e)));
@@ -276,7 +309,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("for", field)
                 .addText(labelText);
         container.addElement(textLabel);
-        Input input = new Input(inputType, field)
+        InputTag input = new InputTag(inputType, field)
                 .addAttr("id", field)
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
@@ -317,7 +350,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             fieldSet.addElement("label")
                     .addAttr("for", n)
                     .addText(d);
-            Input input = new Input(inputType, field)
+            InputTag input = new InputTag(inputType, field)
                     .addAttr("id", n)
                     .addAttr("value", n);
             input.addAttr(new BooleanAttribute("checked", enumSetInput.getValue(e)));
@@ -387,8 +420,8 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         Element select = fieldSet.addElement("select")
                 .addAttr("name", field)
                 .addAttr("id", field)
-                .addAttr("multiple", true)
                 .addAttr("data-native-menu", false);
+        select.addAttr(new BooleanAttribute<>("multiple", true));
         for (Enum e : enumSetInput.getConstants())
         {
             String n = e.toString();
@@ -408,7 +441,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("for", field)
                 .addText(labelText);
         container.addElement(label);
-        Input input = new Input(inputType, field)
+        InputTag input = new InputTag(inputType, field)
                 .addAttr("id", field)
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
@@ -426,7 +459,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("for", field)
                 .addText(labelText);
         container.addElement(label);
-        Input input = new Input(inputType, field)
+        InputTag input = new InputTag(inputType, field)
                 .addAttr("id", field)
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
@@ -444,7 +477,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("for", field)
                 .addText(labelText);
         container.addElement(textLabel);
-        Input input = new Input(inputType, field)
+        InputTag input = new InputTag(inputType, field)
                 .addAttr("id", field)
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
@@ -462,7 +495,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("for", field)
                 .addText(labelText);
         container.addElement(textLabel);
-        Input input = new Input(inputType, field)
+        InputTag input = new InputTag(inputType, field)
                 .addAttr("id", field)
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
@@ -471,5 +504,56 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         fieldMap.put(field, w);
         input.addAttr("value", w);
         return container;
+    }
+
+    protected Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        MultipleSelector selector = (MultipleSelector) value;
+        List options = selector.getOptions();
+        MultipleSelectorInput<D,Object> input = new MultipleSelectorInput<>(threadLocal, dataType, field, options);
+        fieldMap.put(field, input);
+        Element fieldSet = new Element("fieldset");
+        fieldSet.addElement("label")
+                .addText(getLabel(field));
+        Element select = fieldSet.addElement("select")
+                .addAttr("name", field)
+                .addAttr("id", field)
+                .addAttr("data-native-menu", false);
+        select.addAttr(new BooleanAttribute("multiple", true));
+        for (Object opt : options)
+        {
+            String n = opt.toString();
+            String d = getLabel(n);
+            Element option = select.addElement("option")
+                    .addAttr("value", n)
+                    .addText(d);
+            option.addAttr(new BooleanAttribute("selected", input.getValue(opt)));
+        }
+        return fieldSet;
+    }
+
+    protected Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        SingleSelector selector = (SingleSelector) value;
+        List options = selector.getOptions();
+        SingleSelectorInput<D,Object> input = new SingleSelectorInput<>(threadLocal, dataType, field, options);
+        fieldMap.put(field, input);
+        Element fieldSet = new Element("fieldset");
+        fieldSet.addElement("label")
+                .addText(getLabel(field));
+        Element select = fieldSet.addElement("select")
+                .addAttr("name", field)
+                .addAttr("id", field)
+                .addAttr("data-native-menu", false);
+        for (Object opt : options)
+        {
+            String n = opt.toString();
+            String d = getLabel(n);
+            Element option = select.addElement("option")
+                    .addAttr("value", n)
+                    .addText(d);
+            option.addAttr(new BooleanAttribute("selected", input.getValue(opt)));
+        }
+        return fieldSet;
     }
 }
