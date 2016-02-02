@@ -23,10 +23,12 @@ package org.vesalainen.html;
 public interface AttributedContent extends Content
 {
 
-    <T> AttributedContent addAttr(String name, T value);
+    <T> AttributedContent setAttr(String name, T value);
 
-    <T> AttributedContent addAttr(Attribute<T> attr);
+    <T> AttributedContent setAttr(Attribute<T> attr);
     
+    AttributedContent removeAttr(String name);
+
     AttributedContent addClasses(String... cls);
     
     boolean hasAttr(String name);

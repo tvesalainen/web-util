@@ -16,9 +16,7 @@
  */
 package org.vesalainen.web;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.vesalainen.util.Lists;
 
 /**
@@ -60,6 +58,19 @@ public class SingleSelector<T>
     public List<T> getOptions()
     {
         return options;
+    }
+
+    @Override
+    public String toString()
+    {
+        if (value != null)
+        {
+            return value.toString();
+        }
+        else
+        {
+            return "";
+        }
     }
     
 }

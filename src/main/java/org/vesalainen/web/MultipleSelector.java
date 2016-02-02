@@ -26,9 +26,8 @@ import org.vesalainen.util.Lists;
  * @author tkv
  * @param <T>
  */
-public class MultipleSelector<T>
+public class MultipleSelector<T> extends HashSet<T>
 {
-    private final Set<T> values;
     private final List<T> options;
 
     public MultipleSelector(T... options)
@@ -43,13 +42,8 @@ public class MultipleSelector<T>
 
     public MultipleSelector(Set<T> values, List<T> options)
     {
+        addAll(values);
         this.options = options;
-        this.values = values;
-    }
-
-    public Set<T> getValues()
-    {
-        return values;
     }
 
     public List<T> getOptions()

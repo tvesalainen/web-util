@@ -17,9 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +46,7 @@ public class Tag implements AttributedContent
         if (classes == null)
         {
             classes = new ClassAttribute(cls);
-            addAttr(classes);
+            setAttr(classes);
         }
         else
         {
@@ -57,19 +55,29 @@ public class Tag implements AttributedContent
         return this;
     }
     @Override
-    public <T> Tag addAttr(String name, T value)
+    public <T> Tag setAttr(String name, T value)
     {
-        return addAttr(new Attribute<>(name, value));
+        return setAttr(new SimpleAttribute<>(name, value));
     }
 
     @Override
-    public <T> Tag addAttr(Attribute<T> attr)
+    public <T> Tag setAttr(Attribute<T> attr)
     {
         if (attributes == null)
         {
             attributes = new HashMap<>();
         }
         attributes.put(attr.getName(), attr);
+        return this;
+    }
+
+    @Override
+    public AttributedContent removeAttr(String name)
+    {
+        if (attributes != null)
+        {
+            attributes.remove(name);
+        }
         return this;
     }
 

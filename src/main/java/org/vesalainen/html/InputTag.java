@@ -26,21 +26,21 @@ public final class InputTag extends Tag
     public InputTag(String type, String name)
     {
         super("input");
-        addAttr("type", type);
-        addAttr("name", name);
+        setAttr("type", type);
+        setAttr("name", name);
     }
 
     @Override
-    public <T> InputTag addAttr(Attribute<T> attr)
+    public <T> InputTag setAttr(Attribute<T> attr)
     {
-        super.addAttr(attr);
+        super.setAttr(attr);
         return this;
     }
 
     @Override
-    public <T> InputTag addAttr(String name, T value)
+    public <T> InputTag setAttr(String name, T value)
     {
-        super.addAttr(name, value);
+        super.setAttr(name, value);
         return this;
     }
     

@@ -25,7 +25,7 @@ import org.vesalainen.util.Lists;
  *
  * @author tkv
  */
-public class ClassAttribute extends Attribute<Set<String>>
+public class ClassAttribute extends SimpleAttribute<Set<String>>
 {
 
     public ClassAttribute(String... classes)

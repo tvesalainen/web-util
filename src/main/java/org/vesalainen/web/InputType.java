@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface InputType
 {
-    String value();
-    Class<? extends Enum> enumType() default Enum.class;
+    String value() default "text";
+    Class<?> itemType() default Object.class;
     Attr[] attrs() default {};
 }

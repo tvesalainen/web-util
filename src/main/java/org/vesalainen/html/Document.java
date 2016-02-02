@@ -34,7 +34,7 @@ public class Document
     protected Element head;
     protected Element body;
     protected Set<Framework> frameworks;
-    private final Attribute<Charset> charset;
+    private final SimpleAttribute<Charset> charset;
 
     public Document()
     {
@@ -44,9 +44,9 @@ public class Document
     {
         html = new Element("html");
         head = html.addElement("head");
-        charset = new Attribute<>("charset", StandardCharsets.UTF_8);
+        charset = new SimpleAttribute<>("charset", StandardCharsets.UTF_8);
         head.addTag("meta")
-                .addAttr(charset);
+                .setAttr(charset);
         if (title != null)
         {
             head.addElement("title")

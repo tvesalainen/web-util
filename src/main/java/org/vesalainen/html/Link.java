@@ -14,42 +14,48 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html.jquery;
+package org.vesalainen.html;
 
-import org.vesalainen.html.AbstractFramework;
-import org.vesalainen.html.Document;
-import org.vesalainen.html.Element;
+import java.io.IOException;
 
 /**
  *
  * @author tkv
  */
-public class JQuery extends AbstractFramework
+public class Link implements Attribute<String>
 {
-    private static String Format = "/jquery-%s.min.js";
-    
-    public JQuery()
-    {
-        super("1.12.0");
-    }
+    private final String name;
+    private final String path;
+    private final Content query;
 
-    public JQuery(String version)
+    public Link(String name, String path, Content query)
     {
-        super(version);
-    }
-
-    @Override
-    public void useIn(Document page)
-    {
-        Element head = page.getHead();
-        head.addElement("script")
-                .setAttr("src", path(version));
+        this.name = name;
+        this.path = path;
+        this.query = query;
     }
 
     @Override
-    protected String path(String version)
+    public String getName()
     {
-        return String.format(Format, version);
+        return name;
+    }
+
+    @Override
+    public String getValue()
+    {
+        return path+'?'+query;
+    }
+
+    @Override
+    public void append(Appendable out) throws IOException
+    {
+        out.append(name);
+        out.append("=\"");
+        out.append(path);
+        out.append('?');
+        query.append(out);
+        out.append("\"");
     }
     
 }

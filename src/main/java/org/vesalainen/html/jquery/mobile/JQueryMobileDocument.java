@@ -62,10 +62,10 @@ public class JQueryMobileDocument extends Document
         public Page(String id)
         {
             super("div");
-            addAttr("data-role", "page");
-            addAttr("id", id);
+            setAttr("data-role", "page");
+            setAttr("id", id);
             main = new Element("div")
-                    .addAttr("data-role", "main")
+                    .setAttr("data-role", "main")
                     .addClasses("ui-content");
             addContent(main);
         }
@@ -75,7 +75,7 @@ public class JQueryMobileDocument extends Document
             if (header == null)
             {
                 header = new Element("div")
-                        .addAttr("data-role", "header");
+                        .setAttr("data-role", "header");
                 insertContent(header);
             }
             return header;
@@ -91,7 +91,7 @@ public class JQueryMobileDocument extends Document
             if (footer == null)
             {
                 footer = new Element("div")
-                        .addAttr("data-role", "footer");
+                        .setAttr("data-role", "footer");
                 addContent(footer);
             }
             return footer;

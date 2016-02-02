@@ -79,7 +79,7 @@ public class Element extends ContainerContent implements AttributedContent
         if (classes == null)
         {
             classes = new ClassAttribute(cls);
-            addAttr(classes);
+            setAttr(classes);
         }
         else
         {
@@ -88,31 +88,41 @@ public class Element extends ContainerContent implements AttributedContent
         return this;
     }
     /**
-     * Add Attribute
+     * Set SimpleAttribute
      * @param <T>
      * @param name
      * @param value
      * @return this
      */
     @Override
-    public <T> Element addAttr(String name, T value)
+    public <T> Element setAttr(String name, T value)
     {
-        return addAttr(new Attribute<>(name, value));
+        return setAttr(new SimpleAttribute<>(name, value));
     }
     /**
-     * Add Attribute
+     * Set SimpleAttribute
      * @param <T>
      * @param attr
      * @return this
      */
     @Override
-    public <T> Element addAttr(Attribute<T> attr)
+    public <T> Element setAttr(Attribute<T> attr)
     {
         if (attributes == null)
         {
             attributes = new TreeMap<>();
         }
         attributes.put(attr.getName(), attr);
+        return this;
+    }
+
+    @Override
+    public AttributedContent removeAttr(String name)
+    {
+        if (attributes != null)
+        {
+            attributes.remove(name);
+        }
         return this;
     }
 

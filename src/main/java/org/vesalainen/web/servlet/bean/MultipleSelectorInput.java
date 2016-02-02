@@ -19,7 +19,6 @@ package org.vesalainen.web.servlet.bean;
 import java.util.List;
 import java.util.Set;
 import org.vesalainen.bean.ThreadLocalBeanField;
-import org.vesalainen.util.Lists;
 import org.vesalainen.web.MultipleSelector;
 
 /**
@@ -43,7 +42,7 @@ public class MultipleSelectorInput<D,T> extends ThreadLocalBeanField<D,MultipleS
     {
         String[] arr = (String[]) value;
         MultipleSelector selector = get();
-        Set set = selector.getValues();
+        Set set = selector;
         set.clear();
         for (String name : arr)
         {
@@ -75,7 +74,7 @@ public class MultipleSelectorInput<D,T> extends ThreadLocalBeanField<D,MultipleS
         public String toString()
         {
             MultipleSelector selector = get();
-            Set set = selector.getValues();
+            Set set = selector;
             if (set.contains(value))
             {
                 return "true";

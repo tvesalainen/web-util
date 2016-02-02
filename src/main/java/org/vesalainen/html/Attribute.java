@@ -16,55 +16,16 @@
  */
 package org.vesalainen.html;
 
-import java.io.IOException;
-import static org.vesalainen.html.Encoder.encode;
-
 /**
  *
  * @author tkv
  * @param <T>
  */
-public class Attribute<T>
+public interface Attribute<T> extends Content
 {
-    protected final String name;
-    protected T value;
 
-    public Attribute(String name, T value)
-    {
-        this.name = name;
-        this.value = value;
-    }
+    String getName();
 
-    @Override
-    public String toString()
-    {
-        return name + "=\"" + value + "\"";
-    }
-
-    void append(Appendable out) throws IOException
-    {
-        out.append(name);
-        out.append("=\"");
-        if (value != null)
-        {
-            encode(out, value.toString());
-        }
-        out.append("\"");
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public T getValue()
-    {
-        return value;
-    }
-
-    public void setValue(T value)
-    {
-        this.value = value;
-    }
-
+    T getValue();
+    
 }

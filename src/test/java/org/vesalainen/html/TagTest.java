@@ -36,13 +36,13 @@ public class TagTest
     {
         Element html = new Element("html");
         assertEquals("<html></html>", html.toString());
-        html.addAttr("lang", "fi");
+        html.setAttr("lang", "fi");
         assertEquals("<html lang=\"fi\"></html>", html.toString());
-        html.addAttr("test", true);
+        html.setAttr("test", true);
         assertEquals("<html lang=\"fi\" test=\"true\"></html>", html.toString());
         Element head = html.addElement("head");
         assertEquals("<html lang=\"fi\" test=\"true\"><head></head></html>", html.toString());
-        Element div = head.addElement("div").addAttr("id", 13);
+        Element div = head.addElement("div").setAttr("id", 13);
         assertEquals("<html lang=\"fi\" test=\"true\"><head><div id=\"13\"></div></head></html>", html.toString());
         div.addText("Hello <There>");
         assertEquals("<html lang=\"fi\" test=\"true\"><head><div id=\"13\">Hello &lt;There&gt;</div></head></html>", html.toString());
@@ -52,7 +52,7 @@ public class TagTest
     public void test2()
     {
         Tag meta = new Tag("meta")
-                .addAttr("charset", StandardCharsets.UTF_8);
+                .setAttr("charset", StandardCharsets.UTF_8);
         assertEquals("<meta charset=\"UTF-8\">", meta.toString());
     }
 }

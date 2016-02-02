@@ -14,42 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html.jquery;
+package org.vesalainen.html;
 
-import org.vesalainen.html.AbstractFramework;
-import org.vesalainen.html.Document;
-import org.vesalainen.html.Element;
+import java.io.IOException;
 
 /**
  *
  * @author tkv
  */
-public class JQuery extends AbstractFramework
+public class RawContent<T> implements Content
 {
-    private static String Format = "/jquery-%s.min.js";
+    T content;
+
+    public RawContent(T content)
+    {
+        this.content = content;
+    }
     
-    public JQuery()
-    {
-        super("1.12.0");
-    }
-
-    public JQuery(String version)
-    {
-        super(version);
-    }
-
     @Override
-    public void useIn(Document page)
+    public void append(Appendable out) throws IOException
     {
-        Element head = page.getHead();
-        head.addElement("script")
-                .setAttr("src", path(version));
-    }
-
-    @Override
-    protected String path(String version)
-    {
-        return String.format(Format, version);
+        out.append(content.toString());
     }
     
 }

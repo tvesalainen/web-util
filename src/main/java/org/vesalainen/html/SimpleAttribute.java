@@ -17,27 +17,57 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import static org.vesalainen.html.Encoder.encode;
 
 /**
- * Implements HTML boolean attribute. Boolean attribute shows only name when
- * value != null and value.toString() == 'true'
+ *
  * @author tkv
  * @param <T>
  */
-public class BooleanAttribute<T> extends SimpleAttribute<T>
+public class SimpleAttribute<T> implements Attribute<T>
 {
-    public BooleanAttribute(String name, T value)
+    protected final String name;
+    protected T value;
+
+    public SimpleAttribute(String name, T value)
     {
-        super(name, value);
+        this.name = name;
+        this.value = value;
     }
-    
+
+    @Override
+    public String toString()
+    {
+        return name + "=\"" + value + "\"";
+    }
+
     @Override
     public void append(Appendable out) throws IOException
     {
-        if (value != null && "true".equals(value.toString()))
+        out.append(name);
+        out.append("=\"");
+        if (value != null)
         {
-            out.append(name);
+            encode(out, value.toString());
         }
+        out.append("\"");
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public T getValue()
+    {
+        return value;
+    }
+
+    public void setValue(T value)
+    {
+        this.value = value;
     }
 
 }

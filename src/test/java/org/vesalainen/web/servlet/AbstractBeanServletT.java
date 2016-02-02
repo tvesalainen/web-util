@@ -17,10 +17,11 @@
 package org.vesalainen.web.servlet;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
@@ -30,6 +31,7 @@ import org.vesalainen.html.Element;
 import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument.Page;
+import org.vesalainen.util.Lists;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelector;
@@ -79,7 +81,7 @@ public class AbstractBeanServletT
             JQueryMobileDocument doc = new JQueryMobileDocument("BeanServletTest");
             Page main = doc.getPage("page1");
             Element form = main.addElement("form")
-                    .addAttr("method", "post");
+                    .setAttr("method", "post");
             addInputs(form,
                 "submit",
                 "submit2",
@@ -102,12 +104,15 @@ public class AbstractBeanServletT
                 "on",
                 "es");
             
+            addHiddenInputs(form, "hidden", "hset");
             return doc;
         }
 
     }
     public static class Data
     {
+        List<Integer> hset = new ArrayList<>();
+        long hidden;
         enum En {E1, E2, E3};
         En en;
         String area;
@@ -129,6 +134,27 @@ public class AbstractBeanServletT
         int range;
         MultipleSelector<Integer> selector = new MultipleSelector<>(1, 2, 3, 4);
         SingleSelector<Double> selector2 = new SingleSelector<>(1.0, 2.0, 3.0, 4.0);
+
+        @InputType(itemType=Integer.class)
+        public List<Integer> getHset()
+        {
+            return hset;
+        }
+
+        public void setHset(List<Integer> hset)
+        {
+            this.hset = hset;
+        }
+
+        public long getHidden()
+        {
+            return hidden;
+        }
+
+        public void setHidden(long hidden)
+        {
+            this.hidden = hidden;
+        }
 
         public SingleSelector<Double> getSelector2()
         {
@@ -242,7 +268,7 @@ public class AbstractBeanServletT
         }
         
 
-        @InputType(value="select", enumType=En.class)
+        @InputType(value="select", itemType=En.class)
         public EnumSet<En> getMul()
         {
             return mul;
@@ -264,7 +290,7 @@ public class AbstractBeanServletT
             this.sel = sel;
         }
         
-        @InputType(value="checkbox", enumType=En.class)
+        @InputType(value="checkbox", itemType=En.class)
         public EnumSet<En> getEs()
         {
             return es;
@@ -352,6 +378,17 @@ public class AbstractBeanServletT
         public void setSubmit2(String submit2)
         {
             this.submit2 = submit2;
+            int size = hset.size();
+            if (size > 1)
+            {
+                int i1 = hset.get(size-2);
+                int i2 = hset.get(size-1);
+                hset.add(i1+i2);
+            }
+            else
+            {
+                hset.add(1);
+            }
         }
 
     }

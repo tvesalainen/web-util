@@ -49,13 +49,13 @@ public class Bootstrap extends AbstractFramework
     {
         Element head = page.getHead();
         head.addTag("meta")
-                .addAttr("name", "viewport")
-                .addAttr("content", "width=device-width, initial-scale=1");
+                .setAttr("name", "viewport")
+                .setAttr("content", "width=device-width, initial-scale=1");
         head.addTag("link")
-                .addAttr("rel", "stylesheet")
-                .addAttr("href", String.format(CSS, version));
+                .setAttr("rel", "stylesheet")
+                .setAttr("href", String.format(CSS, version));
         head.addElement("script")
-                .addAttr("src", String.format(Min, version));
+                .setAttr("src", String.format(Min, version));
     }
 
     @Override
