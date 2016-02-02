@@ -51,30 +51,30 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
  */
 public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 {
-    private final ThreadLocal<D> threadLocal;
+    private final ThreadLocal<D> threadLocalData;
     private final Map<String,BeanField> fieldMap;
     private D empty;
     private Class<D> dataType;
 
     public AbstractBeanServlet()
     {
-        threadLocal = new ThreadLocal<>();
+        threadLocalData = new ThreadLocal<>();
         fieldMap = new HashMap<>();
     }
 
     @Override
     public void init() throws ServletException
     {
-        super.init();
         empty = createData();
         dataType = (Class<D>) empty.getClass();
+        super.init();
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         D data = createData();
-        threadLocal.set(data);
+        threadLocalData.set(data);
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String field = e.getKey();
@@ -91,18 +91,26 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        threadLocal.set(empty);
+        threadLocalData.set(empty);
         response(resp, document);
     }
 
     protected abstract D createData();
     
-    public Content createInput(D data, String field)
+    public void addInputs(Element form, String... fields)
+    {
+        for (String field : fields)
+        {
+            form.addContent(createInput(field));
+        }
+    }
+    
+    public Content createInput(String field)
     {
         String inputType = "text";
-        Class type = BeanHelper.getType(data, field);
-        Object value = BeanHelper.getFieldValue(data, field);
-        InputType inputTypeAnnotation = BeanHelper.getAnnotation(data, field, InputType.class);
+        Class type = BeanHelper.getType(empty, field);
+        Object value = BeanHelper.getFieldValue(empty, field);
+        InputType inputTypeAnnotation = BeanHelper.getAnnotation(empty, field, InputType.class);
         if (inputTypeAnnotation != null)
         {
             inputType = inputTypeAnnotation.value();
@@ -182,8 +190,9 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 return textAreaContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
             case "button":
             case "reset":
-            case "submit":
                 return buttonContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+            case "submit":
+                return submitContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
             case "radio":
                 return radioContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
             case "checkbox":
@@ -251,7 +260,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
         container.addTag(input);
-        TextInput w = new TextInput(threadLocal, dataType, field);
+        TextInput w = new TextInput(threadLocalData, dataType, field);
         fieldMap.put(field, w);
         input.addAttr("value", w);
         return container;
@@ -269,7 +278,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("name", field)
                 .addAttr("placeholder", placeholder);
         addAttrs(textAreaInput, inputTypeAnnotation);
-        TextInput w = new TextInput(threadLocal, dataType, field);
+        TextInput w = new TextInput(threadLocalData, dataType, field);
         fieldMap.put(field, w);
         textAreaInput.addText(w);
         textAreaContainer.addElement(textAreaInput);
@@ -287,7 +296,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 
     protected Element radioContainer(String field, String inputType, Class<?> type, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
-        EnumInput enumInput = new EnumInput(threadLocal, dataType, field);
+        EnumInput enumInput = new EnumInput(threadLocalData, dataType, field);
         fieldMap.put(field, enumInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("legend")
@@ -310,7 +319,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 
     protected ContainerContent singleCheckboxContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
-        BooleanInput booleanInput = new BooleanInput(threadLocal, dataType, field);
+        BooleanInput booleanInput = new BooleanInput(threadLocalData, dataType, field);
         fieldMap.put(field, booleanInput);
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label")
@@ -346,7 +355,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         {
             throw new IllegalArgumentException("enumType missing from "+field);
         }
-        EnumSetInput enumSetInput = new EnumSetInput(threadLocal, dataType, inputTypeAnnotation.enumType(), field);
+        EnumSetInput enumSetInput = new EnumSetInput(threadLocalData, dataType, inputTypeAnnotation.enumType(), field);
         fieldMap.put(field, enumSetInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("legend")
@@ -388,7 +397,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
 
     private Element singleSelectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
     {
-        EnumInput input = new EnumInput(threadLocal, dataType, field);
+        EnumInput input = new EnumInput(threadLocalData, dataType, field);
         fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label")
@@ -420,7 +429,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
         {
             throw new IllegalArgumentException("enumType missing from "+field);
         }
-        EnumSetInput enumSetInput = new EnumSetInput(threadLocal, dataType, inputTypeAnnotation.enumType(), field);
+        EnumSetInput enumSetInput = new EnumSetInput(threadLocalData, dataType, inputTypeAnnotation.enumType(), field);
         fieldMap.put(field, enumSetInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label")
@@ -454,7 +463,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
         container.addTag(input);
-        ColorInput colorInput = new ColorInput(threadLocal, dataType, field);
+        ColorInput colorInput = new ColorInput(threadLocalData, dataType, field);
         fieldMap.put(field, colorInput);
         input.addAttr("value", colorInput);
         return container;
@@ -472,7 +481,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
         container.addTag(input);
-        DateInput dateInput = new DateInput(threadLocal, dataType, field, inputType);
+        DateInput dateInput = new DateInput(threadLocalData, dataType, field, inputType);
         fieldMap.put(field, dateInput);
         input.addAttr("value", dateInput);
         return container;
@@ -490,7 +499,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
         container.addTag(input);
-        NumberInput w = new NumberInput(threadLocal, dataType, field);
+        NumberInput w = new NumberInput(threadLocalData, dataType, field);
         fieldMap.put(field, w);
         input.addAttr("value", w);
         return container;
@@ -508,7 +517,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
                 .addAttr("placeholder", placeholder);
         addAttrs(input, inputTypeAnnotation);
         container.addTag(input);
-        URLInput w = new URLInput(threadLocal, dataType, field);
+        URLInput w = new URLInput(threadLocalData, dataType, field);
         fieldMap.put(field, w);
         input.addAttr("value", w);
         return container;
@@ -518,7 +527,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
     {
         MultipleSelector selector = (MultipleSelector) value;
         List options = selector.getOptions();
-        MultipleSelectorInput<D,Object> input = new MultipleSelectorInput<>(threadLocal, dataType, field, options);
+        MultipleSelectorInput<D,Object> input = new MultipleSelectorInput<>(threadLocalData, dataType, field, options);
         fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label")
@@ -544,7 +553,7 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
     {
         SingleSelector selector = (SingleSelector) value;
         List options = selector.getOptions();
-        SingleSelectorInput<D,Object> input = new SingleSelectorInput<>(threadLocal, dataType, field, options);
+        SingleSelectorInput<D,Object> input = new SingleSelectorInput<>(threadLocalData, dataType, field, options);
         fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label")
@@ -563,5 +572,17 @@ public abstract class AbstractBeanServlet<D> extends AbstractDocumentServlet<D>
             option.addAttr(new BooleanAttribute("selected", input.getValue(opt)));
         }
         return fieldSet;
+    }
+
+    private Tag submitContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    {
+        Tag button = new Tag("input")
+                .addAttr("type", inputType)
+                .addAttr("name", field)
+                .addAttr("value", labelText);
+        addAttrs(button, inputTypeAnnotation);
+        TextInput input = new TextInput(threadLocalData, dataType, field);
+        fieldMap.put(field, input);
+        return button;
     }
 }

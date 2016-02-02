@@ -80,26 +80,27 @@ public class AbstractBeanServletT
             Page main = doc.getPage("page1");
             Element form = main.addElement("form")
                     .addAttr("method", "post");
-            form.addContent(createInput(data, "submit"));
-
-            form.addContent(createInput(data, "selector2"));
-            form.addContent(createInput(data, "selector"));
-            form.addContent(createInput(data, "range"));
-            form.addContent(createInput(data, "url"));
-            form.addContent(createInput(data, "week"));
-            form.addContent(createInput(data, "month"));
-            form.addContent(createInput(data, "datetimelocal"));
-            form.addContent(createInput(data, "time"));
-            form.addContent(createInput(data, "date"));
-            form.addContent(createInput(data, "color"));
-            form.addContent(createInput(data, "mul"));
-            form.addContent(createInput(data, "sel"));
-            form.addContent(createInput(data, "text"));
-            form.addContent(createInput(data, "number"));
-            form.addContent(createInput(data, "area"));
-            form.addContent(createInput(data, "en"));
-            form.addContent(createInput(data, "on"));
-            form.addContent(createInput(data, "es"));
+            addInputs(form,
+                "submit",
+                "submit2",
+                "selector2",
+                "selector",
+                "range",
+                "url",
+                "week",
+                "month",
+                "datetimelocal",
+                "time",
+                "date",
+                "color",
+                "mul",
+                "sel",
+                "text",
+                "number",
+                "area",
+                "en",
+                "on",
+                "es");
             
             return doc;
         }
@@ -111,6 +112,7 @@ public class AbstractBeanServletT
         En en;
         String area;
         String submit;
+        String submit2;
         String text;
         int number;
         boolean on;
@@ -307,17 +309,6 @@ public class AbstractBeanServletT
             this.area = area;
         }
         
-        @InputType("submit")
-        public String getSubmit()
-        {
-            return submit;
-        }
-
-        public void setSubmit(String submit)
-        {
-            this.submit = submit;
-        }
-
         public int getNumber()
         {
             return number;
@@ -341,5 +332,27 @@ public class AbstractBeanServletT
             this.text = text;
         }
         
+        @InputType("submit")
+        public String getSubmit()
+        {
+            return submit;
+        }
+
+        public void setSubmit(String submit)
+        {
+            this.submit = submit;
+        }
+
+        @InputType("submit")
+        public String getSubmit2()
+        {
+            return submit2;
+        }
+
+        public void setSubmit2(String submit2)
+        {
+            this.submit2 = submit2;
+        }
+
     }
 }
