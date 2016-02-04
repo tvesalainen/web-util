@@ -18,26 +18,28 @@ package org.vesalainen.html.jquery.mobile;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.vesalainen.html.Document;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Frameworks;
+import org.vesalainen.js.AbstractScriptContainer;
+import org.vesalainen.js.ScriptContainer;
+import org.vesalainen.web.servlet.bean.BeanDocument;
 
 /**
  *
  * @author tkv
  */
-public class JQueryMobileDocument extends Document
+public class JQueryMobileDocument<C> extends BeanDocument
 {
     private final Map<String,Page> map = new HashMap<>();
     
-    public JQueryMobileDocument()
+    public JQueryMobileDocument(ThreadLocal<C> threadLocalData)
     {
-        this(null);
+        super(threadLocalData);
     }
 
-    public JQueryMobileDocument(String title)
+    public JQueryMobileDocument(ThreadLocal<C> threadLocalData, String title)
     {
-        super(title);
+        super(threadLocalData, title);
         use(Frameworks.JQueryMobile);
     }
     
@@ -53,20 +55,22 @@ public class JQueryMobileDocument extends Document
         return page;
     }
     
-    public static class Page extends Element
+    
+    public class Page extends Element
     {
-        private Element header;
-        private Element main;
-        private Element footer;
+        protected String id;
+        protected Element header;
+        protected Element main;
+        protected Element footer;
+        protected ScriptContainer script;
 
         public Page(String id)
         {
             super("div");
+            this.id = id;
             setAttr("data-role", "page");
             setAttr("id", id);
-            main = new Element("div")
-                    .setAttr("data-role", "main")
-                    .addClasses("ui-content");
+            main = new Element("div").setAttr("data-role", "main").addClasses("ui-content");
             addContent(main);
         }
 
@@ -74,8 +78,7 @@ public class JQueryMobileDocument extends Document
         {
             if (header == null)
             {
-                header = new Element("div")
-                        .setAttr("data-role", "header");
+                header = new Element("div").setAttr("data-role", "header");
                 insertContent(header);
             }
             return header;
@@ -90,13 +93,21 @@ public class JQueryMobileDocument extends Document
         {
             if (footer == null)
             {
-                footer = new Element("div")
-                        .setAttr("data-role", "footer");
+                footer = new Element("div").setAttr("data-role", "footer");
                 addContent(footer);
             }
             return footer;
         }
-        
+
+        public ScriptContainer getScriptContainer()
+        {
+            if (script == null)
+            {
+                ScriptContainer sc = getScriptContainer();
+                script = new AbstractScriptContainer("$(document).on(\"pagecreate\",\"#"+id+"\",function(){", "});");
+                sc.addScript(script);
+            }
+            return script;
+        }
     }
-    
 }

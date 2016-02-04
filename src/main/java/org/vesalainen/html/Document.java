@@ -22,17 +22,24 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+import org.vesalainen.js.AbstractScriptContainer;
+import org.vesalainen.js.ScriptContainer;
+import org.vesalainen.web.I18n;
+import org.vesalainen.web.StupidI18n;
 
 /**
  *
  * @author tkv
  */
-public class Document 
+public class Document implements I18n
 {
+    protected I18n i18n = new StupidI18n();
     protected Element html;
     protected Element head;
     protected Element body;
+    protected ScriptContainer script;
     protected Set<Framework> frameworks;
     private final SimpleAttribute<Charset> charset;
 
@@ -55,6 +62,18 @@ public class Document
         body = html.addElement("body");
     }
 
+    public Form addForm(String action)
+    {
+        return addForm("post", action);
+    }
+    
+    public Form addForm(String method, String action)
+    {
+        Form form = new Form(method, action);
+        body.addElement(form);
+        return form;
+    }
+    
     public void use(Framework framework)
     {
         if (frameworks == null)
@@ -70,6 +89,17 @@ public class Document
             }
         }
         framework.useIn(this);
+    }
+    
+    public ScriptContainer getScriptContainer()
+    {
+        if (script == null)
+        {
+            Element se = head.addElement("script");
+            script = new AbstractScriptContainer("", "");
+            se.addContent(script);
+        }
+        return script;
     }
     /**
      * Sets charset. Using charset other than default UTF-8 affects performance.
@@ -131,5 +161,30 @@ public class Document
             throw new IllegalArgumentException(ex);
         }
     }
+    
+    @Override
+    public String getLabel(Object key)
+    {
+        return i18n.getLabel(key);
+    }
+
+    @Override
+    public String getLabel(Locale locale, Object key)
+    {
+        return i18n.getLabel(locale, key);
+    }
+
+    @Override
+    public String getPlaceholder(Object key)
+    {
+        return i18n.getPlaceholder(key);
+    }
+
+    @Override
+    public String getPlaceholder(Locale locale, Object key)
+    {
+        return i18n.getPlaceholder(locale, key);
+    }
+
     
 }

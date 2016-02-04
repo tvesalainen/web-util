@@ -26,12 +26,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.vesalainen.html.Document;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
-import org.vesalainen.html.jquery.mobile.JQueryMobileDocument.Page;
-import org.vesalainen.util.Lists;
+import org.vesalainen.html.jquery.mobile.Page;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelector;
@@ -75,10 +73,9 @@ public class AbstractBeanServletT
         }
 
         @Override
-        protected Document createDocument()
+        protected JQueryMobileDocument createDocument()
         {
-            Data data = createData();
-            JQueryMobileDocument doc = new JQueryMobileDocument("BeanServletTest");
+            JQueryMobileDocument doc = new JQueryMobileDocument(threadLocalData, "BeanServletTest");
             Page main = doc.getPage("page1");
             Element form = main.addElement("form")
                     .setAttr("method", "post");

@@ -30,12 +30,11 @@ import org.vesalainen.web.StupidI18n;
 /**
  *
  * @author tkv
- * @param <D>
+ * @param <D> Document type
  */
-public abstract class AbstractDocumentServlet<D> extends HttpServlet implements I18n
+public abstract class AbstractDocumentServlet<D extends Document> extends HttpServlet
 {
-    protected Document document;
-    protected I18n i18n = new StupidI18n();
+    protected D document;
     
     public AbstractDocumentServlet()
     {
@@ -64,30 +63,5 @@ public abstract class AbstractDocumentServlet<D> extends HttpServlet implements 
         os.flush();
     }
 
-    @Override
-    public String getLabel(Object key)
-    {
-        return i18n.getLabel(key);
-    }
-
-    @Override
-    public String getLabel(Locale locale, Object key)
-    {
-        return i18n.getLabel(locale, key);
-    }
-
-    @Override
-    public String getPlaceholder(Object key)
-    {
-        return i18n.getPlaceholder(key);
-    }
-
-    @Override
-    public String getPlaceholder(Locale locale, Object key)
-    {
-        return i18n.getPlaceholder(locale, key);
-    }
-
-    
-    protected abstract Document createDocument();
+    protected abstract D createDocument();
 }

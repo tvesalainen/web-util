@@ -17,8 +17,6 @@
 package org.vesalainen.js;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.vesalainen.util.Lists;
 
 /**

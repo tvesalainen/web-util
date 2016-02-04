@@ -16,9 +16,7 @@
  */
 package org.vesalainen.html.jquery.mobile;
 
-import java.io.IOException;
 import org.vesalainen.html.SimpleAttribute;
-import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
@@ -26,9 +24,9 @@ import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 /**
  *
  * @author tkv
- * @param <D>
+ * @param <C>
  */
-public abstract class JQueryMobileBeanServlet<D> extends AbstractBeanServlet<D>
+public abstract class JQueryMobileBeanServlet<C> extends AbstractBeanServlet<JQueryMobileDocument,C>
 {
     private static final SimpleAttribute<String> ControlGroup = new SimpleAttribute<>("data-role", "controlgroup");
     
