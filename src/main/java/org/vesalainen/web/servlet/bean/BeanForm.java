@@ -21,8 +21,10 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.AttributedContent;
 import org.vesalainen.html.BooleanAttribute;
@@ -71,42 +73,11 @@ public class BeanForm<C> extends Form implements I18n
 
     public void addRestAsHiddenInputs()
     {
-        for (String field : document.allFields)
-        {
-            if (!document.fieldMap.containsKey(field))
-            {
-                Content input = createHiddenInput(field);
-                addContent(input);
-            }
-        }
-    }
-
-    public void addHiddenInputs(String... fields)
-    {
-        for (String field : fields)
-        {
-            Content input = createHiddenInput(field);
-            addContent(input);
-        }
-    }
-
-    public Content createHiddenInput(String field)
-    {
+        Set<String> set = new HashSet<>();
+        set.addAll(document.allFields);
+        set.removeAll(document.fieldMap.keySet());
         addHideScript();
-        Class type = BeanHelper.getType(document.context, field);
-        if (Collection.class.isAssignableFrom(type))
-        {
-            InputType inputTypeAnnotation = BeanHelper.getAnnotation(document.context, field, InputType.class);
-            if (inputTypeAnnotation == null)
-            {
-                throw new IllegalArgumentException("@InputType not found");
-            }
-            return hiddenCollectionContainer(field, inputTypeAnnotation.itemType());
-        }
-        else
-        {
-            return hiddenContainer(field);
-        }
+        addContent(hiddenContainer(set));
     }
 
     public Content createInput(String field)
@@ -522,25 +493,14 @@ public class BeanForm<C> extends Form implements I18n
         return button;
     }
 
-    protected InputTag hiddenContainer(String field)
+    protected InputTag hiddenContainer(Set<String> fields)
     {
-        InputTag input = new InputTag("text", field).setAttr("id", field);
+        InputTag input = new InputTag("text", "JSON").setAttr("id", "JSON");
         input.addClasses("hidden");
-        TextInput w = new TextInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, w);
+        JSONInput w = new JSONInput(document.threadLocalData, fields);
+        document.fieldMap.put("JSON", w);
         input.setAttr("value", w);
         return input;
-    }
-
-    protected Element hiddenCollectionContainer(String field, Class itemType)
-    {
-        Element div = new Element("div");
-        div.addClasses("hidden");
-        CollectionInput input = new CollectionInput(document.threadLocalData, document.dataType, itemType, field);
-        document.fieldMap.put(field, input);
-        RawContent<CollectionInput> raw = new RawContent<>(input);
-        div.addContent(raw);
-        return div;
     }
 
     protected void addHideScript()

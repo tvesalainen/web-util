@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
+import org.vesalainen.html.jquery.mobile.JQueryMobileServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument.JQueryMobilePage;
 import org.vesalainen.html.jquery.mobile.JQueryMobileForm;
@@ -64,7 +64,7 @@ public class AbstractBeanServletT
             Logger.getLogger(EmbeddedServerT.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public static class BeanServletImpl extends JQueryMobileBeanServlet<Data>
+    public static class BeanServletImpl extends JQueryMobileServlet<Data>
     {
 
         @Override
@@ -101,7 +101,7 @@ public class AbstractBeanServletT
                 "on",
                 "es");
             
-            form.addHiddenInputs("hidden", "hset");
+            form.addRestAsHiddenInputs();
             return doc;
         }
 

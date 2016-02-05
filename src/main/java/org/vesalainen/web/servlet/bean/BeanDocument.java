@@ -64,4 +64,14 @@ public class BeanDocument<C> extends Document
         return fieldMap.get(field);
     }
 
+    public Map<String, BeanField> getFieldMap()
+    {
+        return fieldMap;
+    }
+
+    public Set<String> getAllFields()
+    {
+        return allFields;
+    }
+
 }

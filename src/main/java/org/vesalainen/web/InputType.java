@@ -31,5 +31,6 @@ public @interface InputType
 {
     String value() default "text";
     Class<?> itemType() default Object.class;
+    Class<?> itemType2() default Object.class;
     Attr[] attrs() default {};
 }

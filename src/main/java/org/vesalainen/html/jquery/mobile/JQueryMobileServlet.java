@@ -23,7 +23,7 @@ import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
  * @author tkv
  * @param <C>
  */
-public abstract class JQueryMobileBeanServlet<C> extends AbstractBeanServlet<JQueryMobileDocument,C>
+public abstract class JQueryMobileServlet<C> extends AbstractBeanServlet<JQueryMobileDocument,C>
 {
     
 }
