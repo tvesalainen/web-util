@@ -17,15 +17,11 @@
 package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.bean.BeanField;
-import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.web.servlet.AbstractDocumentServlet;
 
 /**
@@ -49,6 +45,7 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
     public void init() throws ServletException
     {
         empty = createData();
+        threadLocalData.set(empty);
         dataType = (Class<C>) empty.getClass();
         super.init();
     }

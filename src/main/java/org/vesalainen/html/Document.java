@@ -33,7 +33,7 @@ import org.vesalainen.web.StupidI18n;
  *
  * @author tkv
  */
-public class Document implements I18n
+public class Document implements Page
 {
     protected I18n i18n = new StupidI18n();
     protected Element html;
@@ -62,11 +62,13 @@ public class Document implements I18n
         body = html.addElement("body");
     }
 
+    @Override
     public Form addForm(String action)
     {
         return addForm("post", action);
     }
     
+    @Override
     public Form addForm(String method, String action)
     {
         Form form = new Form(method, action);
@@ -91,6 +93,7 @@ public class Document implements I18n
         framework.useIn(this);
     }
     
+    @Override
     public ScriptContainer getScriptContainer()
     {
         if (script == null)
@@ -110,6 +113,7 @@ public class Document implements I18n
         this.charset.setValue(charset);
     }
     
+    @Override
     public Charset getCharset()
     {
         return this.charset.getValue();
@@ -126,6 +130,12 @@ public class Document implements I18n
     }
 
     public Element getBody()
+    {
+        return body;
+    }
+
+    @Override
+    public Element getContent()
     {
         return body;
     }

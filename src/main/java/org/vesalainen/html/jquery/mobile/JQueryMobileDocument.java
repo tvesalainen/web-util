@@ -16,10 +16,14 @@
  */
 package org.vesalainen.html.jquery.mobile;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import org.vesalainen.html.Element;
+import org.vesalainen.html.Form;
 import org.vesalainen.html.Frameworks;
+import org.vesalainen.html.Page;
 import org.vesalainen.js.AbstractScriptContainer;
 import org.vesalainen.js.ScriptContainer;
 import org.vesalainen.web.servlet.bean.BeanDocument;
@@ -30,7 +34,7 @@ import org.vesalainen.web.servlet.bean.BeanDocument;
  */
 public class JQueryMobileDocument<C> extends BeanDocument
 {
-    private final Map<String,Page> map = new HashMap<>();
+    private final Map<String,JQueryMobilePage> map = new HashMap<>();
     
     public JQueryMobileDocument(ThreadLocal<C> threadLocalData)
     {
@@ -43,12 +47,12 @@ public class JQueryMobileDocument<C> extends BeanDocument
         use(Frameworks.JQueryMobile);
     }
     
-    public Page getPage(String id)
+    public JQueryMobilePage getPage(String id)
     {
-        Page page = map.get(id);
+        JQueryMobilePage page = map.get(id);
         if (page == null)
         {
-            page = new Page(id);
+            page = new JQueryMobilePage(id);
             body.addElement(page);
             map.put(id, page);
         }
@@ -56,7 +60,7 @@ public class JQueryMobileDocument<C> extends BeanDocument
     }
     
     
-    public class Page extends Element
+    public class JQueryMobilePage extends Element implements Page
     {
         protected String id;
         protected Element header;
@@ -64,7 +68,7 @@ public class JQueryMobileDocument<C> extends BeanDocument
         protected Element footer;
         protected ScriptContainer script;
 
-        public Page(String id)
+        public JQueryMobilePage(String id)
         {
             super("div");
             this.id = id;
@@ -99,15 +103,66 @@ public class JQueryMobileDocument<C> extends BeanDocument
             return footer;
         }
 
+        @Override
         public ScriptContainer getScriptContainer()
         {
             if (script == null)
             {
-                ScriptContainer sc = getScriptContainer();
+                ScriptContainer sc = JQueryMobileDocument.this.getScriptContainer();
                 script = new AbstractScriptContainer("$(document).on(\"pagecreate\",\"#"+id+"\",function(){", "});");
                 sc.addScript(script);
             }
             return script;
+        }
+
+        @Override
+        public Element getContent()
+        {
+            return main;
+        }
+
+        @Override
+        public JQueryMobileForm addForm(String action)
+        {
+            return addForm("post", action);
+        }
+
+        @Override
+        public JQueryMobileForm addForm(String method, String action)
+        {
+            JQueryMobileForm form = new JQueryMobileForm(JQueryMobileDocument.this, this, method, action);
+            main.addElement(form);
+            return form;
+        }
+
+        @Override
+        public Charset getCharset()
+        {
+            return JQueryMobileDocument.this.getCharset();
+        }
+
+        @Override
+        public String getLabel(Object key)
+        {
+            return i18n.getLabel(key);
+        }
+
+        @Override
+        public String getLabel(Locale locale, Object key)
+        {
+            return i18n.getLabel(locale, key);
+        }
+
+        @Override
+        public String getPlaceholder(Object key)
+        {
+            return i18n.getPlaceholder(key);
+        }
+
+        @Override
+        public String getPlaceholder(Locale locale, Object key)
+        {
+            return i18n.getPlaceholder(locale, key);
         }
     }
 }

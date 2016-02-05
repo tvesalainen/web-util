@@ -26,16 +26,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.vesalainen.html.Element;
 import org.vesalainen.html.jquery.mobile.JQueryMobileBeanServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
-import org.vesalainen.html.jquery.mobile.Page;
+import org.vesalainen.html.jquery.mobile.JQueryMobileDocument.JQueryMobilePage;
+import org.vesalainen.html.jquery.mobile.JQueryMobileForm;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelector;
 import org.vesalainen.web.SingleSelector;
 import org.vesalainen.web.server.EmbeddedServer;
 import org.vesalainen.web.server.EmbeddedServerT;
+import org.vesalainen.web.servlet.bean.BeanForm;
 
 /**
  *
@@ -75,11 +76,10 @@ public class AbstractBeanServletT
         @Override
         protected JQueryMobileDocument createDocument()
         {
-            JQueryMobileDocument doc = new JQueryMobileDocument(threadLocalData, "BeanServletTest");
-            Page main = doc.getPage("page1");
-            Element form = main.addElement("form")
-                    .setAttr("method", "post");
-            addInputs(form,
+            JQueryMobileDocument<Data> doc = new JQueryMobileDocument(threadLocalData, "BeanServletTest");
+            JQueryMobilePage page = doc.getPage("page1");
+            JQueryMobileForm form = page.addForm(null);
+            form.addInputs(
                 "submit",
                 "submit2",
                 "selector2",
@@ -101,7 +101,7 @@ public class AbstractBeanServletT
                 "on",
                 "es");
             
-            addHiddenInputs(form, "hidden", "hset");
+            form.addHiddenInputs("hidden", "hset");
             return doc;
         }
 

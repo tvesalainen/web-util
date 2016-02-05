@@ -16,9 +16,6 @@
  */
 package org.vesalainen.html.jquery.mobile;
 
-import org.vesalainen.html.SimpleAttribute;
-import org.vesalainen.html.Element;
-import org.vesalainen.web.InputType;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 
 /**
@@ -28,41 +25,5 @@ import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
  */
 public abstract class JQueryMobileBeanServlet<C> extends AbstractBeanServlet<JQueryMobileDocument,C>
 {
-    private static final SimpleAttribute<String> ControlGroup = new SimpleAttribute<>("data-role", "controlgroup");
-    
-    @Override
-    protected Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
-    {
-        return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
-                .setAttr(ControlGroup);
-    }
-
-    @Override
-    protected Element radioContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
-    {
-        return super.radioContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
-                .setAttr(ControlGroup);
-    }
-
-    @Override
-    protected Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
-    {
-        return super.selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
-                .addClasses("ui-field-contain");
-    }
-
-    @Override
-    protected Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
-    {
-        return super.singleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation)
-                .addClasses("ui-field-contain");
-    }
-
-    @Override
-    protected Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
-    {
-        return super.multipleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation)
-                .addClasses("ui-field-contain");
-    }
     
 }
