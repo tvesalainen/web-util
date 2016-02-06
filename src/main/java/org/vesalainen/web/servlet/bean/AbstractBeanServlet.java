@@ -55,18 +55,25 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
     {
         C data = createData();
         threadLocalData.set(data);
+        String submitField = null;
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String field = e.getKey();
-                BeanField bf = document.getBeanField(field);
+            BeanField bf = document.getBeanField(field);
             if (bf == null)
             {
                 throw new IllegalArgumentException(field+" not found");
             }
             bf.set(e.getValue());
+            if (bf instanceof SubmitInput)
+            {
+                submitField = field;
+            }
         }
+        onSubmit(data, submitField);
         response(resp, document);
     }
+    protected abstract void onSubmit(C data, String field);
 
     protected abstract C createData();
 }

@@ -16,29 +16,23 @@
  */
 package org.vesalainen.html.jquery.mobile;
 
-import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import org.vesalainen.html.Element;
-import org.vesalainen.html.Form;
 import org.vesalainen.html.Frameworks;
-import org.vesalainen.html.Page;
-import org.vesalainen.js.AbstractScriptContainer;
-import org.vesalainen.js.ScriptContainer;
 import org.vesalainen.web.servlet.bean.BeanDocument;
 
 /**
  *
  * @author tkv
+ * @param <C>
  */
-public class JQueryMobileDocument<C> extends BeanDocument
+public class JQueryMobileDocument<C> extends BeanDocument<C>
 {
     private final Map<String,JQueryMobilePage> map = new HashMap<>();
     
     public JQueryMobileDocument(ThreadLocal<C> threadLocalData)
     {
-        super(threadLocalData);
+        this(threadLocalData, null);
     }
 
     public JQueryMobileDocument(ThreadLocal<C> threadLocalData, String title)
@@ -52,7 +46,7 @@ public class JQueryMobileDocument<C> extends BeanDocument
         JQueryMobilePage page = map.get(id);
         if (page == null)
         {
-            page = new JQueryMobilePage(id);
+            page = new JQueryMobilePage(id, this);
             body.addElement(page);
             map.put(id, page);
         }
@@ -60,109 +54,4 @@ public class JQueryMobileDocument<C> extends BeanDocument
     }
     
     
-    public class JQueryMobilePage extends Element implements Page
-    {
-        protected String id;
-        protected Element header;
-        protected Element main;
-        protected Element footer;
-        protected ScriptContainer script;
-
-        public JQueryMobilePage(String id)
-        {
-            super("div");
-            this.id = id;
-            setAttr("data-role", "page");
-            setAttr("id", id);
-            main = new Element("div").setAttr("data-role", "main").addClasses("ui-content");
-            addContent(main);
-        }
-
-        public Element getHeader()
-        {
-            if (header == null)
-            {
-                header = new Element("div").setAttr("data-role", "header");
-                insertContent(header);
-            }
-            return header;
-        }
-
-        public Element getMain()
-        {
-            return main;
-        }
-
-        public Element getFooter()
-        {
-            if (footer == null)
-            {
-                footer = new Element("div").setAttr("data-role", "footer");
-                addContent(footer);
-            }
-            return footer;
-        }
-
-        @Override
-        public ScriptContainer getScriptContainer()
-        {
-            if (script == null)
-            {
-                ScriptContainer sc = JQueryMobileDocument.this.getScriptContainer();
-                script = new AbstractScriptContainer("$(document).on(\"pagecreate\",\"#"+id+"\",function(){", "});");
-                sc.addScript(script);
-            }
-            return script;
-        }
-
-        @Override
-        public Element getContent()
-        {
-            return main;
-        }
-
-        @Override
-        public JQueryMobileForm addForm(String action)
-        {
-            return addForm("post", action);
-        }
-
-        @Override
-        public JQueryMobileForm addForm(String method, String action)
-        {
-            JQueryMobileForm form = new JQueryMobileForm(JQueryMobileDocument.this, this, method, action);
-            main.addElement(form);
-            return form;
-        }
-
-        @Override
-        public Charset getCharset()
-        {
-            return JQueryMobileDocument.this.getCharset();
-        }
-
-        @Override
-        public String getLabel(Object key)
-        {
-            return i18n.getLabel(key);
-        }
-
-        @Override
-        public String getLabel(Locale locale, Object key)
-        {
-            return i18n.getLabel(locale, key);
-        }
-
-        @Override
-        public String getPlaceholder(Object key)
-        {
-            return i18n.getPlaceholder(key);
-        }
-
-        @Override
-        public String getPlaceholder(Locale locale, Object key)
-        {
-            return i18n.getPlaceholder(locale, key);
-        }
-    }
 }

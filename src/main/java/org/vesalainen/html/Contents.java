@@ -14,17 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html.jquery.mobile;
+package org.vesalainen.html;
 
-import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
+import java.io.IOException;
 
 /**
  *
  * @author tkv
- * @param <D>
- * @param <C>
  */
-public abstract class JQueryMobileServlet<D extends JQueryMobileDocument,C> extends AbstractBeanServlet<D,C>
+public class Contents
 {
-    
+    public static void append(Appendable out, Object value) throws IOException
+    {
+        if (value != null)
+        {
+            if (value instanceof Content)
+            {
+                Content content = (Content) value;
+                content.append(out);
+            }
+            else
+            {
+                out.append(value.toString());
+            }
+        }
+    }
 }

@@ -23,5 +23,5 @@ package org.vesalainen.js;
 public interface ScriptContainer extends Script
 {
     ScriptContainer addScript(Script script);
-    ScriptContainer addCode(String code);
+    ScriptContainer addCode(Object code);
 }

@@ -14,45 +14,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html.jquery;
+package org.vesalainen.html;
 
 import java.io.IOException;
-import org.vesalainen.js.Function;
-import org.vesalainen.js.Script;
-import org.vesalainen.js.ScriptContainer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author tkv
  */
-public class SelectorFunction extends AbstractSelector implements ScriptContainer
+public class DynString implements Content
 {
-    private Function function;
-    
-    public SelectorFunction(String selector, String action, String... args)
+    private final Object[] components;
+
+    public DynString(Object... components)
     {
-        super(selector, action);
-        this.function = new Function(null, args);
+        this.components = components;
     }
 
     @Override
-    protected void appendArgs(Appendable out) throws IOException
+    public String toString()
     {
-        function.append(out);
+        try
+        {
+            StringBuilder sb = new StringBuilder();
+            append(sb);
+            return sb.toString();
+        }
+        catch (IOException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     @Override
-    public ScriptContainer addScript(Script script)
+    public void append(Appendable out) throws IOException
     {
-        function.addScript(script);
-        return function;
-    }
-
-    @Override
-    public ScriptContainer addCode(Object code)
-    {
-        function.addCode(code);
-        return function;
+        for (Object o : components)
+        {
+            out.append(o.toString());
+        }
     }
     
 }

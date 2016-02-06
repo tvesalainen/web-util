@@ -17,6 +17,7 @@
 package org.vesalainen.js;
 
 import java.io.IOException;
+import org.vesalainen.html.Contents;
 
 /**
  *
@@ -24,9 +25,9 @@ import java.io.IOException;
  */
 public class AbstractScript implements Script
 {
-    private final String code;
+    private final Object code;
 
-    public AbstractScript(String code)
+    public AbstractScript(Object code)
     {
         this.code = code;
     }
@@ -34,7 +35,7 @@ public class AbstractScript implements Script
     @Override
     public void append(Appendable out) throws IOException
     {
-        out.append(code);
+        Contents.append(out, code);
     }
 
 }

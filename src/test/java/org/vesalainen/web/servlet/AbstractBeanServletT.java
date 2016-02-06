@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.vesalainen.html.jquery.mobile.JQueryMobileServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
-import org.vesalainen.html.jquery.mobile.JQueryMobileDocument.JQueryMobilePage;
+import org.vesalainen.html.jquery.mobile.JQueryMobilePage;
 import org.vesalainen.html.jquery.mobile.JQueryMobileForm;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
@@ -36,7 +36,6 @@ import org.vesalainen.web.MultipleSelector;
 import org.vesalainen.web.SingleSelector;
 import org.vesalainen.web.server.EmbeddedServer;
 import org.vesalainen.web.server.EmbeddedServerT;
-import org.vesalainen.web.servlet.bean.BeanForm;
 
 /**
  *
@@ -64,7 +63,7 @@ public class AbstractBeanServletT
             Logger.getLogger(EmbeddedServerT.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public static class BeanServletImpl extends JQueryMobileServlet<Data>
+    public static class BeanServletImpl extends JQueryMobileServlet<JQueryMobileDocument,Data>
     {
 
         @Override
@@ -103,6 +102,12 @@ public class AbstractBeanServletT
             
             form.addRestAsHiddenInputs();
             return doc;
+        }
+
+        @Override
+        protected void onSubmit(Data data, String field)
+        {
+            System.err.println("submit("+field+")");
         }
 
     }

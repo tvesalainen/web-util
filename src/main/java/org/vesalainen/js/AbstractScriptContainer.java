@@ -19,6 +19,7 @@ package org.vesalainen.js;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.vesalainen.html.Contents;
 
 /**
  *
@@ -26,11 +27,11 @@ import java.util.List;
  */
 public class AbstractScriptContainer implements ScriptContainer
 {
-    protected String prefix;
-    protected String suffix;
+    protected Object prefix;
+    protected Object suffix;
     protected List<Script> content = new ArrayList<>();
 
-    public AbstractScriptContainer(String prefix, String suffix)
+    public AbstractScriptContainer(Object prefix, String suffix)
     {
         this.prefix = prefix;
         this.suffix = suffix;
@@ -44,7 +45,7 @@ public class AbstractScriptContainer implements ScriptContainer
     }
 
     @Override
-    public ScriptContainer addCode(String code)
+    public ScriptContainer addCode(Object code)
     {
         addScript(new AbstractScript(code));
         return this;
@@ -53,12 +54,12 @@ public class AbstractScriptContainer implements ScriptContainer
     @Override
     public void append(Appendable out) throws IOException
     {
-        out.append(prefix);
+        Contents.append(out, prefix);
         for (Script script : content)
         {
             script.append(out);
         }
-        out.append(suffix);
+        Contents.append(out, suffix);
     }
     
 }

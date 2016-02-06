@@ -14,45 +14,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html.jquery;
+package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
-import org.vesalainen.js.Function;
-import org.vesalainen.js.Script;
-import org.vesalainen.js.ScriptContainer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.vesalainen.html.Content;
 
 /**
  *
  * @author tkv
+ * @param <C> Context type
  */
-public class SelectorFunction extends AbstractSelector implements ScriptContainer
+public abstract class ThreadLocalContent<C> implements Content
 {
-    private Function function;
-    
-    public SelectorFunction(String selector, String action, String... args)
+    protected final ThreadLocal<C> local;
+
+    public ThreadLocalContent(ThreadLocal<C> local)
     {
-        super(selector, action);
-        this.function = new Function(null, args);
+        this.local = local;
     }
 
     @Override
-    protected void appendArgs(Appendable out) throws IOException
+    public String toString()
     {
-        function.append(out);
-    }
-
-    @Override
-    public ScriptContainer addScript(Script script)
-    {
-        function.addScript(script);
-        return function;
-    }
-
-    @Override
-    public ScriptContainer addCode(Object code)
-    {
-        function.addCode(code);
-        return function;
+        try
+        {
+            StringBuilder sb = new StringBuilder();
+            append(sb);
+            return sb.toString();
+        }
+        catch (IOException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }
     }
     
 }

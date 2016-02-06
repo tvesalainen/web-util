@@ -488,7 +488,7 @@ public class BeanForm<C> extends Form implements I18n
     {
         Tag button = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", labelText);
         addAttrs(button, inputTypeAnnotation);
-        TextInput input = new TextInput(document.threadLocalData, document.dataType, field);
+        SubmitInput input = new SubmitInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, input);
         return button;
     }
