@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.util.ConvertUtility;
+import org.vesalainen.util.MapCollection;
 import org.vesalainen.web.InputType;
 
 /**
@@ -69,7 +70,7 @@ public class JsonHelper
             }
             else
             {
-                if (value instanceof Map)
+                if (value instanceof MapCollection)
                 {
                     if (inputType == null || Object.class.equals(inputType.itemType()) || Object.class.equals(inputType.itemType2()))
                     {
@@ -77,18 +78,41 @@ public class JsonHelper
                     }
                     Class<?> itemType = inputType.itemType();
                     Class<?> itemType2 = inputType.itemType2();
-                    Map map = (Map) value;
-                    map.clear();
+                    MapCollection mapCollection = (MapCollection) value;
+                    mapCollection.clear();
                     JSONObject jj = (JSONObject) jo;
                     for (String key : jj.keySet())
                     {
-                        Object o = jj.get(key);
-                        map.put(ConvertUtility.convert(itemType, key), ConvertUtility.convert(itemType2, o));
+                        JSONArray ja = (JSONArray) jj.get(key);
+                        for (Object o : ja)
+                        {
+                            mapCollection.add(ConvertUtility.convert(itemType, key), ConvertUtility.convert(itemType2, o));
+                        }
                     }
                 }
                 else
                 {
-                    BeanHelper.setFieldValue(base, field, jo);
+                    if (value instanceof Map)
+                    {
+                        if (inputType == null || Object.class.equals(inputType.itemType()) || Object.class.equals(inputType.itemType2()))
+                        {
+                            throw new IllegalArgumentException("@InputType.itemType() and/or @InputType.itemType2() is missing");
+                        }
+                        Class<?> itemType = inputType.itemType();
+                        Class<?> itemType2 = inputType.itemType2();
+                        Map map = (Map) value;
+                        map.clear();
+                        JSONObject jj = (JSONObject) jo;
+                        for (String key : jj.keySet())
+                        {
+                            Object o = jj.get(key);
+                            map.put(ConvertUtility.convert(itemType, key), ConvertUtility.convert(itemType2, o));
+                        }
+                    }
+                    else
+                    {
+                        BeanHelper.setFieldValue(base, field, jo);
+                    }
                 }
             }
         }

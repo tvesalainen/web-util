@@ -22,7 +22,9 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.Lists;
+import org.vesalainen.util.MapList;
 import org.vesalainen.web.InputType;
 
 /**
@@ -72,6 +74,15 @@ public class JsonHelperTest
         assertEquals("{\"map\":{\"a\":\"1\",\"b\":\"2\"}}", js);
         JsonHelper.setValue(new JSONObject(js), t, "map");
         assertEquals(map, t.getMap());
+        
+        MapList<String,Integer> mapList = new HashMapList<>();
+        mapList.add("a1", 1);
+        mapList.add("a1", 2);
+        mapList.add("a2", 3);
+        js = JsonHelper.toString(t, "mapList");
+        assertEquals("{\"mapList\":{\"a1\":[1,2],\"a2\":[3]}}", js);
+        JsonHelper.setValue(new JSONObject(js), t, "mapList");
+        assertEquals(map, t.getMap());
     }
     public static class T
     {
@@ -80,11 +91,27 @@ public class JsonHelperTest
         List<Integer> ints = Lists.create(9,8,7,6,5);
         Map<String,String> map = new HashMap<>();
         long l = 123456789L;
+        MapList<String,Integer> mapList = new HashMapList<>();
 
         public T()
         {
             map.put("a", "1");
             map.put("b", "2");
+            
+            mapList.add("a1", 1);
+            mapList.add("a1", 2);
+            mapList.add("a2", 3);
+        }
+
+        @InputType(itemType=String.class, itemType2=Integer.class)
+        public MapList<String, Integer> getMapList()
+        {
+            return mapList;
+        }
+
+        public void setMapList(MapList<String, Integer> mapList)
+        {
+            this.mapList = mapList;
         }
 
         public long getL()
