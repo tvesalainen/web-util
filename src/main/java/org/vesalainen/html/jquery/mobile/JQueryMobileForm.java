@@ -21,7 +21,6 @@ import org.vesalainen.html.Page;
 import org.vesalainen.html.SimpleAttribute;
 import org.vesalainen.js.ScriptContainer;
 import org.vesalainen.web.InputType;
-import org.vesalainen.web.servlet.bean.BeanDocument;
 import org.vesalainen.web.servlet.bean.BeanForm;
 
 /**

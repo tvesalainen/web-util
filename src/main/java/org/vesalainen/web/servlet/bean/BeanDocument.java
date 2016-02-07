@@ -74,4 +74,14 @@ public class BeanDocument<C> extends Document
         return allFields;
     }
 
+    public ThreadLocal<C> getThreadLocalData()
+    {
+        return threadLocalData;
+    }
+
+    public Class<C> getDataType()
+    {
+        return dataType;
+    }
+
 }
