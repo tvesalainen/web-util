@@ -18,7 +18,6 @@ package org.vesalainen.html.jquery.mobile;
 
 import java.nio.charset.Charset;
 import java.util.Locale;
-import org.vesalainen.html.DynString;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Page;
 import org.vesalainen.js.AbstractScriptContainer;
@@ -85,7 +84,7 @@ public class JQueryMobilePage<C> extends Element implements Page
         if (script == null)
         {
             ScriptContainer sc = document.getScriptContainer();
-            script = new AbstractScriptContainer(new DynString("$(document).on(\"pagecreate\",\"#", id, "\",function(){"), "});");
+            script = new AbstractScriptContainer("$(document).on(\"pagecreate\",\"#"+id+"\",function(){", "});");
             sc.addScript(script);
         }
         return script;

@@ -16,39 +16,16 @@
  */
 package org.vesalainen.web;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.vesalainen.util.Lists;
 
 /**
  *
  * @author tkv
- * @param <T>
  */
-public class MultipleSelector<T> extends HashSet<T>
+public interface MultipleSelector<T> extends Set<T>
 {
-    private final List<T> options;
 
-    public MultipleSelector(T... options)
-    {
-        this(new HashSet<T>(), Lists.create(options));
-    }
-
-    public MultipleSelector(List<T> options)
-    {
-        this(new HashSet<T>(), options);
-    }
-
-    public MultipleSelector(Set<T> values, List<T> options)
-    {
-        addAll(values);
-        this.options = options;
-    }
-
-    public List<T> getOptions()
-    {
-        return options;
-    }
+    List<T> getOptions();
     
 }

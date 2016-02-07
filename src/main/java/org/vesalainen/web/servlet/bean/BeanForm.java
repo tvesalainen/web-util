@@ -18,7 +18,6 @@ package org.vesalainen.web.servlet.bean;
 
 import java.awt.Color;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -33,7 +32,6 @@ import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Form;
 import org.vesalainen.html.InputTag;
-import org.vesalainen.html.RawContent;
 import org.vesalainen.html.Tag;
 import org.vesalainen.js.ScriptContainer;
 import org.vesalainen.web.Attr;
@@ -128,13 +126,13 @@ public class BeanForm<C> extends Form implements I18n
                                 }
                                 else
                                 {
-                                    if (MultipleSelector.class.equals(type))
+                                    if (MultipleSelector.class.isAssignableFrom(type))
                                     {
                                         inputType = "select";
                                     }
                                     else
                                     {
-                                        if (SingleSelector.class.equals(type))
+                                        if (SingleSelector.class.isAssignableFrom(type))
                                         {
                                             inputType = "select";
                                         }
@@ -180,13 +178,13 @@ public class BeanForm<C> extends Form implements I18n
                     return multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
                 }
             case "select":
-                if (MultipleSelector.class.equals(type))
+                if (MultipleSelector.class.isAssignableFrom(type))
                 {
                     return multipleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
                 }
                 else
                 {
-                    if (SingleSelector.class.equals(type))
+                    if (SingleSelector.class.isAssignableFrom(type))
                     {
                         return singleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
                     }

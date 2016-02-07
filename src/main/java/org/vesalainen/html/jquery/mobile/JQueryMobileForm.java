@@ -34,10 +34,11 @@ public class JQueryMobileForm extends BeanForm
     
     private final Page page;
     
-    public JQueryMobileForm(BeanDocument document, Page page, String method, String action)
+    public JQueryMobileForm(JQueryMobileDocument document, Page page, String method, String action)
     {
         super(document, method, action);
         this.page = page;
+        this.setAttr("data-ajax", document.isAjax());
     }
     
     @Override

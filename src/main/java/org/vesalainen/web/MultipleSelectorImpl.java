@@ -14,40 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html;
+package org.vesalainen.web;
 
-import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.vesalainen.util.Lists;
 
 /**
  *
  * @author tkv
+ * @param <T>
  */
-public class Contents
+public class MultipleSelectorImpl<T> extends HashSet<T> implements MultipleSelector<T>
 {
-    public static String toString(Object value)
+    private final List<T> options;
+
+    public MultipleSelectorImpl(T... options)
     {
-        if (value != null)
-        {
-            return value.toString();
-        }
-        else
-        {
-            return "";
-        }
+        this(new HashSet<T>(), Lists.create(options));
     }
-    public static void append(Appendable out, Object value) throws IOException
+
+    public MultipleSelectorImpl(List<T> options)
     {
-        if (value != null)
-        {
-            if (value instanceof Content)
-            {
-                Content content = (Content) value;
-                content.append(out);
-            }
-            else
-            {
-                out.append(value.toString());
-            }
-        }
+        this(new HashSet<T>(), options);
     }
+
+    public MultipleSelectorImpl(Set<T> values, List<T> options)
+    {
+        addAll(values);
+        this.options = options;
+    }
+
+    @Override
+    public List<T> getOptions()
+    {
+        return options;
+    }
+    
 }

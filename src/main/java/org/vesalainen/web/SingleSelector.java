@@ -17,60 +17,18 @@
 package org.vesalainen.web;
 
 import java.util.List;
-import org.vesalainen.util.Lists;
 
 /**
  *
  * @author tkv
- * @param <T>
  */
-public class SingleSelector<T>
+public interface SingleSelector<T>
 {
-    private T value;
-    private final List<T> options;
 
-    public SingleSelector(T... options)
-    {
-        this(null, Lists.create(options));
-    }
+    List<T> getOptions();
 
-    public SingleSelector(List<T> options)
-    {
-        this(null, options);
-    }
+    T getValue();
 
-    public SingleSelector(T value, List<T> options)
-    {
-        this.options = options;
-        this.value = value;
-    }
-
-    public void setValue(T value)
-    {
-        this.value = value;
-    }
-
-    public T getValue()
-    {
-        return value;
-    }
-
-    public List<T> getOptions()
-    {
-        return options;
-    }
-
-    @Override
-    public String toString()
-    {
-        if (value != null)
-        {
-            return value.toString();
-        }
-        else
-        {
-            return "";
-        }
-    }
+    void setValue(T value);
     
 }

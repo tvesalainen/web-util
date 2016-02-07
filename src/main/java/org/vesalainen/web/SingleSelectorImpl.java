@@ -14,56 +14,60 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.js;
+package org.vesalainen.web;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import org.vesalainen.html.Contents;
+import org.vesalainen.util.Lists;
 
 /**
  *
  * @author tkv
+ * @param <T>
  */
-public class AbstractScriptContainer implements ScriptContainer
+public class SingleSelectorImpl<T> implements SingleSelector<T>
 {
-    protected Object prefix;
-    protected Object suffix;
-    protected List<Script> content = new ArrayList<>();
+    private T value;
+    private final List<T> options;
 
-    public AbstractScriptContainer()
+    public SingleSelectorImpl(T... options)
     {
+        this(null, Lists.create(options));
     }
 
-    public AbstractScriptContainer(Object prefix, String suffix)
+    public SingleSelectorImpl(List<T> options)
     {
-        this.prefix = prefix;
-        this.suffix = suffix;
-    }
-    
-    @Override
-    public ScriptContainer addScript(Script script)
-    {
-        content.add(script);
-        return this;
+        this(null, options);
     }
 
-    @Override
-    public ScriptContainer addCode(Object code)
+    public SingleSelectorImpl(T value, List<T> options)
     {
-        addScript(new AbstractScript(code));
-        return this;
+        this.options = options;
+        this.value = value;
     }
 
     @Override
-    public void append(Appendable out) throws IOException
+    public void setValue(T value)
     {
-        Contents.append(out, prefix);
-        for (Script script : content)
-        {
-            script.append(out);
-        }
-        Contents.append(out, suffix);
+        this.value = value;
+    }
+
+    @Override
+    public T getValue()
+    {
+        return value;
+    }
+
+    @Override
+    public List<T> getOptions()
+    {
+        return options;
+    }
+
+    @Override
+    public String toString()
+    {
+        return Contents.toString(value);
     }
     
 }

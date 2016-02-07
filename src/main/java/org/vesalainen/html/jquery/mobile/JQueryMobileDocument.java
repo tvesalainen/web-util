@@ -29,6 +29,7 @@ import org.vesalainen.web.servlet.bean.BeanDocument;
 public class JQueryMobileDocument<C> extends BeanDocument<C>
 {
     private final Map<String,JQueryMobilePage> map = new HashMap<>();
+    private boolean ajax = true;
     
     public JQueryMobileDocument(ThreadLocal<C> threadLocalData)
     {
@@ -39,6 +40,16 @@ public class JQueryMobileDocument<C> extends BeanDocument<C>
     {
         super(threadLocalData, title);
         use(Frameworks.JQueryMobile);
+    }
+
+    public boolean isAjax()
+    {
+        return ajax;
+    }
+
+    public void setAjax(boolean ajax)
+    {
+        this.ajax = ajax;
     }
     
     public JQueryMobilePage getPage(String id)

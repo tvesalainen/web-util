@@ -32,8 +32,8 @@ import org.vesalainen.html.jquery.mobile.JQueryMobilePage;
 import org.vesalainen.html.jquery.mobile.JQueryMobileForm;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
-import org.vesalainen.web.MultipleSelector;
-import org.vesalainen.web.SingleSelector;
+import org.vesalainen.web.MultipleSelectorImpl;
+import org.vesalainen.web.SingleSelectorImpl;
 import org.vesalainen.web.server.EmbeddedServer;
 import org.vesalainen.web.server.EmbeddedServerT;
 
@@ -134,8 +134,8 @@ public class AbstractBeanServletT
         Date week;
         URL url;
         int range;
-        MultipleSelector<Integer> selector = new MultipleSelector<>(1, 2, 3, 4);
-        SingleSelector<Double> selector2 = new SingleSelector<>(1.0, 2.0, 3.0, 4.0);
+        MultipleSelectorImpl<Integer> selector = new MultipleSelectorImpl<>(1, 2, 3, 4);
+        SingleSelectorImpl<Double> selector2 = new SingleSelectorImpl<>(1.0, 2.0, 3.0, 4.0);
 
         @InputType(itemType=Integer.class)
         public List<Integer> getHset()
@@ -158,22 +158,22 @@ public class AbstractBeanServletT
             this.hidden = hidden;
         }
 
-        public SingleSelector<Double> getSelector2()
+        public SingleSelectorImpl<Double> getSelector2()
         {
             return selector2;
         }
 
-        public void setSelector2(SingleSelector<Double> selector2)
+        public void setSelector2(SingleSelectorImpl<Double> selector2)
         {
             this.selector2 = selector2;
         }
 
-        public MultipleSelector<Integer> getSelector()
+        public MultipleSelectorImpl<Integer> getSelector()
         {
             return selector;
         }
 
-        public void setSelector(MultipleSelector<Integer> selector)
+        public void setSelector(MultipleSelectorImpl<Integer> selector)
         {
             this.selector = selector;
         }
