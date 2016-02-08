@@ -30,6 +30,7 @@ import org.vesalainen.html.jquery.mobile.JQueryMobileServlet;
 import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
 import org.vesalainen.html.jquery.mobile.JQueryMobilePage;
 import org.vesalainen.html.jquery.mobile.JQueryMobileForm;
+import org.vesalainen.http.Query;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelectorImpl;
@@ -105,9 +106,9 @@ public class AbstractBeanServletT
         }
 
         @Override
-        protected void onSubmit(Data data, String field, String value)
+        protected void onSubmit(Data data, String field, Query query)
         {
-            System.err.println("submit("+field+")="+value);
+            System.err.println("submit("+field+")="+query);
         }
 
     }

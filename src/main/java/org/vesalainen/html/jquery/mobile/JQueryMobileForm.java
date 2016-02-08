@@ -36,7 +36,7 @@ public class JQueryMobileForm<C> extends BeanForm<C>
     
     private final Page page;
     
-    public JQueryMobileForm(JQueryMobileDocument document, Page page, String method, String action)
+    public JQueryMobileForm(JQueryMobileDocument document, Page page, String method, Object action)
     {
         super(document, method, action);
         this.page = page;

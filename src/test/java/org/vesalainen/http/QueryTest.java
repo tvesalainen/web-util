@@ -14,23 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html;
+package org.vesalainen.http;
+
+import java.util.List;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author tkv
  */
-public class Form extends Element
+public class QueryTest
 {
-    public Form(Object action)
+    
+    public QueryTest()
     {
-        this("post", action);
     }
-    public Form(String method, Object action)
+
+    @Test
+    public void test1()
     {
-        super("form");
-        setAttr("method", method);
-        setAttr("action", action);
+        Query q1 = new Query();
+        q1.add("p1", "foo bar");
+        q1.add("p1", "ääliö");
+        q1.add("p2", "bar is open");
+        String qs = q1.toString();
+        Query q2 = new Query(qs);
+        List<String> ls = q2.get("p1");
+        assertEquals(2, ls.size());
+        assertTrue(ls.contains("foo bar"));
+        assertTrue(ls.contains("ääliö"));
+        ls = q2.get("p2");
+        assertEquals(1, ls.size());
+        assertTrue(ls.contains("bar is open"));
     }
     
 }

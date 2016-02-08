@@ -53,12 +53,12 @@ public class BeanForm<C> extends Form implements I18n
     protected BeanDocument<C> document;
     protected boolean hasHideScript;
 
-    public BeanForm(BeanDocument document, String action)
+    public BeanForm(BeanDocument document, Object action)
     {
         this(document, "post", action);
     }
 
-    public BeanForm(BeanDocument document, String method, String action)
+    public BeanForm(BeanDocument document, String method, Object action)
     {
         super(method, action);
         this.document = document;
@@ -72,6 +72,11 @@ public class BeanForm<C> extends Form implements I18n
         }
     }
 
+    public void addInput(String field, Attribute... attributes)
+    {
+        addContent(createInput(field, attributes));
+    }
+    
     public void addRestAsHiddenInputs()
     {
         Set<String> set = new HashSet<>();

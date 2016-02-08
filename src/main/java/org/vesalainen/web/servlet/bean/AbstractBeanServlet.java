@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.bean.BeanField;
+import org.vesalainen.http.Query;
 import org.vesalainen.web.servlet.AbstractDocumentServlet;
 
 /**
@@ -56,7 +57,6 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
         C data = createData();
         threadLocalData.set(data);
         String submitField = null;
-        String submitValue = null;
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String field = e.getKey();
@@ -70,16 +70,18 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
             if (bf instanceof SubmitInput)
             {
                 submitField = field;
-                if (value != null && value.length > 0)
-                {
-                    submitValue = value[0];
-                }
             }
         }
-        onSubmit(data, submitField, submitValue);
+        Query query = null;
+        String queryString = req.getQueryString();
+        if (queryString != null)
+        {
+            query = new Query(queryString);
+        }
+        onSubmit(data, submitField, query);
         response(resp, document);
     }
-    protected abstract void onSubmit(C data, String field, String value);
+    protected abstract void onSubmit(C data, String field, Query query);
 
     protected abstract C createData();
 }

@@ -19,10 +19,7 @@ package org.vesalainen.web.servlet.bean;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.vesalainen.bean.ThreadLocalBeanField;
-import org.vesalainen.web.HTML5Datetime;
 
 /**
  *
@@ -31,7 +28,6 @@ import org.vesalainen.web.HTML5Datetime;
 public class DateInput<T> extends ThreadLocalBeanField<T, Object>
 {
 
-    public static final HTML5Datetime parser = HTML5Datetime.getInstance();
     private String format;
 
     public DateInput(ThreadLocal<T> local, Class<? extends T> cls, String fieldname, String type)
