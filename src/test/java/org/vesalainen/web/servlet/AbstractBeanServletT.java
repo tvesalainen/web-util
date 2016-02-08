@@ -105,9 +105,9 @@ public class AbstractBeanServletT
         }
 
         @Override
-        protected void onSubmit(Data data, String field)
+        protected void onSubmit(Data data, String field, String value)
         {
-            System.err.println("submit("+field+")");
+            System.err.println("submit("+field+")="+value);
         }
 
     }

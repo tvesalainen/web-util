@@ -16,6 +16,8 @@
  */
 package org.vesalainen.html;
 
+import java.util.Collection;
+
 /**
  *
  * @author tkv
@@ -26,6 +28,8 @@ public interface AttributedContent extends Content
     <T> AttributedContent setAttr(String name, T value);
 
     <T> AttributedContent setAttr(Attribute<T> attr);
+    
+    AttributedContent setAttr(Collection<Attribute> all);
     
     AttributedContent removeAttr(String name);
 

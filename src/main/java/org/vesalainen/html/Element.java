@@ -17,7 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -113,6 +113,16 @@ public class Element extends ContainerContent implements AttributedContent
             attributes = new TreeMap<>();
         }
         attributes.put(attr.getName(), attr);
+        return this;
+    }
+
+    @Override
+    public AttributedContent setAttr(Collection<Attribute> all)
+    {
+        for (Attribute a : all)
+        {
+            setAttr(a);
+        }
         return this;
     }
 

@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,6 +69,16 @@ public class Tag implements AttributedContent
             attributes = new HashMap<>();
         }
         attributes.put(attr.getName(), attr);
+        return this;
+    }
+
+    @Override
+    public AttributedContent setAttr(Collection<Attribute> all)
+    {
+        for (Attribute a : all)
+        {
+            setAttr(a);
+        }
         return this;
     }
 

@@ -16,6 +16,8 @@
  */
 package org.vesalainen.html.jquery.mobile;
 
+import java.util.Collection;
+import org.vesalainen.html.Attribute;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Page;
 import org.vesalainen.html.SimpleAttribute;
@@ -26,8 +28,9 @@ import org.vesalainen.web.servlet.bean.BeanForm;
 /**
  *
  * @author tkv
+ * @param <C>
  */
-public class JQueryMobileForm extends BeanForm
+public class JQueryMobileForm<C> extends BeanForm<C>
 {
     private static final SimpleAttribute<String> ControlGroup = new SimpleAttribute<>("data-role", "controlgroup");
     
@@ -52,37 +55,37 @@ public class JQueryMobileForm extends BeanForm
     }
 
     @Override
-    protected Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
-        return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
+        return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrs)
                 .setAttr(ControlGroup);
     }
 
     @Override
-    protected Element radioContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element radioContainer(String field, String inputType, Class<?> type, String labelText, String placeholder, Collection<Attribute> attrs)
     {
-        return super.radioContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
+        return super.radioContainer(field, inputType, type, labelText, placeholder, attrs)
                 .setAttr(ControlGroup);
     }
 
     @Override
-    protected Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
-        return super.selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation)
+        return super.selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrs)
                 .addClasses("ui-field-contain");
     }
 
     @Override
-    protected Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
     {
-        return super.singleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation)
+        return super.singleSelectorContainer(field, inputType, value, labelText, placeholder, attrs)
                 .addClasses("ui-field-contain");
     }
 
     @Override
-    protected Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
     {
-        return super.multipleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation)
+        return super.multipleSelectorContainer(field, inputType, value, labelText, placeholder, attrs)
                 .addClasses("ui-field-contain");
     }
     

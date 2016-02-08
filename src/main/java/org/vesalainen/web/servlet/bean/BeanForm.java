@@ -18,6 +18,7 @@ package org.vesalainen.web.servlet.bean;
 
 import java.awt.Color;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -25,15 +26,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import org.vesalainen.bean.BeanHelper;
-import org.vesalainen.html.AttributedContent;
+import org.vesalainen.html.Attribute;
 import org.vesalainen.html.BooleanAttribute;
 import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Form;
 import org.vesalainen.html.InputTag;
+import org.vesalainen.html.SimpleAttribute;
 import org.vesalainen.html.Tag;
 import org.vesalainen.js.ScriptContainer;
+import org.vesalainen.util.Lists;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.InputType;
@@ -78,8 +81,9 @@ public class BeanForm<C> extends Form implements I18n
         addContent(hiddenContainer(set));
     }
 
-    public Content createInput(String field)
+    public Content createInput(String field, Attribute... attributes)
     {
+        List<Attribute> attrList = Lists.create(attributes);
         String inputType = "text";
         Class type = BeanHelper.getType(document.context, field);
         Object value = BeanHelper.getFieldValue(document.context, field);
@@ -87,6 +91,10 @@ public class BeanForm<C> extends Form implements I18n
         if (inputTypeAnnotation != null)
         {
             inputType = inputTypeAnnotation.value();
+            for (Attr at : inputTypeAnnotation.attrs())
+            {
+                attrList.add(new SimpleAttribute(at.name(), at.value()));
+            }
         }
         else
         {
@@ -153,55 +161,55 @@ public class BeanForm<C> extends Form implements I18n
             case "email":
             case "search":
             case "tel":
-                return textContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+                return textContainer(field, inputType, labelText, placeholder, attrList);
             case "url":
-                return urlContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+                return urlContainer(field, inputType, labelText, placeholder, attrList);
             case "number":
             case "range":
-                return numberContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+                return numberContainer(field, inputType, labelText, placeholder, attrList);
             case "textarea":
-                return textAreaContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+                return textAreaContainer(field, inputType, labelText, placeholder, attrList);
             case "button":
             case "reset":
-                return buttonContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+                return buttonContainer(field, inputType, labelText, placeholder, attrList);
             case "submit":
-                return submitContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+                return submitContainer(field, inputType, labelText, placeholder, attrList);
             case "radio":
-                return radioContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                return radioContainer(field, inputType, type, labelText, placeholder, attrList);
             case "checkbox":
                 if (isBoolean(type))
                 {
-                    return singleCheckboxContainer(field, inputType, labelText, placeholder, inputTypeAnnotation);
+                    return singleCheckboxContainer(field, inputType, labelText, placeholder, attrList);
                 }
                 else
                 {
-                    return multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                    return multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrList);
                 }
             case "select":
                 if (MultipleSelector.class.isAssignableFrom(type))
                 {
-                    return multipleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
+                    return multipleSelectorContainer(field, inputType, value, labelText, placeholder, attrList);
                 }
                 else
                 {
                     if (SingleSelector.class.isAssignableFrom(type))
                     {
-                        return singleSelectorContainer(field, inputType, value, labelText, placeholder, inputTypeAnnotation);
+                        return singleSelectorContainer(field, inputType, value, labelText, placeholder, attrList);
                     }
                     else
                     {
-                        return selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                        return selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrList);
                     }
                 }
             case "color":
-                return colorContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                return colorContainer(field, inputType, type, labelText, placeholder, attrList);
             case "date":
             case "datetime":
             case "datetime-local":
             case "month":
             case "time":
             case "week":
-                return dateContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                return dateContainer(field, inputType, labelText, placeholder, attrList);
             case "datalist":
             case "keygen":
             case "output":
@@ -210,24 +218,13 @@ public class BeanForm<C> extends Form implements I18n
         }
     }
 
-    private void addAttrs(AttributedContent tag, InputType inputType)
-    {
-        if (inputType != null)
-        {
-            for (Attr at : inputType.attrs())
-            {
-                tag.setAttr(at.name(), at.value());
-            }
-        }
-    }
-
-    protected ContainerContent textContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public ContainerContent textContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
         container.addElement(textLabel);
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
-        addAttrs(input, inputTypeAnnotation);
+        input.setAttr(attrs);
         container.addTag(input);
         TextInput w = new TextInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, w);
@@ -235,28 +232,28 @@ public class BeanForm<C> extends Form implements I18n
         return container;
     }
 
-    protected ContainerContent textAreaContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public ContainerContent textAreaContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         ContainerContent textAreaContainer = new ContainerContent();
         Element textAreaLabel = new Element("label").setAttr("for", field).addText(labelText);
         textAreaContainer.addElement(textAreaLabel);
-        Element textAreaInput = new Element(inputType).setAttr("id", field).setAttr("name", field).setAttr("placeholder", placeholder);
-        addAttrs(textAreaInput, inputTypeAnnotation);
+        Element input = new Element(inputType).setAttr("id", field).setAttr("name", field).setAttr("placeholder", placeholder);
+        input.setAttr(attrs);
         TextInput w = new TextInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, w);
-        textAreaInput.addText(w);
-        textAreaContainer.addElement(textAreaInput);
+        input.addText(w);
+        textAreaContainer.addElement(input);
         return textAreaContainer;
     }
 
-    private Tag buttonContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Tag buttonContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
-        Tag button = new Tag("input").setAttr("type", inputType).setAttr("value", labelText);
-        addAttrs(button, inputTypeAnnotation);
-        return button;
+        Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", labelText).setAttr("placeholder", placeholder);
+        input.setAttr(attrs);
+        return input;
     }
 
-    protected Element radioContainer(String field, String inputType, Class<?> type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element radioContainer(String field, String inputType, Class<?> type, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         EnumInput enumInput = new EnumInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, enumInput);
@@ -267,14 +264,15 @@ public class BeanForm<C> extends Form implements I18n
             String n = e.toString();
             String d = document.getLabel(n);
             fieldSet.addElement("label").setAttr("for", n).addText(d);
-            InputTag radioInput = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
-            radioInput.setAttr(new BooleanAttribute("checked", enumInput.getValue(e)));
-            fieldSet.addTag(radioInput);
+            InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
+            input.setAttr(attrs);
+            input.setAttr(new BooleanAttribute("checked", enumInput.getValue(e)));
+            fieldSet.addTag(input);
         }
         return fieldSet;
     }
 
-    protected ContainerContent singleCheckboxContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public ContainerContent singleCheckboxContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         BooleanInput booleanInput = new BooleanInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, booleanInput);
@@ -282,7 +280,7 @@ public class BeanForm<C> extends Form implements I18n
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
         container.addElement(textLabel);
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
-        addAttrs(input, inputTypeAnnotation);
+        input.setAttr(attrs);
         container.addTag(input);
         input.setAttr(new BooleanAttribute("checked", booleanInput));
         return container;
@@ -293,7 +291,7 @@ public class BeanForm<C> extends Form implements I18n
         return boolean.class.equals(type) || Boolean.class.equals(type);
     }
 
-    protected Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         if (!EnumSet.class.equals(type))
         {
@@ -318,23 +316,24 @@ public class BeanForm<C> extends Form implements I18n
             String d = getLabel(n);
             fieldSet.addElement("label").setAttr("for", n).addText(d);
             InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
+            input.setAttr(attrs);
             input.setAttr(new BooleanAttribute("checked", enumSetInput.getValue(e)));
             fieldSet.addTag(input);
         }
         return fieldSet;
     }
 
-    protected Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         if (type.isEnum())
         {
-            return singleSelectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+            return singleSelectContainer(field, labelText, attrs);
         }
         else
         {
             if (EnumSet.class.equals(type))
             {
-                return multiSelectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation);
+                return multiSelectContainer(field, labelText, inputTypeAnnotation, attrs);
             }
             else
             {
@@ -343,7 +342,7 @@ public class BeanForm<C> extends Form implements I18n
         }
     }
 
-    private Element singleSelectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element singleSelectContainer(String field, String labelText, Collection<Attribute> attrs)
     {
         EnumInput input = new EnumInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, input);
@@ -356,11 +355,12 @@ public class BeanForm<C> extends Form implements I18n
             String d = getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(e)));
+            option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    private Element multiSelectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element multiSelectContainer(String field, String labelText, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         if (inputTypeAnnotation == null)
         {
@@ -383,17 +383,18 @@ public class BeanForm<C> extends Form implements I18n
             String d = getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", enumSetInput.getValue(e)));
+            option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    protected Content colorContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public ContainerContent colorContainer(String field, String inputType, Class type, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", field).addText(labelText);
         container.addElement(label);
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
-        addAttrs(input, inputTypeAnnotation);
+        input.setAttr(attrs);
         container.addTag(input);
         ColorInput colorInput = new ColorInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, colorInput);
@@ -401,13 +402,13 @@ public class BeanForm<C> extends Form implements I18n
         return container;
     }
 
-    private Content dateContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public ContainerContent dateContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", field).addText(labelText);
         container.addElement(label);
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
-        addAttrs(input, inputTypeAnnotation);
+        input.setAttr(attrs);
         container.addTag(input);
         DateInput dateInput = new DateInput(document.threadLocalData, document.dataType, field, inputType);
         document.fieldMap.put(field, dateInput);
@@ -415,13 +416,13 @@ public class BeanForm<C> extends Form implements I18n
         return container;
     }
 
-    protected Content numberContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public ContainerContent numberContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
         container.addElement(textLabel);
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
-        addAttrs(input, inputTypeAnnotation);
+        input.setAttr(attrs);
         container.addTag(input);
         NumberInput w = new NumberInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, w);
@@ -429,13 +430,13 @@ public class BeanForm<C> extends Form implements I18n
         return container;
     }
 
-    private Content urlContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public ContainerContent urlContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
         container.addElement(textLabel);
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
-        addAttrs(input, inputTypeAnnotation);
+        input.setAttr(attrs);
         container.addTag(input);
         URLInput w = new URLInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, w);
@@ -443,7 +444,7 @@ public class BeanForm<C> extends Form implements I18n
         return container;
     }
 
-    protected Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         MultipleSelector selector = (MultipleSelector) value;
         List options = selector.getOptions();
@@ -459,11 +460,12 @@ public class BeanForm<C> extends Form implements I18n
             String d = document.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
+            option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    protected Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
     {
         SingleSelector selector = (SingleSelector) value;
         List options = selector.getOptions();
@@ -478,17 +480,18 @@ public class BeanForm<C> extends Form implements I18n
             String d = getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
+            option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    protected Tag submitContainer(String field, String inputType, String labelText, String placeholder, InputType inputTypeAnnotation)
+    public Tag submitContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
     {
-        Tag button = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", labelText);
-        addAttrs(button, inputTypeAnnotation);
-        SubmitInput input = new SubmitInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, input);
-        return button;
+        Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", labelText);
+        input.setAttr(attrs);
+        SubmitInput submitInput = new SubmitInput(document.threadLocalData, document.dataType, field);
+        document.fieldMap.put(field, submitInput);
+        return input;
     }
 
     protected InputTag hiddenContainer(Set<String> fields)
