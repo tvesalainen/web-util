@@ -19,14 +19,31 @@ package org.vesalainen.html;
 import java.io.IOException;
 
 /**
- *
+ * Parameterized content
  * @author tkv
+ * @param <P> DynContent parameter type
  */
-public class RawContent<T> implements Content
+public class ParamContent<P> implements Content
 {
-    T content;
+    private final P param;
+    private DynContent<P> content;
 
-    public RawContent(T content)
+    public ParamContent()
+    {
+        this.param = null;
+    }
+
+    public ParamContent(P ctx)
+    {
+        this.param = ctx;
+    }
+
+    public P getParam()
+    {
+        return param;
+    }
+
+    public void setContent(DynContent<P> content)
     {
         this.content = content;
     }
@@ -34,7 +51,10 @@ public class RawContent<T> implements Content
     @Override
     public void append(Appendable out) throws IOException
     {
-        out.append(content.toString());
+        if (content != null)
+        {
+            content.append(param, out);
+        }
     }
     
 }

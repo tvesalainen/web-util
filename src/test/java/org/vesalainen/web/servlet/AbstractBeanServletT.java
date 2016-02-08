@@ -78,7 +78,7 @@ public class AbstractBeanServletT
         {
             JQueryMobileDocument<Data> doc = new JQueryMobileDocument(threadLocalData, "BeanServletTest");
             JQueryMobilePage page = doc.getPage("page1");
-            JQueryMobileForm form = page.addForm(null);
+            JQueryMobileForm form = page.addForm(null, "fid");
             form.addInputs(
                 "submit",
                 "submit2",

@@ -64,12 +64,15 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
             BeanField bf = document.getBeanField(field);
             if (bf == null)
             {
-                throw new IllegalArgumentException(field+" not found");
+                System.err.println(field+" not found");
             }
-            bf.set(value);
-            if (bf instanceof SubmitInput)
+            else
             {
-                submitField = field;
+                bf.set(value);
+                if (bf instanceof SubmitInput)
+                {
+                    submitField = field;
+                }
             }
         }
         Query query = null;

@@ -30,7 +30,7 @@ import org.vesalainen.web.SingleSelector;
 public class SingleSelectorInput<D,T> extends ThreadLocalBeanField<D,SingleSelector<T>>
 {
     private final List<T> options;
-    private Class<T> type;
+    private Class<T> optType;
     
     public SingleSelectorInput(ThreadLocal<D> local, Class<? extends D> cls, String fieldname, List<T> options)
     {
@@ -40,15 +40,18 @@ public class SingleSelectorInput<D,T> extends ThreadLocalBeanField<D,SingleSelec
         {
             throw new IllegalArgumentException(fieldname+" has empty options");
         }
-        type = (Class<T>) options.get(0).getClass();
+        optType = (Class<T>) options.get(0).getClass();
     }
 
     @Override
     public void set(Object value)
     {
-        String[] arr = (String[]) value;
-        SingleSelector selector = get();
-        selector.setValue(ConvertUtility.convert(type, arr[0]));
+        if (value != null)
+        {
+            String[] arr = (String[]) value;
+            SingleSelector selector = get();
+            selector.setValue(ConvertUtility.convert(optType, arr[0]));
+        }
     }
 
     public Value getValue(T opt)

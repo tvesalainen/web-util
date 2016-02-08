@@ -501,12 +501,12 @@ public class BeanForm<C> extends Form implements I18n
 
     protected InputTag hiddenContainer(Set<String> fields)
     {
-        InputTag input = new InputTag("text", "JSON").setAttr("id", "JSON");
-        input.addClasses("hidden");
-        JSONInput w = new JSONInput(document.threadLocalData, fields);
-        document.fieldMap.put("JSON", w);
-        input.setAttr("value", w);
-        return input;
+        InputTag inputTag = new InputTag("text", "JSON");
+        inputTag.addClasses("hidden");
+        JSONInput input = new JSONInput(document.threadLocalData, fields);
+        document.fieldMap.put("JSON", input);
+        inputTag.setAttr("value", input);
+        return inputTag;
     }
 
     protected void addHideScript()
