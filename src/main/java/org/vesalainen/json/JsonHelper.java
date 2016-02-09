@@ -67,14 +67,7 @@ public class JsonHelper
                 for (int ii=0;ii<length;ii++)
                 {
                     Object o = ja.get(ii);
-                    if (JSONObject.NULL.equals(o))
-                    {
-                        col.add(null);
-                    }
-                    else
-                    {
-                        col.add(ConvertUtility.convert(itemType, o));
-                    }
+                    col.add(fromJSONObject(itemType, o));
                 }
             }
             else
@@ -95,14 +88,7 @@ public class JsonHelper
                         JSONArray ja = (JSONArray) jj.get(key);
                         for (Object o : ja)
                         {
-                            if (JSONObject.NULL.equals(o))
-                            {
-                                mapCollection.add(ConvertUtility.convert(itemType, key), null);
-                            }
-                            else
-                            {
-                                mapCollection.add(ConvertUtility.convert(itemType, key), ConvertUtility.convert(itemType2, o));
-                            }
+                            mapCollection.add(fromJSONObject(itemType, key), fromJSONObject(itemType2, o));
                         }
                     }
                 }
@@ -124,17 +110,25 @@ public class JsonHelper
                             Object o = jj.get(key);
                             if (jj.isNull(key))
                             {
-                                map.put(ConvertUtility.convert(itemType, key), null);
+                                map.put(fromJSONObject(itemType, key), null);
                             }
                             else
                             {
-                                map.put(ConvertUtility.convert(itemType, key), ConvertUtility.convert(itemType2, o));
+                                map.put(fromJSONObject(itemType, key), fromJSONObject(itemType2, o));
                             }
                         }
                     }
                     else
                     {
-                        BeanHelper.setFieldValue(base, field, jo);
+                        Class type = BeanHelper.getType(base, field);
+                        if (JSONBean.class.isAssignableFrom(type))
+                        {
+                            BeanHelper.setFieldValue(base, field, fromJSONObject(JSONBean.class, jo));
+                        }
+                        else
+                        {
+                            BeanHelper.setFieldValue(base, field, jo);
+                        }
                     }
                 }
             }
@@ -151,6 +145,36 @@ public class JsonHelper
         Object value = BeanHelper.getFieldValue(base, field);
         json.put(field, toJSONObject(value));
     }
+    private static Object fromJSONObject(Class<?> expected, Object value)
+    {
+        if (JSONObject.NULL.equals(value))
+        {
+            return null;
+        }
+        if (JSONBean.class.isAssignableFrom(expected))
+        {
+            JSONObject jo = (JSONObject) value;
+            String classname = jo.getString("class");
+            if (classname == null)
+            {
+                throw new IllegalArgumentException("class missing in "+jo);
+            }
+            try
+            {
+                Class<?> cls = Class.forName(classname);
+                JSONBean jsonBean = (JSONBean) cls.newInstance();
+                jo.remove("class");
+                setValues(jo, jsonBean);
+                return jsonBean;
+            }
+            catch (ClassNotFoundException | IllegalAccessException | InstantiationException ex)
+            {
+                throw new IllegalArgumentException(ex);
+            }
+        }
+        return ConvertUtility.convert(expected, value);
+    }
+    
     private static Object toJSONObject(Object value)
     {
         if (value == null)
@@ -245,6 +269,18 @@ public class JsonHelper
                     }
             }
             return jarr;
+        }
+        if (value instanceof JSONBean)
+        {
+            JSONObject jo = new JSONObject();
+            Class<?> cls = value.getClass();
+            jo.put("class", cls.getName());
+            for (String field : BeanHelper.getFields(cls))
+            {
+                Object fieldValue = BeanHelper.getFieldValue(value, field);
+                jo.put(field, toJSONObject(fieldValue));
+            }
+            return jo;
         }
         return value.toString();
     }

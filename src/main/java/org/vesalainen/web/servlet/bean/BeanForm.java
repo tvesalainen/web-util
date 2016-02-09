@@ -453,7 +453,7 @@ public class BeanForm<C> extends Form implements I18n
     {
         MultipleSelector selector = (MultipleSelector) value;
         List options = selector.getOptions();
-        MultipleSelectorInput<C, Object> input = new MultipleSelectorInput<>(document.threadLocalData, document.dataType, field, options);
+        MultipleSelectorInput<C, Object> input = new MultipleSelectorInput<>(document.threadLocalData, document.dataType, field, selector);
         document.fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(getLabel(field));
@@ -474,7 +474,7 @@ public class BeanForm<C> extends Form implements I18n
     {
         SingleSelector selector = (SingleSelector) value;
         List options = selector.getOptions();
-        SingleSelectorInput<C, Object> input = new SingleSelectorInput<>(document.threadLocalData, document.dataType, field, options);
+        SingleSelectorInput<C, Object> input = new SingleSelectorInput<>(document.threadLocalData, document.dataType, field, selector);
         document.fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(document.getLabel(field));

@@ -31,10 +31,10 @@ public class MultipleSelectorInput<D,T> extends ThreadLocalBeanField<D,MultipleS
 {
     private final List<T> options;
     
-    public MultipleSelectorInput(ThreadLocal<D> local, Class<? extends D> cls, String fieldname, List<T> options)
+    public MultipleSelectorInput(ThreadLocal<D> local, Class<? extends D> cls, String fieldname, MultipleSelector selector)
     {
         super(local, cls, fieldname);
-        this.options = options;
+        this.options = selector.getOptions();
     }
 
     @Override

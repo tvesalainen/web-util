@@ -19,6 +19,7 @@ package org.vesalainen.json;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.json.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -90,9 +91,17 @@ public class JsonHelperTest
         assertEquals("{\"mapList\":{\"a1\":[1,null],\"a2\":[3]}}", js);
         JsonHelper.setValue(new JSONObject(js), t, "mapList");
         assertEquals(map, t.getMap());
+        
+        JB jb = new JB();
+        js = JsonHelper.toString(t, "jb");
+        assertEquals("{\"jb\":{\"ll\":123456,\"str1\":\"qwerty\",\"class\":\"org.vesalainen.json.JsonHelperTest$JB\"}}", js);
+        JsonHelper.setValue(new JSONObject(js), t, "jb");
+        assertEquals(jb, t.getJb());
+        
     }
     public static class T
     {
+        JB jb = new JB();
         E e = E.E2;
         String str;
         int[] iarr = new int[] {1,2,3,4,5};
@@ -110,6 +119,16 @@ public class JsonHelperTest
             mapList.add("a1", 1);
             mapList.add("a1", null);
             mapList.add("a2", 3);
+        }
+
+        public JB getJb()
+        {
+            return jb;
+        }
+
+        public void setJb(JB jb)
+        {
+            this.jb = jb;
         }
 
         public E getE()
@@ -183,6 +202,64 @@ public class JsonHelperTest
         public void setStr(String str)
         {
             this.str = str;
+        }
+        
+    }
+    public static class JB implements JSONBean
+    {
+        private String str1 = "qwerty";
+        private long ll = 123456L;
+
+        public String getStr1()
+        {
+            return str1;
+        }
+
+        public void setStr1(String str1)
+        {
+            this.str1 = str1;
+        }
+
+        public long getLl()
+        {
+            return ll;
+        }
+
+        public void setLl(long ll)
+        {
+            this.ll = ll;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = 5;
+            hash = 97 * hash + Objects.hashCode(this.str1);
+            hash = 97 * hash + (int) (this.ll ^ (this.ll >>> 32));
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+            if (getClass() != obj.getClass())
+            {
+                return false;
+            }
+            final JB other = (JB) obj;
+            if (!Objects.equals(this.str1, other.str1))
+            {
+                return false;
+            }
+            if (this.ll != other.ll)
+            {
+                return false;
+            }
+            return true;
         }
         
     }

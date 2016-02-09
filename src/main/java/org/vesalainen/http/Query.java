@@ -46,11 +46,11 @@ public class Query extends HashMapList<String,String> implements Content
     {
         if (queryString != null)
         {
-            if (!queryString.startsWith("?"))
+            if (queryString.startsWith("?"))
             {
                 throw new IllegalArgumentException(queryString+" illegal");
             }
-            String[] param = queryString.substring(1).split("&");
+            String[] param = queryString.split("&");
             for (String ps : param)
             {
                 String[] pss = ps.split("=");
@@ -79,7 +79,6 @@ public class Query extends HashMapList<String,String> implements Content
     public void append(Appendable out) throws IOException
     {
         boolean first = true;
-        out.append('?');
         for (Entry<String,List<String>> e : entrySet())
         {
             for (String value : e.getValue())

@@ -32,10 +32,10 @@ public class SingleSelectorInput<D,T> extends ThreadLocalBeanField<D,SingleSelec
     private final List<T> options;
     private Class<T> optType;
     
-    public SingleSelectorInput(ThreadLocal<D> local, Class<? extends D> cls, String fieldname, List<T> options)
+    public SingleSelectorInput(ThreadLocal<D> local, Class<? extends D> cls, String fieldname, SingleSelector selector)
     {
         super(local, cls, fieldname);
-        this.options = options;
+        this.options = selector.getOptions();
         if (options.isEmpty())
         {
             throw new IllegalArgumentException(fieldname+" has empty options");
