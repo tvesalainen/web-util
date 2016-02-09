@@ -41,6 +41,9 @@ import org.vesalainen.util.MapList;
  */
 public abstract class AbstractSSESource
 {
+    public static final String EventClass = "server-sent-event";
+    public static final String EventCSS = "."+EventClass;
+    
     private final MapList<String,SSEObserver> eventMap = new HashMapList<>();
     
     protected String urlPattern;
@@ -69,7 +72,7 @@ public abstract class AbstractSSESource
     {
         DocumentReadyEvent ready = new DocumentReadyEvent();
         ready.addCode("var events;");
-        SelectorFunction sf = new SelectorFunction(".server_sent_event", "each");
+        SelectorFunction sf = new SelectorFunction(EventCSS, "each");
         sf.addCode("if (events) events=events+','+$(this).attr('id'); else events=$(this).attr('id');");
         ready.addScript(sf);
         ready.addCode("localStorage.org_vesalainen_html_events=events;");

@@ -58,12 +58,12 @@ public class AbstractSSEServletT
                     .getBody()
                     .addElement("div")
                     .setAttr("id", "ev1")
-                    .setAttr("class", "server_sent_event");
+                    .setAttr("class", AbstractSSESource.EventClass);
             source.getPage()
                     .getBody()
                     .addElement("div")
                     .setAttr("id", "ev2")
-                    .setAttr("class", "server_sent_event");
+                    .setAttr("class", AbstractSSESource.EventClass);
         }
         
     }
