@@ -33,6 +33,7 @@ import org.vesalainen.web.InputType;
  */
 public class JsonHelperTest
 {
+    enum E {E1, E2};
     
     public JsonHelperTest()
     {
@@ -46,6 +47,11 @@ public class JsonHelperTest
         assertEquals("{\"str\":null}", js);
         JsonHelper.setValue(new JSONObject(js), t, "str");
         assertNull(t.str);
+        
+        js = JsonHelper.toString(t, "e");
+        assertEquals("{\"e\":\"E2\"}", js);
+        JsonHelper.setValue(new JSONObject(js), t, "e");
+        assertEquals(E.E2, t.getE());
         
         js = JsonHelper.toString(t, "l");
         assertEquals("{\"l\":123456789}", js);
@@ -70,22 +76,24 @@ public class JsonHelperTest
         Map<String,String> map = new HashMap<>();
         map.put("a", "1");
         map.put("b", "2");
+        map.put("n", null);
         js = JsonHelper.toString(t, "map");
-        assertEquals("{\"map\":{\"a\":\"1\",\"b\":\"2\"}}", js);
+        assertEquals("{\"map\":{\"a\":\"1\",\"b\":\"2\",\"n\":null}}", js);
         JsonHelper.setValue(new JSONObject(js), t, "map");
         assertEquals(map, t.getMap());
         
         MapList<String,Integer> mapList = new HashMapList<>();
         mapList.add("a1", 1);
-        mapList.add("a1", 2);
+        mapList.add("a1", null);
         mapList.add("a2", 3);
         js = JsonHelper.toString(t, "mapList");
-        assertEquals("{\"mapList\":{\"a1\":[1,2],\"a2\":[3]}}", js);
+        assertEquals("{\"mapList\":{\"a1\":[1,null],\"a2\":[3]}}", js);
         JsonHelper.setValue(new JSONObject(js), t, "mapList");
         assertEquals(map, t.getMap());
     }
     public static class T
     {
+        E e = E.E2;
         String str;
         int[] iarr = new int[] {1,2,3,4,5};
         List<Integer> ints = Lists.create(9,8,7,6,5);
@@ -97,10 +105,21 @@ public class JsonHelperTest
         {
             map.put("a", "1");
             map.put("b", "2");
+            map.put("n", null);
             
             mapList.add("a1", 1);
-            mapList.add("a1", 2);
+            mapList.add("a1", null);
             mapList.add("a2", 3);
+        }
+
+        public E getE()
+        {
+            return e;
+        }
+
+        public void setE(E e)
+        {
+            this.e = e;
         }
 
         @InputType(itemType=String.class, itemType2=Integer.class)
