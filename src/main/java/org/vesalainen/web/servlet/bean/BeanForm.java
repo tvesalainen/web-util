@@ -542,5 +542,15 @@ public class BeanForm<C> extends Form implements I18n
     {
         return document.getPlaceholder(locale, key);
     }
+
+    public boolean isHasHideScript()
+    {
+        return hasHideScript;
+    }
+
+    public void setHasHideScript(boolean hasHideScript)
+    {
+        this.hasHideScript = hasHideScript;
+    }
     
 }

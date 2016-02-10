@@ -14,23 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web;
+package org.vesalainen.html;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.vesalainen.util.EnumMapList;
 
 /**
  *
  * @author tkv
+ * @param <P>
+ * @param <K>
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD})
-public @interface InputType
+public abstract class AbstractEnumDynContent<P extends DynParam<K>,K extends Enum<K>> extends AbstractDynContent<P,K> implements EnumDynContent<P,K>
 {
-    String value() default "text";
-    Class<?> itemType() default Object.class;
-    Class<?> itemType2() default Object.class;
-    Attr[] attrs() default {};
+
+    public AbstractEnumDynContent(Class<K> cls)
+    {
+        super(new EnumMapList<K,Placeholder>(cls));
+    }
+
 }

@@ -52,7 +52,7 @@ public class BeanDocument<C> extends Document
     }
 
     @Override
-    public Form addForm(String method, String action)
+    public Form addForm(String method, Object action)
     {
         BeanForm form = new BeanForm(this, method, action);
         body.addElement(form);

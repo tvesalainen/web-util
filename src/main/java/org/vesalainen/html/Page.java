@@ -28,9 +28,9 @@ public interface Page extends I18n
 {
     Element getContent();
 
-    Form addForm(String action);
+    Form addForm(Object action);
 
-    Form addForm(String method, String action);
+    Form addForm(String method, Object action);
 
     Charset getCharset();
 

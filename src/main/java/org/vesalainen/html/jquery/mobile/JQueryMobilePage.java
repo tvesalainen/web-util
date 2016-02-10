@@ -97,13 +97,13 @@ public class JQueryMobilePage<C> extends Element implements Page
     }
 
     @Override
-    public JQueryMobileForm addForm(String action)
+    public JQueryMobileForm addForm(Object action)
     {
         return addForm("post", action);
     }
 
     @Override
-    public JQueryMobileForm addForm(String method, String action)
+    public JQueryMobileForm addForm(String method, Object action)
     {
         JQueryMobileForm form = new JQueryMobileForm(document, this, method, action);
         main.addElement(form);

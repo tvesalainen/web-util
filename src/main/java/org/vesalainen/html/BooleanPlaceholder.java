@@ -19,44 +19,45 @@ package org.vesalainen.html;
 import java.io.IOException;
 
 /**
- * Parameterized content
+ *
  * @author tkv
- * @param <P> DynContent parameter type
- * @param <K>
+ * @param <T>
  */
-public class ParamContent<P extends DynParam<K>,K> implements Content
+public class BooleanPlaceholder<T> extends Placeholder<T>
 {
-    private final P param;
-    private DynContent<P,K> content;
+    private final Object comp;
 
-    public ParamContent()
+    public BooleanPlaceholder(Object comp)
     {
-        this.param = null;
+        this.comp = comp;
     }
 
-    public ParamContent(P ctx)
+    public BooleanPlaceholder(Object comp, T value)
     {
-        this.param = ctx;
+        super(value);
+        this.comp = comp;
     }
 
-    public P getParam()
-    {
-        return param;
-    }
-
-    public void setContent(DynContent<P,K> content)
-    {
-        this.content = content;
-    }
-    
     @Override
     public void append(Appendable out) throws IOException
     {
-        if (content != null)
+        if (value != null && value.equals(comp))
         {
-            content.provision(param);
-            content.append(param, out);
+            super.append(out);
         }
     }
-    
+
+    @Override
+    public String toString()
+    {
+        if (value != null && value.equals(comp))
+        {
+            return "true";
+        }
+        else
+        {
+            return "false";
+        }
+    }
+
 }

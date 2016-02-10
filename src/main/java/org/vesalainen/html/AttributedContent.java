@@ -24,15 +24,38 @@ import java.util.Collection;
  */
 public interface AttributedContent extends Content
 {
-
+    /**
+     * Set Attribute
+     * @param <T>
+     * @param name
+     * @param value
+     * @return this
+     */
     <T> AttributedContent setAttr(String name, T value);
-
+    /**
+     * Set HTML5 data- attribute
+     * @param <T>
+     * @param name Name without data- prefix
+     * @param value
+     * @return 
+     */
+    <T> AttributedContent setDataAttr(String name, T value);
+    /**
+     * Set Attribute
+     * @param <T>
+     * @param attr
+     * @return this
+     */
     <T> AttributedContent setAttr(Attribute<T> attr);
     
     AttributedContent setAttr(Collection<Attribute> all);
     
     AttributedContent removeAttr(String name);
-
+    /**
+     * Add entr(y/ies) to clas attribute
+     * @param cls
+     * @return this
+     */
     AttributedContent addClasses(String... cls);
     
     boolean hasAttr(String name);

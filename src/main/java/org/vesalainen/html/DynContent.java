@@ -21,9 +21,18 @@ import java.io.IOException;
 /**
  *
  * @author tkv
- * @param <P> Content context
+ * @param <K> Key type
+ * @param <P> Param type
  */
-public interface DynContent<P>
+public interface DynContent<P extends DynParam<K>,K>
 {
-    public void append(P param, Appendable out) throws IOException;
+    void append(P param, Appendable out) throws IOException;
+    
+    Placeholder<Object> wrap(K key);
+    
+    Placeholder<Object> wrap(K key, Object comp);
+    
+    void attach(K key, Placeholder wrap);
+    
+    void provision(P param);
 }

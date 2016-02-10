@@ -14,23 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.vesalainen.html;
 
 /**
  *
  * @author tkv
+ * @param <P>
+ * @param <E>
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD})
-public @interface InputType
+public interface EnumDynContent<P extends DynParam<E>,E extends Enum<E>> extends DynContent<P,E>
 {
-    String value() default "text";
-    Class<?> itemType() default Object.class;
-    Class<?> itemType2() default Object.class;
-    Attr[] attrs() default {};
+    
 }

@@ -25,7 +25,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import org.vesalainen.html.Content;
 import org.vesalainen.util.HashMapList;
-import org.vesalainen.util.MapList;
 
 /**
  *
@@ -54,11 +53,17 @@ public class Query extends HashMapList<String,String> implements Content
             for (String ps : param)
             {
                 String[] pss = ps.split("=");
-                if (pss.length != 2)
+                switch (pss.length)
                 {
-                    throw new IllegalArgumentException(queryString+" illegal");
+                    case 1:
+                        add(pss[0], "");
+                        break;
+                    case 2:
+                        add(pss[0], pss[1]);
+                        break;
+                    default:
+                        throw new IllegalArgumentException(queryString+" illegal");
                 }
-                add(pss[0], pss[1]);
             }
         }
     }

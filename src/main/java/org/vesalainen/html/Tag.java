@@ -62,6 +62,12 @@ public class Tag implements AttributedContent
     }
 
     @Override
+    public <T> AttributedContent setDataAttr(String name, T value)
+    {
+        return setAttr(new DataAttribute<>(name, value));
+    }
+    
+    @Override
     public <T> Tag setAttr(Attribute<T> attr)
     {
         if (attributes == null)

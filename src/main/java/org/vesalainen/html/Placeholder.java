@@ -14,23 +14,48 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web;
+package org.vesalainen.html;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.IOException;
 
 /**
  *
  * @author tkv
+ * @param <T>
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD})
-public @interface InputType
+public class Placeholder<T> implements Content
 {
-    String value() default "text";
-    Class<?> itemType() default Object.class;
-    Class<?> itemType2() default Object.class;
-    Attr[] attrs() default {};
+    protected T value;
+
+    public Placeholder()
+    {
+    }
+
+    public Placeholder(T value)
+    {
+        this.value = value;
+    }
+
+    public T getValue()
+    {
+        return value;
+    }
+
+    public void setValue(T value)
+    {
+        this.value = value;
+    }
+
+    @Override
+    public String toString()
+    {
+        return Contents.toString(value);
+    }
+
+    @Override
+    public void append(Appendable out) throws IOException
+    {
+        Contents.append(out, value);
+    }
+    
 }

@@ -99,6 +99,13 @@ public class Element extends ContainerContent implements AttributedContent
     {
         return setAttr(new SimpleAttribute<>(name, value));
     }
+
+    @Override
+    public <T> AttributedContent setDataAttr(String name, T value)
+    {
+        return setAttr(new DataAttribute<>(name, value));
+    }
+    
     /**
      * Set SimpleAttribute
      * @param <T>

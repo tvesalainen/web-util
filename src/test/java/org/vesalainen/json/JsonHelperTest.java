@@ -208,7 +208,7 @@ public class JsonHelperTest
     public static class JB implements JSONBean
     {
         private String str1 = "qwerty";
-        private long ll = 123456L;
+        public long ll = 123456L;
 
         public String getStr1()
         {
@@ -218,16 +218,6 @@ public class JsonHelperTest
         public void setStr1(String str1)
         {
             this.str1 = str1;
-        }
-
-        public long getLl()
-        {
-            return ll;
-        }
-
-        public void setLl(long ll)
-        {
-            this.ll = ll;
         }
 
         @Override

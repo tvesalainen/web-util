@@ -30,7 +30,10 @@ public class Form extends Element
     {
         super("form");
         setAttr("method", method);
-        setAttr("action", action);
+        if (action != null)
+        {
+            setAttr("action", action);
+        }
     }
     
 }

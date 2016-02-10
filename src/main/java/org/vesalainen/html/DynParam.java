@@ -14,23 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.vesalainen.html;
 
 /**
  *
  * @author tkv
+ * @param <K>
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD})
-public @interface InputType
+public interface DynParam<K>
 {
-    String value() default "text";
-    Class<?> itemType() default Object.class;
-    Class<?> itemType2() default Object.class;
-    Attr[] attrs() default {};
+    void provision(K key, Placeholder<Object> wrap);
 }

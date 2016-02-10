@@ -63,13 +63,13 @@ public class Document implements Page
     }
 
     @Override
-    public Form addForm(String action)
+    public Form addForm(Object action)
     {
         return addForm("post", action);
     }
     
     @Override
-    public Form addForm(String method, String action)
+    public Form addForm(String method, Object action)
     {
         Form form = new Form(method, action);
         body.addElement(form);
