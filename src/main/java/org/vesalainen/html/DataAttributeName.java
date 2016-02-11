@@ -19,21 +19,18 @@ package org.vesalainen.html;
 /**
  *
  * @author tkv
- * @param <T>
  */
-public class DataAttribute<T> extends SimpleAttribute<T>
+public class DataAttributeName
 {
-    private final String camelCased;
     
-    public DataAttribute(String name, T value)
+    public static String name(String name)
     {
-        super("data-"+name, value);
-        camelCased = name.replace('-', '.');
+        return "data-"+name;
     }
 
-    public String getCamelCased()
+    public static String getCamelCased(String name)
     {
-        return camelCased;
+        return name.replace('-', '.');
     }
     
 }

@@ -38,7 +38,6 @@ public abstract class AbstractSSEServlet extends HttpServlet
         String events = req.getParameter("events");
         if (events != null)
         {
-            System.err.println(req.getRemoteHost());
             resp.setContentType("text/event-stream");
             resp.setCharacterEncoding("UTF-8");
             SSEObserver sseo = source.register(events);
@@ -46,13 +45,7 @@ public abstract class AbstractSSEServlet extends HttpServlet
         }
         else
         {
-            resp.setContentType("text/html");
-            resp.setCharacterEncoding("UTF-8");
-            resp.setStatus(HttpServletResponse.SC_OK);
-            ServletOutputStream os = resp.getOutputStream();
-            Document page = source.getPage();
-            page.write(os);
-            os.flush();
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "events parameter missing");
         }
     }
     

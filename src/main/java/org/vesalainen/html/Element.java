@@ -103,7 +103,7 @@ public class Element extends ContainerContent implements AttributedContent
     @Override
     public <T> AttributedContent setDataAttr(String name, T value)
     {
-        return setAttr(new DataAttribute<>(name, value));
+        return setAttr(DataAttributeName.name(name), value);
     }
     
     /**

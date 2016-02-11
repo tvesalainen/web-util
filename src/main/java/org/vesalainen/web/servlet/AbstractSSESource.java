@@ -22,15 +22,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.vesalainen.html.Element;
-import org.vesalainen.html.Frameworks;
-import org.vesalainen.html.Document;
-import org.vesalainen.html.ScriptElement;
+import org.vesalainen.html.DataAttributeName;
 import org.vesalainen.html.jquery.DocumentReadyEvent;
 import org.vesalainen.html.jquery.SelectorFunction;
+import org.vesalainen.js.Function;
 import org.vesalainen.js.Script;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
@@ -41,54 +38,43 @@ import org.vesalainen.util.MapList;
  */
 public abstract class AbstractSSESource
 {
-    public static final String EventClass = "server-sent-event";
-    public static final String EventCSS = "."+EventClass;
+    public static final String EventSink = DataAttributeName.name("sse-sink");
+    public static final String EventCSS = "["+EventSink+"]";
     
     private final MapList<String,SSEObserver> eventMap = new HashMapList<>();
     
     protected String urlPattern;
-    protected Set<String> allEvents;
-    protected Document page;
     protected ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
     protected ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
     protected ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
 
-    protected AbstractSSESource(String urlPattern, String... allEvents)
+    protected AbstractSSESource(String urlPattern)
     {
         this.urlPattern = urlPattern;
-        this.allEvents = new TreeSet<>();
-        for (String ev : allEvents)
-        {
-            this.allEvents.add(ev);
-        }
-        this.page = new Document();
-        page.use(Frameworks.JQuery);
-        Element head = page.getHead();
-        ScriptElement script = new ScriptElement(createScript());
-        head.addContent(script);
     }
 
-    private Script createScript()
+    public Script createScript()
     {
         DocumentReadyEvent ready = new DocumentReadyEvent();
         ready.addCode("var events;");
         SelectorFunction sf = new SelectorFunction(EventCSS, "each");
-        sf.addCode("if (events) events=events+','+$(this).attr('id'); else events=$(this).attr('id');");
+        sf.addCode("if (events) events=events+','+$(this).attr('"+EventSink+"'); else events=$(this).attr('"+EventSink+"');");
         ready.addScript(sf);
-        ready.addCode("localStorage.org_vesalainen_html_events=events;");
         ready.addCode("if (events) {");
         ready.addCode("var url = '");
         ready.addCode(urlPattern);
         ready.addCode("'+'?events='+events;");
+        ready.addCode("localStorage.events = events;");
         ready.addCode("var eventSource = new EventSource(url);");
-        ready.addScript(new Events());
+        SelectorFunction el = new SelectorFunction(EventCSS, "each");
+        el.addCode("eventSource.addEventListener($(this).attr('"+EventSink+"'),");
+        Function ef = new Function(null, "event");
+        el.addScript(ef);
+        ef.addCode("document.getElementById($(this).attr('id')).innerHTML = event.data;");
+        el.addCode(", false);");
+        ready.addScript(el);
         ready.addCode("}");
         return ready;
-    }
-    
-    public Document getPage()
-    {
-        return page;
     }
     
     public SSEObserver register(String events)
@@ -232,22 +218,5 @@ public abstract class AbstractSSESource
             }
         }
 
-    }
-    public class Events implements Script
-    {
-
-        @Override
-        public void append(Appendable out) throws IOException
-        {
-            for (String ev : allEvents)
-            {
-                out.append("eventSource.addEventListener('");
-                out.append(ev);
-                out.append("', function(event) {document.getElementById('");
-                out.append(ev);
-                out.append("').innerHTML = event.data;}, false);");
-            }
-        }
-        
     }
 }
