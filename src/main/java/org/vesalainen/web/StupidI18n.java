@@ -22,7 +22,7 @@ import java.util.Locale;
  *
  * @author tkv
  */
-public class StupidI18n implements I18n
+public class StupidI18n implements I18nSupport
 {
     @Override
     public String getLabel(Object key)

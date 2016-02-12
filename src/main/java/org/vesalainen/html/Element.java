@@ -101,7 +101,7 @@ public class Element extends ContainerContent implements AttributedContent
     }
 
     @Override
-    public <T> AttributedContent setDataAttr(String name, T value)
+    public <T> Element setDataAttr(String name, T value)
     {
         return setAttr(DataAttributeName.name(name), value);
     }

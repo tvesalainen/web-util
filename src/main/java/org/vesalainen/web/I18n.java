@@ -22,15 +22,48 @@ import java.util.Locale;
  *
  * @author tkv
  */
-public interface I18n
+public class I18n
 {
+    private static I18nSupport i18n = new StupidI18n();
+    private static final ThreadLocal<Locale> locale = new ThreadLocal<>();
 
-    String getLabel(Object key);
-
-    String getLabel(Locale locale, Object key);
-
-    String getPlaceholder(Object key);
-
-    String getPlaceholder(Locale locale, Object key);
+    public static final void setLocale(Locale locale)
+    {
+        I18n.locale.set(locale);
+    }
     
+    public static final Locale getLocale()
+    {
+        return locale.get();
+    }
+    
+    public static final I18nSupport getI18n()
+    {
+        return i18n;
+    }
+
+    public static final void setI18n(I18nSupport i18n)
+    {
+        I18n.i18n = i18n;
+    }
+
+    public static final String getLabel(Object key)
+    {
+        return i18n.getLabel(locale.get(), key);
+    }
+
+    public static final String getLabel(Locale locale, Object key)
+    {
+        return i18n.getLabel(locale, key);
+    }
+
+    public static final String getPlaceholder(Object key)
+    {
+        return i18n.getPlaceholder(locale.get(), key);
+    }
+
+    public static final String getPlaceholder(Locale locale, Object key)
+    {
+        return i18n.getPlaceholder(locale, key);
+    }
 }

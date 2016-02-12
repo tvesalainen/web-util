@@ -62,7 +62,7 @@ public class Tag implements AttributedContent
     }
 
     @Override
-    public <T> AttributedContent setDataAttr(String name, T value)
+    public <T> Tag setDataAttr(String name, T value)
     {
         return setAttr(DataAttributeName.name(name), value);
     }

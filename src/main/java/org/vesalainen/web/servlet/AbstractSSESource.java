@@ -53,30 +53,6 @@ public abstract class AbstractSSESource
         this.urlPattern = urlPattern;
     }
 
-    public Script createScript()
-    {
-        DocumentReadyEvent ready = new DocumentReadyEvent();
-        ready.addCode("var events;");
-        SelectorFunction sf = new SelectorFunction(EventCSS, "each");
-        sf.addCode("if (events) events=events+','+$(this).attr('"+EventSink+"'); else events=$(this).attr('"+EventSink+"');");
-        ready.addScript(sf);
-        ready.addCode("if (events) {");
-        ready.addCode("var url = '");
-        ready.addCode(urlPattern);
-        ready.addCode("'+'?events='+events;");
-        ready.addCode("localStorage.events = events;");
-        ready.addCode("var eventSource = new EventSource(url);");
-        SelectorFunction el = new SelectorFunction(EventCSS, "each");
-        el.addCode("eventSource.addEventListener($(this).attr('"+EventSink+"'),");
-        Function ef = new Function(null, "event");
-        el.addScript(ef);
-        ef.addCode("document.getElementById($(this).attr('id')).innerHTML = event.data;");
-        el.addCode(", false);");
-        ready.addScript(el);
-        ready.addCode("}");
-        return ready;
-    }
-    
     public SSEObserver register(String events)
     {
         String[] evs = events.split(",");
@@ -126,7 +102,6 @@ public abstract class AbstractSSESource
     }
     private void addObserver(SSEObserverImpl sseo)
     {
-        System.err.println("addObserver");
         writeLock.lock();
         try
         {
@@ -148,7 +123,6 @@ public abstract class AbstractSSESource
     
     private void removeObserver(SSEObserverImpl sseo)
     {
-        System.err.println("removeObserver");
         writeLock.lock();
         try
         {
@@ -175,6 +149,7 @@ public abstract class AbstractSSESource
         private final Set<String> events = new HashSet<>();
         private Writer writer;
         private Semaphore semaphore = new Semaphore(0);
+        private Map<String,String> dataMap = new HashMap<>();
         
         @Override
         public void addEvent(String event)
@@ -202,13 +177,18 @@ public abstract class AbstractSSESource
         {
             try
             {
-                writer.write("event:");
-                writer.write(event);
-                writer.write("\n");
-                writer.write("data:");
-                writer.write(data);
-                writer.write("\n\n");
-                writer.flush();
+                String prev = dataMap.get(event);
+                if (!data.equals(prev))
+                {
+                    writer.write("event:");
+                    writer.write(event);
+                    writer.write("\n");
+                    writer.write("data:");
+                    writer.write(data);
+                    writer.write("\n\n");
+                    writer.flush();
+                    dataMap.put(event, data);
+                }
                 return true;
             }
             catch (Exception ex)

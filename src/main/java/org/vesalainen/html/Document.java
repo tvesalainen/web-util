@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Set;
 import org.vesalainen.js.AbstractScriptContainer;
 import org.vesalainen.js.ScriptContainer;
-import org.vesalainen.web.I18n;
+import org.vesalainen.web.I18nSupport;
 import org.vesalainen.web.StupidI18n;
 
 /**

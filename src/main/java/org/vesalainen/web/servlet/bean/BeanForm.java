@@ -39,6 +39,7 @@ import org.vesalainen.js.ScriptContainer;
 import org.vesalainen.util.Lists;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.I18n;
+import org.vesalainen.web.I18nSupport;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelector;
 import org.vesalainen.web.SingleSelector;
@@ -48,7 +49,7 @@ import org.vesalainen.web.SingleSelector;
  * @author tkv
  * @param <C>
  */
-public class BeanForm<C> extends Form implements I18n
+public class BeanForm<C> extends Form
 {
     protected BeanDocument<C> document;
     protected boolean hasHideScript;
@@ -157,8 +158,8 @@ public class BeanForm<C> extends Form implements I18n
                 }
             }
         }
-        String labelText = document.getLabel(field);
-        String placeholder = document.getPlaceholder(field);
+        String labelText = I18n.getLabel(field);
+        String placeholder = I18n.getPlaceholder(field);
         switch (inputType)
         {
             case "text":
@@ -267,7 +268,7 @@ public class BeanForm<C> extends Form implements I18n
         for (Enum e : enumInput.getConstants())
         {
             String n = e.toString();
-            String d = document.getLabel(n);
+            String d = I18n.getLabel(n);
             fieldSet.addElement("label").setAttr("for", n).addText(d);
             InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
             input.setAttr(attrs);
@@ -318,7 +319,7 @@ public class BeanForm<C> extends Form implements I18n
         for (Enum e : enumSetInput.getConstants())
         {
             String n = e.toString();
-            String d = getLabel(n);
+            String d = I18n.getLabel(n);
             fieldSet.addElement("label").setAttr("for", n).addText(d);
             InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
             input.setAttr(attrs);
@@ -357,7 +358,7 @@ public class BeanForm<C> extends Form implements I18n
         for (Enum e : input.getConstants())
         {
             String n = e.toString();
-            String d = getLabel(n);
+            String d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(e)));
             option.setAttr(attrs);
@@ -385,7 +386,7 @@ public class BeanForm<C> extends Form implements I18n
         for (Enum e : enumSetInput.getConstants())
         {
             String n = e.toString();
-            String d = getLabel(n);
+            String d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", enumSetInput.getValue(e)));
             option.setAttr(attrs);
@@ -456,13 +457,13 @@ public class BeanForm<C> extends Form implements I18n
         MultipleSelectorInput<C, Object> input = new MultipleSelectorInput<>(document.threadLocalData, document.dataType, field, selector);
         document.fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
-        fieldSet.addElement("label").addText(getLabel(field));
+        fieldSet.addElement("label").addText(I18n.getLabel(field));
         Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
         select.setAttr(new BooleanAttribute("multiple", true));
         for (Object opt : options)
         {
             String n = opt.toString();
-            String d = document.getLabel(n);
+            String d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
             option.setAttr(attrs);
@@ -477,12 +478,12 @@ public class BeanForm<C> extends Form implements I18n
         SingleSelectorInput<C, Object> input = new SingleSelectorInput<>(document.threadLocalData, document.dataType, field, selector);
         document.fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
-        fieldSet.addElement("label").addText(document.getLabel(field));
+        fieldSet.addElement("label").addText(I18n.getLabel(field));
         Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
         for (Object opt : options)
         {
             String n = opt.toString();
-            String d = getLabel(n);
+            String d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
             option.setAttr(attrs);
@@ -517,30 +518,6 @@ public class BeanForm<C> extends Form implements I18n
             ScriptContainer sc = document.getScriptContainer();
             sc.addCode("$('.hidden').hide();");
         }
-    }
-
-    @Override
-    public String getLabel(Object key)
-    {
-        return document.getLabel(key);
-    }
-
-    @Override
-    public String getLabel(Locale locale, Object key)
-    {
-        return document.getLabel(locale, key);
-    }
-
-    @Override
-    public String getPlaceholder(Object key)
-    {
-        return document.getPlaceholder(key);
-    }
-
-    @Override
-    public String getPlaceholder(Locale locale, Object key)
-    {
-        return document.getPlaceholder(locale, key);
     }
 
     public boolean isHasHideScript()
