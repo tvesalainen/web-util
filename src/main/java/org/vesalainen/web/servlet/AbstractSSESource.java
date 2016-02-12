@@ -19,16 +19,14 @@ package org.vesalainen.web.servlet;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.vesalainen.html.DataAttributeName;
-import org.vesalainen.html.jquery.DocumentReadyEvent;
-import org.vesalainen.html.jquery.SelectorFunction;
-import org.vesalainen.js.Function;
-import org.vesalainen.js.Script;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
 
