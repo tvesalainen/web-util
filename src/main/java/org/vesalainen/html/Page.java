@@ -18,13 +18,12 @@ package org.vesalainen.html;
 
 import java.nio.charset.Charset;
 import org.vesalainen.js.ScriptContainer;
-import org.vesalainen.web.I18n;
 
 /**
  *
  * @author tkv
  */
-public interface Page extends I18n
+public interface Page
 {
     Element getContent();
 

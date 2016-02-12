@@ -116,28 +116,4 @@ public class JQueryMobilePage<C> extends Element implements Page
         return document.getCharset();
     }
 
-    @Override
-    public String getLabel(Object key)
-    {
-        return document.getLabel(key);
-    }
-
-    @Override
-    public String getLabel(Locale locale, Object key)
-    {
-        return document.getLabel(locale, key);
-    }
-
-    @Override
-    public String getPlaceholder(Object key)
-    {
-        return document.getPlaceholder(key);
-    }
-
-    @Override
-    public String getPlaceholder(Locale locale, Object key)
-    {
-        return document.getPlaceholder(locale, key);
-    }
-    
 }

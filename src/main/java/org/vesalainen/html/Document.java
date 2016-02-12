@@ -35,7 +35,6 @@ import org.vesalainen.web.StupidI18n;
  */
 public class Document implements Page
 {
-    protected I18n i18n = new StupidI18n();
     protected Element html;
     protected Element head;
     protected Element body;
@@ -171,30 +170,5 @@ public class Document implements Page
             throw new IllegalArgumentException(ex);
         }
     }
-    
-    @Override
-    public String getLabel(Object key)
-    {
-        return i18n.getLabel(key);
-    }
-
-    @Override
-    public String getLabel(Locale locale, Object key)
-    {
-        return i18n.getLabel(locale, key);
-    }
-
-    @Override
-    public String getPlaceholder(Object key)
-    {
-        return i18n.getPlaceholder(key);
-    }
-
-    @Override
-    public String getPlaceholder(Locale locale, Object key)
-    {
-        return i18n.getPlaceholder(locale, key);
-    }
-
     
 }
