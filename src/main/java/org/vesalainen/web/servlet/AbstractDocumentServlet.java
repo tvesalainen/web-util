@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.html.Document;
+import org.vesalainen.web.I18n;
 
 /**
  *
@@ -47,6 +48,7 @@ public abstract class AbstractDocumentServlet<D extends Document> extends HttpSe
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
+        I18n.setLocale(req.getLocale());
         response(resp, document);
     }
 

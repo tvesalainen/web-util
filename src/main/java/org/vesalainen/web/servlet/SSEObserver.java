@@ -18,6 +18,7 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
+import org.json.JSONObject;
 
 /**
  *
@@ -27,5 +28,5 @@ public interface SSEObserver
 {
     void observe(Writer writer) throws IOException;
     void addEvent(String event);
-    boolean fireEvent(String event, String value);
+    boolean fireEvent(String event, JSONObject value);
 }

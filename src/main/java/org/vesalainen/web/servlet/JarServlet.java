@@ -46,12 +46,10 @@ public class JarServlet extends HttpServlet
         }
         response.setHeader("ETag", eTag);
         String pathInfo = request.getPathInfo();
-        System.err.println(pathInfo);
         InputStream is = JarServlet.class.getResourceAsStream(pathInfo);
         if (is != null)
         {
             String mimeType = MimeTypes.getMimeType(pathInfo);
-            System.err.println(mimeType);
             response.setContentType(mimeType);
             response.setStatus(HttpServletResponse.SC_OK);
             ServletOutputStream os = response.getOutputStream();

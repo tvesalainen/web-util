@@ -25,19 +25,9 @@ import java.util.Locale;
 public class StupidI18n implements I18nSupport
 {
     @Override
-    public String getLabel(Object key)
-    {
-        return getLabel(Locale.getDefault(), key);
-    }
-    @Override
     public String getLabel(Locale locale, Object key)
     {
         return "["+key+"]";
-    }
-    @Override
-    public String getPlaceholder(Object key)
-    {
-        return getPlaceholder(Locale.getDefault(), key);
     }
     @Override
     public String getPlaceholder(Locale locale, Object key)

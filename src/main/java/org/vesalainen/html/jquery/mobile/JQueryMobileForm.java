@@ -18,6 +18,7 @@ package org.vesalainen.html.jquery.mobile;
 
 import java.util.Collection;
 import org.vesalainen.html.Attribute;
+import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Page;
 import org.vesalainen.html.SimpleAttribute;
@@ -55,35 +56,35 @@ public class JQueryMobileForm<C> extends BeanForm<C>
     }
 
     @Override
-    public Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrs)
                 .setAttr(ControlGroup);
     }
 
     @Override
-    public Element radioContainer(String field, String inputType, Class<?> type, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Element radioContainer(String field, String inputType, Class<?> type, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         return super.radioContainer(field, inputType, type, labelText, placeholder, attrs)
                 .setAttr(ControlGroup);
     }
 
     @Override
-    public Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         return super.selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrs)
                 .addClasses("ui-field-contain");
     }
 
     @Override
-    public Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Element singleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         return super.singleSelectorContainer(field, inputType, value, labelText, placeholder, attrs)
                 .addClasses("ui-field-contain");
     }
 
     @Override
-    public Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Element multipleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         return super.multipleSelectorContainer(field, inputType, value, labelText, placeholder, attrs)
                 .addClasses("ui-field-contain");

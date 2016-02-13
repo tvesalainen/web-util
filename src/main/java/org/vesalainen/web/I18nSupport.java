@@ -25,11 +25,7 @@ import java.util.Locale;
 public interface I18nSupport
 {
 
-    String getLabel(Object key);
-
     String getLabel(Locale locale, Object key);
-
-    String getPlaceholder(Object key);
 
     String getPlaceholder(Locale locale, Object key);
     

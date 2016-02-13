@@ -158,8 +158,8 @@ public class BeanForm<C> extends Form
                 }
             }
         }
-        String labelText = I18n.getLabel(field);
-        String placeholder = I18n.getPlaceholder(field);
+        Content labelText = I18n.getLabel(field);
+        Content placeholder = I18n.getPlaceholder(field);
         switch (inputType)
         {
             case "text":
@@ -224,7 +224,7 @@ public class BeanForm<C> extends Form
         }
     }
 
-    public ContainerContent textContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public ContainerContent textContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
@@ -238,7 +238,7 @@ public class BeanForm<C> extends Form
         return container;
     }
 
-    public ContainerContent textAreaContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public ContainerContent textAreaContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent textAreaContainer = new ContainerContent();
         Element textAreaLabel = new Element("label").setAttr("for", field).addText(labelText);
@@ -252,14 +252,14 @@ public class BeanForm<C> extends Form
         return textAreaContainer;
     }
 
-    public Tag buttonContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Tag buttonContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", labelText).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         return input;
     }
 
-    public Element radioContainer(String field, String inputType, Class<?> type, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Element radioContainer(String field, String inputType, Class<?> type, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         EnumInput enumInput = new EnumInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, enumInput);
@@ -268,7 +268,7 @@ public class BeanForm<C> extends Form
         for (Enum e : enumInput.getConstants())
         {
             String n = e.toString();
-            String d = I18n.getLabel(n);
+            Content d = I18n.getLabel(n);
             fieldSet.addElement("label").setAttr("for", n).addText(d);
             InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
             input.setAttr(attrs);
@@ -278,7 +278,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public ContainerContent singleCheckboxContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public ContainerContent singleCheckboxContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         BooleanInput booleanInput = new BooleanInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, booleanInput);
@@ -297,7 +297,7 @@ public class BeanForm<C> extends Form
         return boolean.class.equals(type) || Boolean.class.equals(type);
     }
 
-    public Element multiCheckboxContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         if (!EnumSet.class.equals(type))
         {
@@ -319,7 +319,7 @@ public class BeanForm<C> extends Form
         for (Enum e : enumSetInput.getConstants())
         {
             String n = e.toString();
-            String d = I18n.getLabel(n);
+            Content d = I18n.getLabel(n);
             fieldSet.addElement("label").setAttr("for", n).addText(d);
             InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
             input.setAttr(attrs);
@@ -329,7 +329,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public Element selectContainer(String field, String inputType, Class type, String labelText, String placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         if (type.isEnum())
         {
@@ -348,7 +348,7 @@ public class BeanForm<C> extends Form
         }
     }
 
-    public Element singleSelectContainer(String field, String labelText, Collection<Attribute> attrs)
+    public Element singleSelectContainer(String field, Content labelText, Collection<Attribute> attrs)
     {
         EnumInput input = new EnumInput(document.threadLocalData, document.dataType, field);
         document.fieldMap.put(field, input);
@@ -358,7 +358,7 @@ public class BeanForm<C> extends Form
         for (Enum e : input.getConstants())
         {
             String n = e.toString();
-            String d = I18n.getLabel(n);
+            Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(e)));
             option.setAttr(attrs);
@@ -366,7 +366,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public Element multiSelectContainer(String field, String labelText, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element multiSelectContainer(String field, Content labelText, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         if (inputTypeAnnotation == null)
         {
@@ -386,7 +386,7 @@ public class BeanForm<C> extends Form
         for (Enum e : enumSetInput.getConstants())
         {
             String n = e.toString();
-            String d = I18n.getLabel(n);
+            Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", enumSetInput.getValue(e)));
             option.setAttr(attrs);
@@ -394,7 +394,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public ContainerContent colorContainer(String field, String inputType, Class type, String labelText, String placeholder, Collection<Attribute> attrs)
+    public ContainerContent colorContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", field).addText(labelText);
@@ -408,7 +408,7 @@ public class BeanForm<C> extends Form
         return container;
     }
 
-    public ContainerContent dateContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public ContainerContent dateContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", field).addText(labelText);
@@ -422,7 +422,7 @@ public class BeanForm<C> extends Form
         return container;
     }
 
-    public ContainerContent numberContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public ContainerContent numberContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
@@ -436,7 +436,7 @@ public class BeanForm<C> extends Form
         return container;
     }
 
-    public ContainerContent urlContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public ContainerContent urlContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
@@ -450,7 +450,7 @@ public class BeanForm<C> extends Form
         return container;
     }
 
-    public Element multipleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Element multipleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         MultipleSelector selector = (MultipleSelector) value;
         List options = selector.getOptions();
@@ -463,7 +463,7 @@ public class BeanForm<C> extends Form
         for (Object opt : options)
         {
             String n = opt.toString();
-            String d = I18n.getLabel(n);
+            Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
             option.setAttr(attrs);
@@ -471,7 +471,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public Element singleSelectorContainer(String field, String inputType, Object value, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Element singleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         SingleSelector selector = (SingleSelector) value;
         List options = selector.getOptions();
@@ -483,7 +483,7 @@ public class BeanForm<C> extends Form
         for (Object opt : options)
         {
             String n = opt.toString();
-            String d = I18n.getLabel(n);
+            Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
             option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
             option.setAttr(attrs);
@@ -491,7 +491,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public Tag submitContainer(String field, String inputType, String labelText, String placeholder, Collection<Attribute> attrs)
+    public Tag submitContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", labelText);
         input.setAttr(attrs);

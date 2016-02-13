@@ -16,7 +16,13 @@
  */
 package org.vesalainen.web;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import org.vesalainen.html.Content;
 
 /**
  *
@@ -26,6 +32,9 @@ public class I18n
 {
     private static I18nSupport i18n = new StupidI18n();
     private static final ThreadLocal<Locale> locale = new ThreadLocal<>();
+    private static final Set<Object> missing = new HashSet<>();
+    private static final Map<Object,LabelWrap> labelMap = new HashMap<>();
+    private static final Map<Object,LabelWrap> placeholderMap = new HashMap<>();
 
     public static final void setLocale(Locale locale)
     {
@@ -47,23 +56,81 @@ public class I18n
         I18n.i18n = i18n;
     }
 
-    public static final String getLabel(Object key)
+    public static final Content getLabel(Object key)
     {
-        return i18n.getLabel(locale.get(), key);
+        LabelWrap wrap = labelMap.get(key);
+        if (wrap == null)
+        {
+            wrap = new LabelWrap(key, false);
+            labelMap.put(key, wrap);
+        }
+        return wrap;
     }
 
-    public static final String getLabel(Locale locale, Object key)
+    public static final Content getPlaceholder(Object key)
     {
-        return i18n.getLabel(locale, key);
-    }
-
-    public static final String getPlaceholder(Object key)
-    {
-        return i18n.getPlaceholder(locale.get(), key);
+        LabelWrap wrap = placeholderMap.get(key);
+        if (wrap == null)
+        {
+            wrap = new LabelWrap(key, true);
+            placeholderMap.put(key, wrap);
+        }
+        return wrap;
     }
 
     public static final String getPlaceholder(Locale locale, Object key)
     {
         return i18n.getPlaceholder(locale, key);
+    }
+
+    private static void printMissing(Object key)
+    {
+        if (!missing.contains(key))
+        {
+            missing.add(key);
+            System.err.println(key+" = ");
+        }
+    }
+    public static class LabelWrap implements Content
+    {
+        private final Object key;
+        private final boolean placeholder;
+
+        public LabelWrap(Object key, boolean placeholder)
+        {
+            this.key = key;
+            this.placeholder = placeholder;
+        }
+        
+        
+        @Override
+        public void append(Appendable out) throws IOException
+        {
+            out.append(toString());
+        }
+
+        @Override
+        public String toString()
+        {
+            String string;
+            if (placeholder)
+            {
+                string = i18n.getPlaceholder(locale.get(), key);
+            }
+            else
+            {
+                string = i18n.getLabel(locale.get(), key);
+            }
+            if (string != null)
+            {
+                return string;
+            }
+            else
+            {
+                printMissing(key);
+                return "?"+key+"?";
+            }
+        }
+        
     }
 }

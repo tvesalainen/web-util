@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.json.JSONObject;
 import org.vesalainen.html.DataAttributeName;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
@@ -65,8 +66,24 @@ public abstract class AbstractSSESource
     protected abstract void addEvent(String event);
     
     protected abstract void removeEvent(String event);
-    
+    /**
+     * Sends JSONObject event {'text':data}
+     * @param event
+     * @param data 
+     */
     public void fireEvent(String event, String data)
+    {
+        JSONObject jo = new JSONObject();
+        jo.put("text", data);
+        fireEvent(event, jo);
+    }
+    /**
+     * Sends JSONObject event. 'html' key sets target html, 'text' sets target
+     * text. Other keys set named attributes
+     * @param event
+     * @param data 
+     */
+    public void fireEvent(String event, JSONObject data)
     {
         List<SSEObserver> trash = null;
         
@@ -146,8 +163,8 @@ public abstract class AbstractSSESource
     {
         private final Set<String> events = new HashSet<>();
         private Writer writer;
-        private Semaphore semaphore = new Semaphore(0);
-        private Map<String,String> dataMap = new HashMap<>();
+        private final Semaphore semaphore = new Semaphore(0);
+        private final Map<String,JSONObject> dataMap = new HashMap<>();
         
         @Override
         public void addEvent(String event)
@@ -171,18 +188,18 @@ public abstract class AbstractSSESource
         }
 
         @Override
-        public boolean fireEvent(String event, String data)
+        public boolean fireEvent(String event, JSONObject data)
         {
             try
             {
-                String prev = dataMap.get(event);
-                if (!data.equals(prev))
+                JSONObject prev = dataMap.get(event);
+                if (!data.similar(prev))
                 {
                     writer.write("event:");
                     writer.write(event);
                     writer.write("\n");
                     writer.write("data:");
-                    writer.write(data);
+                    data.write(writer);
                     writer.write("\n\n");
                     writer.flush();
                     dataMap.put(event, data);

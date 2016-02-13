@@ -29,8 +29,23 @@ $(document).ready(function () {
         var eventSource = new EventSource(url);
         $("[data-sse-sink]").each(function () {
             eventSource.addEventListener($(this).attr('data-sse-sink'), function (event) {
-                $("[data-sse-sink="+event.type+"]").each(function(){
-                    $(this).html(event.data);
+                $("[data-sse-sink=" + event.type + "]").each(function () {
+                    var json = JSON.parse(event.data);
+                    for (p in json) {
+                        if (p == 'html') {
+                            $(this).html(json[p]);
+                        }
+                        else
+                        {
+                            if (p == 'text') {
+                                $(this).text(json[p]);
+                            }
+                            else
+                            {
+                                $(this).attr(p, json[p]);
+                            }
+                        }
+                    }
                 });
             }, false);
         });

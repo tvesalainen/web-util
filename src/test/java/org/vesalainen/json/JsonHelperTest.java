@@ -41,6 +41,17 @@ public class JsonHelperTest
     }
 
     @Test
+    public void test0()
+    {
+        // this test checks if not-really-documented way of clearing has changed!
+        JSONObject jo = new JSONObject();
+        jo.put("b", true);
+        assertTrue(jo.has("b"));
+        jo.keySet().clear();
+        assertFalse(jo.has("b"));
+    }
+    
+    @Test
     public void test()
     {
         T t = new T();

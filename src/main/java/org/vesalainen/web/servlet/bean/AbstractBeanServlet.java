@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.bean.BeanField;
 import org.vesalainen.http.Query;
+import org.vesalainen.web.I18n;
 import org.vesalainen.web.servlet.AbstractDocumentServlet;
 
 /**
@@ -54,6 +55,7 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
+        I18n.setLocale(req.getLocale());
         C data = createData();
         threadLocalData.set(data);
         String submitField = null;
@@ -62,11 +64,7 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
             String field = e.getKey();
             String[] value = e.getValue();
             BeanField bf = document.getBeanField(field);
-            if (bf == null)
-            {
-                System.err.println(field+" not found");
-            }
-            else
+            if (bf != null)
             {
                 bf.set(value);
                 if (bf instanceof SubmitInput)
