@@ -19,14 +19,14 @@ package org.vesalainen.html.jquery.mobile;
 import java.util.HashMap;
 import java.util.Map;
 import org.vesalainen.html.Frameworks;
-import org.vesalainen.web.servlet.bean.BeanDocument;
+import org.vesalainen.html.jquery.JQueryDocument;
 
 /**
  *
  * @author tkv
  * @param <C>
  */
-public class JQueryMobileDocument<C> extends BeanDocument<C>
+public class JQueryMobileDocument<C> extends JQueryDocument<C>
 {
     private final Map<String,JQueryMobilePage> map = new HashMap<>();
     private boolean ajax = true;

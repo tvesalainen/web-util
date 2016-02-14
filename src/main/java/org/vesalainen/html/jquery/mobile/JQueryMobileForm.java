@@ -50,7 +50,7 @@ public class JQueryMobileForm<C> extends BeanForm<C>
         if (!hasHideScript)
         {
             hasHideScript = true;
-            ScriptContainer sc = page.getScriptContainer();
+            ScriptContainer sc = document.getScriptContainer();
             sc.addCode("$('.hidden').hide();");
         }
     }

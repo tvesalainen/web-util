@@ -18,14 +18,16 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.vesalainen.html.DataAttributeName;
 import org.vesalainen.util.HashMapList;
@@ -35,7 +37,7 @@ import org.vesalainen.util.MapList;
  *
  * @author tkv
  */
-public abstract class AbstractSSESource
+public abstract class AbstractSSESource implements Runnable
 {
     public static final String EventSink = DataAttributeName.name("sse-sink");
     public static final String EventCSS = "["+EventSink+"]";
@@ -46,16 +48,19 @@ public abstract class AbstractSSESource
     protected ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
     protected ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
     protected ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
+    protected SynchronousQueue<SSEObserver> trash = new SynchronousQueue<>();
 
     protected AbstractSSESource(String urlPattern)
     {
         this.urlPattern = urlPattern;
+        Thread thread = new Thread(this, AbstractSSESource.class.getSimpleName());
+        thread.start();
     }
 
     public SSEObserver register(String events)
     {
         String[] evs = events.split(",");
-        SSEObserver sseo = new SSEObserverImpl();
+        SSEObserver sseo = new SSEObserver();
         for (String event : evs)
         {
             sseo.addEvent(event);
@@ -85,8 +90,6 @@ public abstract class AbstractSSESource
      */
     public void fireEvent(String event, JSONObject data)
     {
-        List<SSEObserver> trash = null;
-        
         readLock.lock();
         try
         {
@@ -94,28 +97,20 @@ public abstract class AbstractSSESource
             {
                 if (!sseo.fireEvent(event, data))
                 {
-                    if (trash == null)
-                    {
-                        trash = new ArrayList<>();
-                    }
-                    trash.add(sseo);
+                    trash.put(sseo);
                 }
             }
         }
+        catch (InterruptedException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }        
         finally
         {
             readLock.unlock();
         }
-        if (trash != null)
-        {
-            for (SSEObserver sseo : trash)
-            {
-                removeObserver((SSEObserverImpl) sseo);
-            }
-            trash = null;
-        }
     }
-    private void addObserver(SSEObserverImpl sseo)
+    private void addObserver(SSEObserver sseo)
     {
         writeLock.lock();
         try
@@ -136,7 +131,7 @@ public abstract class AbstractSSESource
         }
     }
     
-    private void removeObserver(SSEObserverImpl sseo)
+    private void removeObserver(SSEObserver sseo)
     {
         writeLock.lock();
         try
@@ -158,21 +153,37 @@ public abstract class AbstractSSESource
             writeLock.unlock();
         }
     }
+
+    @Override
+    public void run()
+    {
+        try
+        {
+            while (true)
+            {
+                SSEObserver sseo = trash.take();
+                removeObserver(sseo);
+            }
+        }
+        catch (InterruptedException ex)
+        {
+            Logger.getLogger(AbstractSSESource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
-    public class SSEObserverImpl implements SSEObserver
+    public class SSEObserver
     {
         private final Set<String> events = new HashSet<>();
         private Writer writer;
         private final Semaphore semaphore = new Semaphore(0);
         private final Map<String,JSONObject> dataMap = new HashMap<>();
+        private boolean done;
         
-        @Override
         public void addEvent(String event)
         {
             events.add(event);
         }
 
-        @Override
         public void observe(Writer writer) throws IOException
         {
             try
@@ -187,28 +198,31 @@ public abstract class AbstractSSESource
             }
         }
 
-        @Override
         public boolean fireEvent(String event, JSONObject data)
         {
             try
             {
-                JSONObject prev = dataMap.get(event);
-                if (!data.similar(prev))
+                if (!done)
                 {
-                    writer.write("event:");
-                    writer.write(event);
-                    writer.write("\n");
-                    writer.write("data:");
-                    data.write(writer);
-                    writer.write("\n\n");
-                    writer.flush();
-                    dataMap.put(event, data);
+                    JSONObject prev = dataMap.get(event);
+                    if (!data.similar(prev))
+                    {
+                        writer.write("event:");
+                        writer.write(event);
+                        writer.write("\n");
+                        writer.write("data:");
+                        data.write(writer);
+                        writer.write("\n\n");
+                        writer.flush();
+                        dataMap.put(event, data);
+                    }
                 }
                 return true;
             }
             catch (Exception ex)
             {
                 semaphore.release();
+                done = true;
                 return false;
             }
         }

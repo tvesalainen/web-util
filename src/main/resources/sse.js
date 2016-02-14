@@ -15,29 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global p */
+
 $(document).ready(function () {
-    var events;
-    $("[data-sse-sink]").each(function () {
-        if (events)
-            events = events + ',' + $(this).attr('data-sse-sink');
-        else
-            events = $(this).attr('data-sse-sink');
+    var events = [];
+    var targets = $("[data-sse-sink]");
+    targets.each(function () {
+        var ev = $(this).attr('data-sse-sink');
+        if (events.indexOf(ev) === -1) {
+            events.push(ev);
+        }
     });
-    if (events) {
+    if (events.length > 0) {
         var url = '/sse' + '?events=' + events;
         localStorage.events = events;
         var eventSource = new EventSource(url);
-        $("[data-sse-sink]").each(function () {
+        targets.each(function () {
             eventSource.addEventListener($(this).attr('data-sse-sink'), function (event) {
+                var x;
                 $("[data-sse-sink=" + event.type + "]").each(function () {
                     var json = JSON.parse(event.data);
                     for (p in json) {
-                        if (p == 'html') {
+                        if (p === 'html') {
                             $(this).html(json[p]);
                         }
                         else
                         {
-                            if (p == 'text') {
+                            if (p === 'text') {
                                 $(this).text(json[p]);
                             }
                             else

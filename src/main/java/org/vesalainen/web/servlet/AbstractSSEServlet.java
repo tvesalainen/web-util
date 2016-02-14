@@ -18,11 +18,10 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.vesalainen.html.Document;
+import org.vesalainen.web.servlet.AbstractSSESource.SSEObserver;
 
 /**
  *
@@ -38,6 +37,7 @@ public abstract class AbstractSSEServlet extends HttpServlet
         String events = req.getParameter("events");
         if (events != null)
         {
+            System.err.println(events);
             resp.setContentType("text/event-stream");
             resp.setCharacterEncoding("UTF-8");
             SSEObserver sseo = source.register(events);
