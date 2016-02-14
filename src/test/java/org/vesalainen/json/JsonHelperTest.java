@@ -105,7 +105,7 @@ public class JsonHelperTest
         
         JB jb = new JB();
         js = JsonHelper.toString(t, "jb");
-        assertEquals("{\"jb\":{\"ll\":123456,\"str1\":\"qwerty\",\"class\":\"org.vesalainen.json.JsonHelperTest$JB\"}}", js);
+        assertEquals("{\"jb\":{\"ll\":123456,\"str1\":\"qwerty\",\"sarr\":[\"qwerty\",\"asdfgh\"],\"class\":\"org.vesalainen.json.JsonHelperTest$JB\"}}", js);
         JsonHelper.setValue(new JSONObject(js), t, "jb");
         assertEquals(jb, t.getJb());
         
@@ -220,6 +220,8 @@ public class JsonHelperTest
     {
         private String str1 = "qwerty";
         public long ll = 123456L;
+        @InputType(itemType=String.class)
+        public List<String> sarr = Lists.create("qwerty", "asdfgh");
 
         public String getStr1()
         {
