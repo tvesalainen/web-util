@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -30,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.vesalainen.html.DataAttributeName;
+import org.vesalainen.json.JsonHelper;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
 
@@ -48,7 +50,7 @@ public abstract class AbstractSSESource implements Runnable
     protected ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
     protected ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
     protected ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
-    protected SynchronousQueue<SSEObserver> trash = new SynchronousQueue<>();
+    protected ArrayBlockingQueue<SSEObserver> trash = new ArrayBlockingQueue<>(100);
 
     protected AbstractSSESource(String urlPattern)
     {
@@ -214,7 +216,7 @@ public abstract class AbstractSSESource implements Runnable
                         data.write(writer);
                         writer.write("\n\n");
                         writer.flush();
-                        dataMap.put(event, data);
+                        dataMap.put(event, JsonHelper.copy(data, prev));
                     }
                 }
                 return true;

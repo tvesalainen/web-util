@@ -33,6 +33,28 @@ import org.vesalainen.web.InputType;
  */
 public class JsonHelper
 {
+    /**
+     * Clears to and puts values in from to to.
+     * If to == null a new JSONObject is returned otherwise returns to
+     * @param from
+     * @param to 
+     */
+    public static JSONObject copy(JSONObject from, JSONObject to)
+    {
+        if (to == null)
+        {
+            to = new JSONObject();
+        }
+        else
+        {
+            to.keySet().clear();
+        }
+        for (String key : from.keySet())
+        {
+            to.put(key, from.get(key));
+        }
+        return to;
+    }
     
     public static void setValues(JSONObject json, Object base)
     {
