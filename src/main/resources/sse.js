@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+"use strict";
 /* global p */
 
 $(document).ready(function () {
@@ -32,26 +32,43 @@ $(document).ready(function () {
         var eventSource = new EventSource(url);
         targets.each(function () {
             eventSource.addEventListener($(this).attr('data-sse-sink'), function (event) {
-                var x;
                 $("[data-sse-sink=" + event.type + "]").each(function () {
                     var json = JSON.parse(event.data);
-                    for (p in json) {
-                        if (p === 'html') {
-                            $(this).html(json[p]);
-                        }
-                        else
-                        {
-                            if (p === 'text') {
+                    for (var p in json) {
+                        switch (p){
+                            case 'html':
+                                $(this).html(json[p]);
+                                break;
+                            case 'text':
                                 $(this).text(json[p]);
-                            }
-                            else
-                            {
+                                break;
+                            default:
                                 $(this).attr(p, json[p]);
-                            }
                         }
                     }
+                    $(this).attr('data-alive', '5');
                 });
             }, false);
+            $(this).attr('data-alive', '5');
         });
+    }
+    
+    var id = setInterval(fade, 5000);
+    function fade()
+    {
+        $("[data-alive]").each(function(){
+            var val = Number($(this).attr("data-alive"));
+            val--;
+            if (val === 0)
+            {
+                $(this).fadeOut("slow");
+                $(this).attr("data-alive", null);
+            }
+            else
+            {
+                $(this).attr("data-alive", val);
+                $(this).show();
+            }
+        })
     }
 });

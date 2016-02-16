@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Attribute;
@@ -35,11 +34,9 @@ import org.vesalainen.html.Form;
 import org.vesalainen.html.InputTag;
 import org.vesalainen.html.SimpleAttribute;
 import org.vesalainen.html.Tag;
-import org.vesalainen.js.ScriptContainer;
 import org.vesalainen.util.Lists;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.I18n;
-import org.vesalainen.web.I18nSupport;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelector;
 import org.vesalainen.web.SingleSelector;
@@ -52,7 +49,6 @@ import org.vesalainen.web.SingleSelector;
 public class BeanForm<C> extends Form
 {
     protected BeanDocument<C> document;
-    protected boolean hasHideScript;
 
     public BeanForm(BeanDocument document, Object action)
     {
@@ -83,7 +79,6 @@ public class BeanForm<C> extends Form
         Set<String> set = new HashSet<>();
         set.addAll(document.allFields);
         set.removeAll(document.fieldMap.keySet());
-        addHideScript();
         addContent(hiddenContainer(set));
     }
 
@@ -503,31 +498,11 @@ public class BeanForm<C> extends Form
     protected InputTag hiddenContainer(Set<String> fields)
     {
         InputTag inputTag = new InputTag("text", "JSON");
-        inputTag.addClasses("hidden");
+        inputTag.setAttr("style", "display: none;");
         JSONInput input = new JSONInput(document.threadLocalData, fields);
         document.fieldMap.put("JSON", input);
         inputTag.setAttr("value", input);
         return inputTag;
     }
 
-    protected void addHideScript()
-    {
-        if (!hasHideScript)
-        {
-            hasHideScript = true;
-            ScriptContainer sc = document.getScriptContainer();
-            sc.addCode("$('.hidden').hide();");
-        }
-    }
-
-    public boolean isHasHideScript()
-    {
-        return hasHideScript;
-    }
-
-    public void setHasHideScript(boolean hasHideScript)
-    {
-        this.hasHideScript = hasHideScript;
-    }
-    
 }

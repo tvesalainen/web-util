@@ -45,17 +45,6 @@ public class JQueryMobileForm<C> extends BeanForm<C>
     }
     
     @Override
-    protected void addHideScript()
-    {
-        if (!hasHideScript)
-        {
-            hasHideScript = true;
-            ScriptContainer sc = document.getScriptContainer();
-            sc.addCode("$('.hidden').hide();");
-        }
-    }
-
-    @Override
     public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
     {
         return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrs)

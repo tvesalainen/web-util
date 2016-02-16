@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -178,8 +178,8 @@ public abstract class AbstractSSESource implements Runnable
         private final Set<String> events = new HashSet<>();
         private Writer writer;
         private final Semaphore semaphore = new Semaphore(0);
-        private final Map<String,JSONObject> dataMap = new HashMap<>();
         private boolean done;
+        private ReentrantLock lock = new ReentrantLock();
         
         public void addEvent(String event)
         {
@@ -202,22 +202,18 @@ public abstract class AbstractSSESource implements Runnable
 
         public boolean fireEvent(String event, JSONObject data)
         {
+            lock.lock();
             try
             {
                 if (!done)
                 {
-                    JSONObject prev = dataMap.get(event);
-                    if (!data.similar(prev))
-                    {
-                        writer.write("event:");
-                        writer.write(event);
-                        writer.write("\n");
-                        writer.write("data:");
-                        data.write(writer);
-                        writer.write("\n\n");
-                        writer.flush();
-                        dataMap.put(event, JsonHelper.copy(data, prev));
-                    }
+                    writer.write("event:");
+                    writer.write(event);
+                    writer.write("\n");
+                    writer.write("data:");
+                    data.write(writer);
+                    writer.write("\n\n");
+                    writer.flush();
                 }
                 return true;
             }
@@ -226,6 +222,10 @@ public abstract class AbstractSSESource implements Runnable
                 semaphore.release();
                 done = true;
                 return false;
+            }
+            finally
+            {
+                lock.unlock();
             }
         }
 
