@@ -22,12 +22,9 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 import org.vesalainen.js.AbstractScriptContainer;
 import org.vesalainen.js.ScriptContainer;
-import org.vesalainen.web.I18nSupport;
-import org.vesalainen.web.StupidI18n;
 
 /**
  *
