@@ -32,8 +32,8 @@ $(document).ready(function () {
         var eventSource = new EventSource(url);
         targets.each(function () {
             eventSource.addEventListener($(this).attr('data-sse-sink'), function (event) {
+                var json = JSON.parse(event.data);
                 $("[data-sse-sink=" + event.type + "]").each(function () {
-                    var json = JSON.parse(event.data);
                     for (var p in json) {
                         switch (p){
                             case 'html':
