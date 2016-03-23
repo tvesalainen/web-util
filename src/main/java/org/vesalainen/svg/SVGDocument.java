@@ -32,6 +32,9 @@ public class SVGDocument extends Element
     public SVGDocument()
     {
         super("svg");
+        setAttr("xmlns", "http://www.w3.org/2000/svg");
+        setAttr("xml:space", "preserve");
+        setAttr("xmlns:xlink", "http://www.w3.org/1999/xlink");
     }
     
     public void write(OutputStream os) throws IOException
