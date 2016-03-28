@@ -202,6 +202,11 @@ public abstract class AbstractSSESource implements Runnable
 
         public boolean fireEvent(String event, JSONObject data)
         {
+            return fireEvent(event, data.toString());
+        }
+        
+        public boolean fireEvent(String event, CharSequence seq)
+        {
             lock.lock();
             try
             {
@@ -211,7 +216,7 @@ public abstract class AbstractSSESource implements Runnable
                     writer.write(event);
                     writer.write("\n");
                     writer.write("data:");
-                    data.write(writer);
+                    writer.append(seq);
                     writer.write("\n\n");
                     writer.flush();
                 }
