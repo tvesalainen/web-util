@@ -36,38 +36,69 @@ $(document).ready(function () {
                 $("[data-sse-sink=" + event.type + "]").each(function () {
                     for (var p in json) {
                         switch (p){
+                            default:
+                                $(this).attr(p, json[p]);
+                                $(this).attr('data-ttv', '5');
+                                break;
                             case 'html':
                                 $(this).html(json[p]);
+                                $(this).attr('data-ttv', '5');
                                 break;
                             case 'text':
                                 $(this).text(json[p]);
+                                $(this).attr('data-ttv', '5');
                                 break;
-                            default:
-                                $(this).attr(p, json[p]);
+                            case 'append':
+                                $(this).append(json[p]);
+                                break;
+                            case 'prepend':
+                                $(this).prepend(json[p]);
+                                break;
+                            case 'after':
+                                $(this).after(json[p]);
+                                break;
+                            case 'before':
+                                $(this).before(json[p]);
+                                break;
                         }
                     }
-                    $(this).attr('data-alive', '5');
                 });
             }, false);
-            $(this).attr('data-alive', '5');
+            //$(this).attr('data-ttv', '5');
         });
     }
     
-    var id = setInterval(fade, 5000);
+    var fadeId = setInterval(fade, 5000);
     function fade()
     {
-        $("[data-alive]").each(function(){
-            var val = Number($(this).attr("data-alive"));
+        $("[data-ttv]").each(function(){
+            var val = Number($(this).attr("data-ttv"));
             val--;
             if (val === 0)
             {
                 $(this).fadeOut("slow");
-                $(this).attr("data-alive", null);
+                $(this).attr("data-ttv", null);
             }
             else
             {
-                $(this).attr("data-alive", val);
+                $(this).attr("data-ttv", val);
                 $(this).show();
+            }
+        })
+    }
+    var removeId = setInterval(remove, 1000);
+    function remove()
+    {
+        $("[data-ttl]").each(function(){
+            var val = Number($(this).attr("data-ttl"));
+            val--;
+            if (val === 0)
+            {
+                $(this).remove();
+            }
+            else
+            {
+                $(this).attr("data-ttl", val);
             }
         })
     }

@@ -56,7 +56,7 @@ public class AbstractBeanServletT
         {
             EmbeddedServer server = new EmbeddedServer();
             server.addServlet(AbstractBeanServletT.BeanServletImpl.class, "/bs");
-            server.start();
+            server.startAndWait();
         }
         catch (Exception ex)
         {

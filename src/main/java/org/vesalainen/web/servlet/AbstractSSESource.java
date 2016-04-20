@@ -73,17 +73,7 @@ public abstract class AbstractSSESource implements Runnable
     protected abstract void addEvent(String event);
     
     protected abstract void removeEvent(String event);
-    /**
-     * Sends JSONObject event {'text':data}
-     * @param event
-     * @param data 
-     */
-    public void fireEvent(String event, String data)
-    {
-        JSONObject jo = new JSONObject();
-        jo.put("text", data);
-        fireEvent(event, jo);
-    }
+
     /**
      * Sends JSONObject event. 'html' key sets target html, 'text' sets target
      * text. Other keys set named attributes
@@ -92,12 +82,17 @@ public abstract class AbstractSSESource implements Runnable
      */
     public void fireEvent(String event, JSONObject data)
     {
+        fireEvent(event, data.toString());
+    }
+    
+    public void fireEvent(String event, CharSequence seq)
+    {
         readLock.lock();
         try
         {
             for (SSEObserver sseo : eventMap.get(event))
             {
-                if (!sseo.fireEvent(event, data))
+                if (!sseo.fireEvent(event, seq))
                 {
                     trash.put(sseo);
                 }
@@ -200,11 +195,6 @@ public abstract class AbstractSSESource implements Runnable
             }
         }
 
-        public boolean fireEvent(String event, JSONObject data)
-        {
-            return fireEvent(event, data.toString());
-        }
-        
         public boolean fireEvent(String event, CharSequence seq)
         {
             lock.lock();

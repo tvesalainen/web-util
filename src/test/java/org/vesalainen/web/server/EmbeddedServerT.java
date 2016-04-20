@@ -49,7 +49,7 @@ public class EmbeddedServerT
         {
             EmbeddedServer server = new EmbeddedServer();
             server.addServlet(TestServlet.class, "/test");
-            server.start();
+            server.startAndWait();
         }
         catch (Exception ex)
         {

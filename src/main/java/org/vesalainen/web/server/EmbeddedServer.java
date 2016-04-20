@@ -20,6 +20,7 @@ import org.vesalainen.web.servlet.JarServlet;
 import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
  *
@@ -49,12 +50,24 @@ public class EmbeddedServer
         server.setHandler(handler);
     }
     
+    public void addServlet(HttpServlet servlet, String mapping)
+    {
+        ServletHolder servletHolder = new ServletHolder(servlet);
+        handler.addServletWithMapping(servletHolder, mapping);
+    }
+    
     public void addServlet(Class<? extends HttpServlet> servlet, String mapping)
     {
         handler.addServletWithMapping(servlet, mapping);
     }
     
     public void start() throws Exception
+    {
+        handler.addServletWithMapping(JarServlet.class, "/*");
+        server.start();
+    }
+    
+    public void startAndWait() throws Exception
     {
         handler.addServletWithMapping(JarServlet.class, "/*");
         server.start();

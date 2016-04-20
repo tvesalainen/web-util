@@ -20,7 +20,6 @@ import org.vesalainen.html.AbstractFramework;
 import org.vesalainen.html.Framework;
 import org.vesalainen.html.Document;
 import org.vesalainen.html.Element;
-import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.JQuery;
 
 /**
