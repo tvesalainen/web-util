@@ -114,7 +114,6 @@ public class AbstractBeanServletT
     }
     public static class Data
     {
-        @InputType(itemType=Integer.class)
         public List<Integer> hset = new ArrayList<>();
         public long hidden;
         public enum En {E1, E2, E3};
@@ -134,11 +133,11 @@ public class AbstractBeanServletT
         public String text;
         public int number;
         public boolean on;
-        @InputType(value="checkbox", itemType=En.class)
+        @InputType(value="checkbox")
         public EnumSet<En> es = EnumSet.noneOf(En.class);
         @InputType(value="select")
         public En sel;
-        @InputType(value="select", itemType=En.class)
+        @InputType(value="select")
         public EnumSet<En> mul = EnumSet.noneOf(En.class);
         public Color color;
         @InputType("date")

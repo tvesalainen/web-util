@@ -88,6 +88,7 @@ public class BeanForm<C> extends Form
         String inputType = "text";
         Class type = BeanHelper.getType(document.context, field);
         Object value = BeanHelper.getFieldValue(document.context, field);
+        Class[] parameterTypes = BeanHelper.getParameterTypes(document.context, field);
         InputType inputTypeAnnotation = BeanHelper.getAnnotation(document.context, field, InputType.class);
         if (inputTypeAnnotation != null)
         {
@@ -184,7 +185,7 @@ public class BeanForm<C> extends Form
                 }
                 else
                 {
-                    return multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrList);
+                    return multiCheckboxContainer(field, inputType, type, labelText, placeholder, parameterTypes[0], attrList);
                 }
             case "select":
                 if (MultipleSelector.class.isAssignableFrom(type))
@@ -199,7 +200,7 @@ public class BeanForm<C> extends Form
                     }
                     else
                     {
-                        return selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrList);
+                        return selectContainer(field, inputType, type, labelText, placeholder, parameterTypes[0], attrList);
                     }
                 }
             case "color":
@@ -292,22 +293,13 @@ public class BeanForm<C> extends Form
         return boolean.class.equals(type) || Boolean.class.equals(type);
     }
 
-    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
     {
         if (!EnumSet.class.equals(type))
         {
             throw new UnsupportedOperationException(type + " not supported for multi selection");
         }
-        if (inputTypeAnnotation == null)
-        {
-            throw new IllegalArgumentException("@InputType missing from " + field);
-        }
-        Class<?> itemType = inputTypeAnnotation.itemType();
-        if (Object.class.equals(itemType))
-        {
-            throw new IllegalArgumentException("enumType missing from " + field);
-        }
-        EnumSetInput enumSetInput = new EnumSetInput(document.threadLocalData, document.dataType, inputTypeAnnotation.itemType(), field);
+        EnumSetInput enumSetInput = new EnumSetInput(document.threadLocalData, document.dataType, innerType, field);
         document.fieldMap.put(field, enumSetInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("legend").addText(labelText);
@@ -324,7 +316,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
     {
         if (type.isEnum())
         {
@@ -334,7 +326,7 @@ public class BeanForm<C> extends Form
         {
             if (EnumSet.class.equals(type))
             {
-                return multiSelectContainer(field, labelText, inputTypeAnnotation, attrs);
+                return multiSelectContainer(field, labelText, innerType, attrs);
             }
             else
             {
@@ -361,18 +353,9 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public Element multiSelectContainer(String field, Content labelText, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element multiSelectContainer(String field, Content labelText, Class innerType, Collection<Attribute> attrs)
     {
-        if (inputTypeAnnotation == null)
-        {
-            throw new IllegalArgumentException("@InputType missing from " + field);
-        }
-        Class<?> itemType = inputTypeAnnotation.itemType();
-        if (Object.class.equals(itemType))
-        {
-            throw new IllegalArgumentException("enumType missing from " + field);
-        }
-        EnumSetInput enumSetInput = new EnumSetInput(document.threadLocalData, document.dataType, inputTypeAnnotation.itemType(), field);
+        EnumSetInput enumSetInput = new EnumSetInput(document.threadLocalData, document.dataType, innerType, field);
         document.fieldMap.put(field, enumSetInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(labelText);

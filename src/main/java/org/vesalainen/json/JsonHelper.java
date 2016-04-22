@@ -67,7 +67,6 @@ public class JsonHelper
     public static void setValue(JSONObject json, Object base, String field)
     {
         Object value = BeanHelper.getFieldValue(base, field);
-        InputType inputType = BeanHelper.getAnnotation(base, field, InputType.class);
         Object jo = json.get(field);
         if (JSONObject.NULL.equals(jo))
         {
@@ -79,30 +78,21 @@ public class JsonHelper
             {
                 JSONArray ja = (JSONArray) jo;
                 int length = ja.length();
-                if (inputType == null || Object.class.equals(inputType.itemType()))
-                {
-                    throw new IllegalArgumentException("@InputType.itemType() is missing");
-                }
                 Collection col = (Collection) value;
+                Class[] pt = BeanHelper.getParameterTypes(base, field);
                 col.clear();
-                Class<?> itemType = inputType.itemType();
                 for (int ii=0;ii<length;ii++)
                 {
                     Object o = ja.get(ii);
-                    col.add(fromJSONObject(itemType, o));
+                    col.add(fromJSONObject(pt[0], o));
                 }
             }
             else
             {
                 if (value instanceof MapCollection)
                 {
-                    if (inputType == null || Object.class.equals(inputType.itemType()) || Object.class.equals(inputType.itemType2()))
-                    {
-                        throw new IllegalArgumentException("@InputType.itemType() and/or @InputType.itemType2() is missing");
-                    }
-                    Class<?> itemType = inputType.itemType();
-                    Class<?> itemType2 = inputType.itemType2();
                     MapCollection mapCollection = (MapCollection) value;
+                    Class[] pt = BeanHelper.getParameterTypes(base, field);
                     mapCollection.clear();
                     JSONObject jj = (JSONObject) jo;
                     for (String key : jj.keySet())
@@ -110,7 +100,7 @@ public class JsonHelper
                         JSONArray ja = (JSONArray) jj.get(key);
                         for (Object o : ja)
                         {
-                            mapCollection.add(fromJSONObject(itemType, key), fromJSONObject(itemType2, o));
+                            mapCollection.add(fromJSONObject(pt[0], key), fromJSONObject(pt[1], o));
                         }
                     }
                 }
@@ -118,13 +108,8 @@ public class JsonHelper
                 {
                     if (value instanceof Map)
                     {
-                        if (inputType == null || Object.class.equals(inputType.itemType()) || Object.class.equals(inputType.itemType2()))
-                        {
-                            throw new IllegalArgumentException("@InputType.itemType() and/or @InputType.itemType2() is missing");
-                        }
-                        Class<?> itemType = inputType.itemType();
-                        Class<?> itemType2 = inputType.itemType2();
                         Map map = (Map) value;
+                        Class[] pt = BeanHelper.getParameterTypes(base, field);
                         map.clear();
                         JSONObject jj = (JSONObject) jo;
                         for (String key : jj.keySet())
@@ -132,11 +117,11 @@ public class JsonHelper
                             Object o = jj.get(key);
                             if (jj.isNull(key))
                             {
-                                map.put(fromJSONObject(itemType, key), null);
+                                map.put(fromJSONObject(pt[0], key), null);
                             }
                             else
                             {
-                                map.put(fromJSONObject(itemType, key), fromJSONObject(itemType2, o));
+                                map.put(fromJSONObject(pt[0], key), fromJSONObject(pt[1], o));
                             }
                         }
                     }

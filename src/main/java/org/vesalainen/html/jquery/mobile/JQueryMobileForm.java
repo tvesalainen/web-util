@@ -22,7 +22,6 @@ import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Page;
 import org.vesalainen.html.SimpleAttribute;
-import org.vesalainen.js.ScriptContainer;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.servlet.bean.BeanForm;
 
@@ -45,9 +44,9 @@ public class JQueryMobileForm<C> extends BeanForm<C>
     }
     
     @Override
-    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
     {
-        return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrs)
+        return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, innerType, attrs)
                 .setAttr(ControlGroup);
     }
 
@@ -59,9 +58,9 @@ public class JQueryMobileForm<C> extends BeanForm<C>
     }
 
     @Override
-    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, InputType inputTypeAnnotation, Collection<Attribute> attrs)
+    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
     {
-        return super.selectContainer(field, inputType, type, labelText, placeholder, inputTypeAnnotation, attrs)
+        return super.selectContainer(field, inputType, type, labelText, placeholder, innerType, attrs)
                 .addClasses("ui-field-contain");
     }
 

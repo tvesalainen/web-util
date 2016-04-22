@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.vesalainen.util.Lists;
@@ -30,13 +31,13 @@ public class ClassAttribute extends SimpleAttribute<Set<String>>
 
     public ClassAttribute(String... classes)
     {
-        super("class", new HashSet<String>());
-        Lists.populate(value, classes);
+        super("class", new HashSet<>());
+        Collections.addAll(value, classes);
     }
     
     public void addClasses(String... cls)
     {
-        Lists.populate(value, cls);
+        Collections.addAll(value, cls);
     }
     
     public void removeClasses(String... cls)

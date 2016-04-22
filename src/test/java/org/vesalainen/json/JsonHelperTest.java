@@ -152,7 +152,6 @@ public class JsonHelperTest
             this.e = e;
         }
 
-        @InputType(itemType=String.class, itemType2=Integer.class)
         public MapList<String, Integer> getMapList()
         {
             return mapList;
@@ -173,7 +172,6 @@ public class JsonHelperTest
             this.l = l;
         }
 
-        @InputType(itemType=String.class, itemType2=String.class)
         public Map<String, String> getMap()
         {
             return map;
@@ -184,7 +182,6 @@ public class JsonHelperTest
             this.map = map;
         }
 
-        @InputType(itemType=Integer.class)
         public List<Integer> getInts()
         {
             return ints;
@@ -220,7 +217,6 @@ public class JsonHelperTest
     {
         private String str1 = "qwerty";
         public long ll = 123456L;
-        @InputType(itemType=String.class)
         public List<String> sarr = Lists.create("qwerty", "asdfgh");
 
         public String getStr1()
