@@ -87,7 +87,7 @@ public class BeanForm<C> extends Form
         List<Attribute> attrList = Lists.create(attributes);
         String inputType = "text";
         Class type = BeanHelper.getType(document.context, field);
-        Object value = BeanHelper.getFieldValue(document.context, field);
+        Object value = BeanHelper.getValue(document.context, field);
         Class[] parameterTypes = BeanHelper.getParameterTypes(document.context, field);
         InputType inputTypeAnnotation = BeanHelper.getAnnotation(document.context, field, InputType.class);
         if (inputTypeAnnotation != null)

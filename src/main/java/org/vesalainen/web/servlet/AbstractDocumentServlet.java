@@ -33,6 +33,7 @@ import org.vesalainen.web.I18n;
 public abstract class AbstractDocumentServlet<D extends Document> extends HttpServlet
 {
     protected D document;
+    protected String title;
     
     public AbstractDocumentServlet()
     {
@@ -63,4 +64,14 @@ public abstract class AbstractDocumentServlet<D extends Document> extends HttpSe
     }
 
     protected abstract D createDocument();
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
 }

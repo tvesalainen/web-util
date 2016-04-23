@@ -48,7 +48,7 @@ public class BeanDocument<C> extends Document
         this.threadLocalData = threadLocalData;
         this.context = threadLocalData.get();
         this.dataType = (Class<C>) context.getClass();
-        allFields = BeanHelper.getFields(context.getClass());
+        allFields = BeanHelper.getProperties(context.getClass());
     }
 
     @Override

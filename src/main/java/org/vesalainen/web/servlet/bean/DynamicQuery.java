@@ -55,7 +55,7 @@ public class DynamicQuery<T> implements Content
         boolean delim = false;
         for (String field : fields)
         {
-            Object value = BeanHelper.getFieldValue(data, field);
+            Object value = BeanHelper.getValue(data, field);
             if (value == null)
             {
                 add(out, delim, field, null);

@@ -66,11 +66,11 @@ public class JsonHelper
     
     public static void setValue(JSONObject json, Object base, String field)
     {
-        Object value = BeanHelper.getFieldValue(base, field);
+        Object value = BeanHelper.getValue(base, field);
         Object jo = json.get(field);
         if (JSONObject.NULL.equals(jo))
         {
-            BeanHelper.setFieldValue(base, field, null);
+            BeanHelper.setValue(base, field, null);
         }
         else
         {
@@ -130,11 +130,11 @@ public class JsonHelper
                         Class type = BeanHelper.getType(base, field);
                         if (JSONBean.class.isAssignableFrom(type))
                         {
-                            BeanHelper.setFieldValue(base, field, fromJSONObject(JSONBean.class, jo));
+                            BeanHelper.setValue(base, field, fromJSONObject(JSONBean.class, jo));
                         }
                         else
                         {
-                            BeanHelper.setFieldValue(base, field, jo);
+                            BeanHelper.setValue(base, field, jo);
                         }
                     }
                 }
@@ -149,7 +149,7 @@ public class JsonHelper
     }
     public static void add(JSONObject json, Object base, String field)
     {
-        Object value = BeanHelper.getFieldValue(base, field);
+        Object value = BeanHelper.getValue(base, field);
         json.put(field, toJSONObject(value));
     }
     private static Object fromJSONObject(Class<?> expected, Object value)
@@ -282,9 +282,9 @@ public class JsonHelper
             JSONObject jo = new JSONObject();
             Class<?> cls = value.getClass();
             jo.put("class", cls.getName());
-            for (String field : BeanHelper.getFields(cls))
+            for (String field : BeanHelper.getProperties(cls))
             {
-                Object fieldValue = BeanHelper.getFieldValue(value, field);
+                Object fieldValue = BeanHelper.getValue(value, field);
                 jo.put(field, toJSONObject(fieldValue));
             }
             return jo;

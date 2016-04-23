@@ -19,12 +19,19 @@ package org.vesalainen.web.servlet.jaxb;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.util.Comparator;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import org.vesalainen.html.Form;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.http.Query;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 import org.vesalainen.web.servlet.bean.BeanDocument;
@@ -42,9 +49,9 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     private final JAXBContext jaxbCtx;
     private final Object factory;
     private final String action;
-    private Supplier<D> documentFactory;
+    private BiFunction<ThreadLocal<C>,String,D> documentFactory;
 
-    public AbstractJAXBServlet(String packageName, File storage, String action, Supplier<D> documentFactory)
+    public AbstractJAXBServlet(String packageName, File storage, String action, BiFunction<ThreadLocal<C>,String,D> documentFactory)
     {
         try
         {
@@ -97,9 +104,66 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     @Override
     protected D createDocument()
     {
-        D doc = documentFactory.get();
+        D doc = documentFactory.apply(threadLocalData, title);
         BeanForm form = doc.addForm(action);
+        C data = threadLocalData.get();
+        BeanHelper.stream(data)
+                .filter((String s)->{return filter(data, s);})
+                .sorted(new ComparatorImpl<>(data))
+                .forEach((String pattern)->addProperty(data, form, pattern));
         return doc;
     }
-    
+    public void addProperty(C data, BeanForm form, String pattern)
+    {
+        System.err.println(pattern);
+        AnnotatedElement annotatedElement = BeanHelper.getAnnotatedElement(data, pattern);
+        for (Annotation a : annotatedElement.getAnnotations())
+        {
+            System.err.println(a);
+        }
+    }
+    private boolean filter(C data, String pattern)
+    {
+        AnnotatedElement ae = BeanHelper.getAnnotatedElement(data, pattern);
+        return
+                ae.isAnnotationPresent(XmlAttribute.class) || ae.isAnnotationPresent(XmlElement.class)|| ae.isAnnotationPresent(XmlElements.class);
+    }
+    private static class ComparatorImpl<C> implements Comparator<String>
+    {
+        private C data;
+
+        public ComparatorImpl(C data)
+        {
+            this.data = data;
+        }
+        
+        @Override
+        public int compare(String o1, String o2)
+        {
+            String p1 = prefix(o1);
+            String p2 = prefix(o2);
+            if (p1.equals(p2))
+            {
+                AnnotatedElement a1 = BeanHelper.getAnnotatedElement(data, o1);
+                AnnotatedElement a2 = BeanHelper.getAnnotatedElement(data, o2);
+                boolean b1 = a1.isAnnotationPresent(XmlAttribute.class);
+                boolean b2 = a2.isAnnotationPresent(XmlAttribute.class);
+                if (b1 != b2)
+                {
+                    return b2 ? 1 : -1;
+                }
+            }
+            return o1.compareTo(o2);
+        }
+        
+        private String prefix(String pattern)
+        {
+            int idx = pattern.lastIndexOf('.');
+            if (idx != -1)
+            {
+                return pattern.substring(0, idx);
+            }
+            return "";
+        }
+    }
 }

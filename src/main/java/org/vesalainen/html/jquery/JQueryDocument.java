@@ -22,17 +22,18 @@ import org.vesalainen.web.servlet.bean.BeanDocument;
 /**
  *
  * @author tkv
+ * @param <C>
  */
 public class JQueryDocument<C> extends BeanDocument<C>
 {
     private DocumentReadyEvent readyEvent;
     
-    public JQueryDocument(ThreadLocal threadLocalData)
+    public JQueryDocument(ThreadLocal<C> threadLocalData)
     {
         super(threadLocalData);
     }
 
-    public JQueryDocument(ThreadLocal threadLocalData, String title)
+    public JQueryDocument(ThreadLocal<C> threadLocalData, String title)
     {
         super(threadLocalData, title);
     }
