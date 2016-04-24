@@ -18,6 +18,9 @@ package org.vesalainen.web.servlet;
 
 import java.awt.Color;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -86,8 +89,6 @@ public class AbstractBeanServletT
                 "selector",
                 "range",
                 "url",
-                "week",
-                "month",
                 "datetimelocal",
                 "time",
                 "date",
@@ -140,16 +141,11 @@ public class AbstractBeanServletT
         @InputType(value="select")
         public EnumSet<En> mul = EnumSet.noneOf(En.class);
         public Color color;
-        @InputType("date")
-        public Date date;
+        public LocalDate date;
         @InputType("time")
-        public Date time;
+        public LocalTime time;
         @InputType("datetime-local")
-        public Date datetimelocal;
-        @InputType("month")
-        public Date month;
-        @InputType("week")
-        public Date week;
+        public LocalDateTime datetimelocal;
         public URL url;
         @InputType(value="range",attrs={
             @Attr(name="min", value="3"),

@@ -21,9 +21,13 @@ import java.util.Map.Entry;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.vesalainen.bean.BeanField;
+import org.json.JSONObject;
+import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.http.Query;
+import org.vesalainen.json.JsonHelper;
+import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
+import org.vesalainen.web.SingleSelector;
 import org.vesalainen.web.servlet.AbstractDocumentServlet;
 
 /**
@@ -34,6 +38,8 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
  */
 public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends AbstractDocumentServlet<D>
 {
+    public static final String JSON = "__JSON__";
+    
     protected final ThreadLocal<C> threadLocalData;
     protected C empty;
     protected Class<C> dataType;
@@ -62,7 +68,42 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String field = e.getKey();
-            String[] value = e.getValue();
+            String[] arr = e.getValue();
+            if (BeanHelper.hasProperty(data, field))
+            {
+                Object value = BeanHelper.getValue(data, field);
+                if (value instanceof SingleSelector)
+                {
+                    SingleSelector ss = (SingleSelector) value;
+                    Class[] pt = BeanHelper.getParameterTypes(data, field);
+                    ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
+                }
+                else
+                {
+                    if (arr.length == 1 && arr[0].isEmpty())
+                    {
+                        BeanHelper.setValue(data, field, null);
+                    }
+                    else
+                    {
+                        BeanHelper.setValue(data, field, arr);
+                    }
+                }
+            }
+            else
+            {
+                System.err.println(field);
+                if (JSON.equals(field))
+                {
+                    JSONObject json = new JSONObject(arr[0]);
+                    JsonHelper.setValues(json, data);
+                }
+                else
+                {
+                    submitField = field;
+                }
+            }
+            /*
             BeanField bf = document.getBeanField(field);
             if (bf != null)
             {
@@ -72,6 +113,7 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
                     submitField = field;
                 }
             }
+                    */
         }
         Query query = null;
         String queryString = req.getQueryString();

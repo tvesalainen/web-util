@@ -18,8 +18,10 @@ package org.vesalainen.web.servlet.bean;
 
 import java.awt.Color;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +42,7 @@ import org.vesalainen.web.I18n;
 import org.vesalainen.web.InputType;
 import org.vesalainen.web.MultipleSelector;
 import org.vesalainen.web.SingleSelector;
+import static org.vesalainen.web.servlet.bean.AbstractBeanServlet.JSON;
 
 /**
  *
@@ -124,27 +127,41 @@ public class BeanForm<C> extends Form
                         }
                         else
                         {
-                            if (Date.class.equals(type))
+                            if (LocalDate.class.equals(type))
                             {
-                                inputType = "datetime-local";
+                                inputType = "date";
                             }
                             else
                             {
-                                if (URL.class.equals(type))
+                                if (LocalTime.class.equals(type))
                                 {
-                                    inputType = "url";
+                                    inputType = "time";
                                 }
                                 else
                                 {
-                                    if (MultipleSelector.class.isAssignableFrom(type))
+                                    if (LocalDateTime.class.equals(type))
                                     {
-                                        inputType = "select";
+                                        inputType = "datetime-local";
                                     }
                                     else
                                     {
-                                        if (SingleSelector.class.isAssignableFrom(type))
+                                        if (URL.class.equals(type))
                                         {
-                                            inputType = "select";
+                                            inputType = "url";
+                                        }
+                                        else
+                                        {
+                                            if (MultipleSelector.class.isAssignableFrom(type))
+                                            {
+                                                inputType = "select";
+                                            }
+                                            else
+                                            {
+                                                if (SingleSelector.class.isAssignableFrom(type))
+                                                {
+                                                    inputType = "select";
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -200,7 +217,21 @@ public class BeanForm<C> extends Form
                     }
                     else
                     {
-                        return selectContainer(field, inputType, type, labelText, placeholder, parameterTypes[0], attrList);
+                        if (type.isEnum())
+                        {
+                            return singleSelectContainer(field, labelText, attrList);
+                        }
+                        else
+                        {
+                            if (EnumSet.class.equals(type))
+                            {
+                                return multiSelectContainer(field, labelText, parameterTypes[0], attrList);
+                            }
+                            else
+                            {
+                                throw new IllegalArgumentException(field + " not Enum or EnumSet");
+                            }
+                        }
                     }
                 }
             case "color":
@@ -264,9 +295,10 @@ public class BeanForm<C> extends Form
         for (Enum e : enumInput.getConstants())
         {
             String n = e.toString();
+            String id = field+'-'+n;
             Content d = I18n.getLabel(n);
-            fieldSet.addElement("label").setAttr("for", n).addText(d);
-            InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
+            fieldSet.addElement("label").setAttr("for", id).addText(d);
+            InputTag input = new InputTag(inputType, field).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
             input.setAttr(new BooleanAttribute("checked", enumInput.getValue(e)));
             fieldSet.addTag(input);
@@ -306,9 +338,10 @@ public class BeanForm<C> extends Form
         for (Enum e : enumSetInput.getConstants())
         {
             String n = e.toString();
+            String id = field+'-'+n;
             Content d = I18n.getLabel(n);
-            fieldSet.addElement("label").setAttr("for", n).addText(d);
-            InputTag input = new InputTag(inputType, field).setAttr("id", n).setAttr("value", n);
+            fieldSet.addElement("label").setAttr("for", id).addText(d);
+            InputTag input = new InputTag(inputType, field).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
             input.setAttr(new BooleanAttribute("checked", enumSetInput.getValue(e)));
             fieldSet.addTag(input);
@@ -316,7 +349,7 @@ public class BeanForm<C> extends Form
         return fieldSet;
     }
 
-    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
+    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class[] innerType, Collection<Attribute> attrs)
     {
         if (type.isEnum())
         {
@@ -326,7 +359,7 @@ public class BeanForm<C> extends Form
         {
             if (EnumSet.class.equals(type))
             {
-                return multiSelectContainer(field, labelText, innerType, attrs);
+                return multiSelectContainer(field, labelText, innerType[0], attrs);
             }
             else
             {
@@ -480,7 +513,7 @@ public class BeanForm<C> extends Form
 
     protected InputTag hiddenContainer(Set<String> fields)
     {
-        InputTag inputTag = new InputTag("text", "JSON");
+        InputTag inputTag = new InputTag("text", JSON);
         inputTag.setAttr("style", "display: none;");
         JSONInput input = new JSONInput(document.threadLocalData, fields);
         document.fieldMap.put("JSON", input);

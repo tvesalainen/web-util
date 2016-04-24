@@ -19,7 +19,6 @@ package org.vesalainen.web.servlet.bean;
 import java.util.Set;
 import org.json.JSONObject;
 import org.vesalainen.bean.BeanField;
-import org.vesalainen.bean.ThreadLocalBeanField;
 import org.vesalainen.json.JsonHelper;
 
 /**

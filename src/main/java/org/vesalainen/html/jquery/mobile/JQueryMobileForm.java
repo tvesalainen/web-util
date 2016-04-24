@@ -58,13 +58,6 @@ public class JQueryMobileForm<C> extends BeanForm<C>
     }
 
     @Override
-    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
-    {
-        return super.selectContainer(field, inputType, type, labelText, placeholder, innerType, attrs)
-                .addClasses("ui-field-contain");
-    }
-
-    @Override
     public Element singleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         return super.singleSelectorContainer(field, inputType, value, labelText, placeholder, attrs)

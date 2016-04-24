@@ -17,8 +17,6 @@
 package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.vesalainen.html.Content;
 
 /**
