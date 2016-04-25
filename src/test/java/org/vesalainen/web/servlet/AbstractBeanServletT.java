@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
@@ -102,7 +101,6 @@ public class AbstractBeanServletT
                 "on",
                 "es");
             
-            form.addRestAsHiddenInputs();
             return doc;
         }
 

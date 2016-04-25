@@ -17,12 +17,14 @@
 package org.vesalainen.html.jquery.mobile;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import org.vesalainen.html.Attribute;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Page;
 import org.vesalainen.html.SimpleAttribute;
-import org.vesalainen.web.InputType;
+import org.vesalainen.web.MultipleSelector;
+import org.vesalainen.web.SingleSelector;
 import org.vesalainen.web.servlet.bean.BeanForm;
 
 /**
@@ -42,33 +44,33 @@ public class JQueryMobileForm<C> extends BeanForm<C>
         this.page = page;
         this.setAttr("data-ajax", document.isAjax());
     }
-    
+
     @Override
-    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
+    public Element multiCheckboxContainer(String field, EnumSet enumSet, String inputType, Class type, Content labelText, Content placeholder, Class<Enum> innerType, Collection<Attribute> attrs)
     {
-        return super.multiCheckboxContainer(field, inputType, type, labelText, placeholder, innerType, attrs)
+        return super.multiCheckboxContainer(field, enumSet, inputType, type, labelText, placeholder, innerType, attrs)
                 .setAttr(ControlGroup);
     }
 
     @Override
-    public Element radioContainer(String field, String inputType, Class<?> type, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public Element radioContainer(String field, Enum value, String inputType, Class<Enum> type, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
-        return super.radioContainer(field, inputType, type, labelText, placeholder, attrs)
+        return super.radioContainer(field, value, inputType, type, labelText, placeholder, attrs)
                 .setAttr(ControlGroup);
     }
 
     @Override
-    public Element singleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public Element singleSelectorContainer(String field, SingleSelector selector, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
-        return super.singleSelectorContainer(field, inputType, value, labelText, placeholder, attrs)
-                .addClasses("ui-field-contain");
+        return super.singleSelectorContainer(field, selector, inputType, value, labelText, placeholder, attrs)
+                .setAttr(ControlGroup);
     }
 
     @Override
-    public Element multipleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public Element multipleSelectorContainer(String field, MultipleSelector selector, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
-        return super.multipleSelectorContainer(field, inputType, value, labelText, placeholder, attrs)
-                .addClasses("ui-field-contain");
+        return super.multipleSelectorContainer(field, selector, inputType, value, labelText, placeholder, attrs)
+                .setAttr(ControlGroup);
     }
     
 }

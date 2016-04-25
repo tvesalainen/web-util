@@ -19,11 +19,14 @@ package org.vesalainen.web.servlet.jaxb;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import org.vesalainen.bean.BeanHelper;
+import org.vesalainen.html.Attribute;
 import org.vesalainen.web.servlet.bean.BeanDocument;
 import org.vesalainen.web.servlet.bean.BeanForm;
 import org.vesalainen.web.servlet.bean.ThreadLocalContent;
@@ -36,32 +39,34 @@ import org.vesalainen.web.servlet.bean.ThreadLocalContent;
 public class JAXBContent<C> extends ThreadLocalContent<C>
 {
     private BeanDocument document;
+    private String action;
     
-    public JAXBContent(ThreadLocal<C> local, BeanDocument document)
+    public JAXBContent(ThreadLocal<C> local, BeanDocument document, String action)
     {
         super(local);
         this.document = document;
+        this.action = action;
     }
 
     @Override
     public void append(Appendable out) throws IOException
     {
         C data = local.get();
-        BeanForm form = null;   // TODO
+        BeanForm form = new BeanForm(document, action);
         BeanHelper.stream(data)
                 .filter((String s)->{return filter(data, s);})
-                .sorted(new ComparatorImpl<>(data))
+                //.sorted(new ComparatorImpl<>(data))
                 .forEach((String pattern)->addProperty(data, form, pattern));
     }
     
     public void addProperty(C data, BeanForm form, String pattern)
     {
-        System.err.println(pattern);
-        AnnotatedElement annotatedElement = BeanHelper.getAnnotatedElement(data, pattern);
-        for (Annotation a : annotatedElement.getAnnotations())
-        {
-            System.err.println(a);
-        }
+        Class type = BeanHelper.getType(data, pattern);
+        Object value = BeanHelper.getValue(data, pattern);
+        Annotation[] annotations = BeanHelper.getAnnotations(data, pattern);
+        List<Attribute> attributes = new ArrayList<>();
+        Xml2Html.inject(annotations, attributes);
+        form.createInput(pattern, attributes);
     }
     private boolean filter(C data, String pattern)
     {

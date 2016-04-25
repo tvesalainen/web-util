@@ -19,22 +19,14 @@ package org.vesalainen.web.servlet.jaxb;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.util.Comparator;
 import java.util.function.BiFunction;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.http.Query;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 import org.vesalainen.web.servlet.bean.BeanDocument;
-import org.vesalainen.web.servlet.bean.BeanForm;
 
 /**
  *
@@ -104,7 +96,7 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     protected D createDocument()
     {
         D doc = documentFactory.apply(threadLocalData, title);
-        doc.getBody().addContent(new JAXBContent(threadLocalData, doc));
+        doc.getBody().addContent(new JAXBContent(threadLocalData, doc, action));
         return doc;
     }
 }

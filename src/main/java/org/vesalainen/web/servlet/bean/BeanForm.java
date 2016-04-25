@@ -36,6 +36,7 @@ import org.vesalainen.html.Form;
 import org.vesalainen.html.InputTag;
 import org.vesalainen.html.SimpleAttribute;
 import org.vesalainen.html.Tag;
+import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.util.Lists;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.I18n;
@@ -77,17 +78,12 @@ public class BeanForm<C> extends Form
         addContent(createInput(field, attributes));
     }
     
-    public void addRestAsHiddenInputs()
-    {
-        Set<String> set = new HashSet<>();
-        set.addAll(document.allFields);
-        set.removeAll(document.fieldMap.keySet());
-        addContent(hiddenContainer(set));
-    }
-
     public Content createInput(String field, Attribute... attributes)
     {
-        List<Attribute> attrList = Lists.create(attributes);
+        return createInput(field, Lists.create(attributes));
+    }
+    public Content createInput(String field, List<Attribute> attrList)
+    {
         String inputType = "text";
         Class type = BeanHelper.getType(document.context, field);
         Object value = BeanHelper.getValue(document.context, field);
@@ -103,76 +99,11 @@ public class BeanForm<C> extends Form
         }
         else
         {
-            if (NumberInput.isInteger(type))
-            {
-                inputType = "number";
-            }
-            else
-            {
-                if (type.isEnum())
-                {
-                    inputType = "radio";
-                }
-                else
-                {
-                    if (isBoolean(type) || EnumSet.class.equals(type))
-                    {
-                        inputType = "checkbox";
-                    }
-                    else
-                    {
-                        if (Color.class.equals(type))
-                        {
-                            inputType = "color";
-                        }
-                        else
-                        {
-                            if (LocalDate.class.equals(type))
-                            {
-                                inputType = "date";
-                            }
-                            else
-                            {
-                                if (LocalTime.class.equals(type))
-                                {
-                                    inputType = "time";
-                                }
-                                else
-                                {
-                                    if (LocalDateTime.class.equals(type))
-                                    {
-                                        inputType = "datetime-local";
-                                    }
-                                    else
-                                    {
-                                        if (URL.class.equals(type))
-                                        {
-                                            inputType = "url";
-                                        }
-                                        else
-                                        {
-                                            if (MultipleSelector.class.isAssignableFrom(type))
-                                            {
-                                                inputType = "select";
-                                            }
-                                            else
-                                            {
-                                                if (SingleSelector.class.isAssignableFrom(type))
-                                                {
-                                                    inputType = "select";
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            inputType = getInputType(type);
         }
-        Content labelText = I18n.getLabel(field);
-        Content placeholder = I18n.getPlaceholder(field);
+        String suffix = BeanHelper.suffix(field);
+        Content labelText = I18n.getLabel(suffix);
+        Content placeholder = I18n.getPlaceholder(BeanHelper.suffix(suffix));
         switch (inputType)
         {
             case "text":
@@ -180,52 +111,52 @@ public class BeanForm<C> extends Form
             case "email":
             case "search":
             case "tel":
-                return textContainer(field, inputType, labelText, placeholder, attrList);
+                return textContainer(field, ConvertUtility.convert(String.class, value), inputType, labelText, placeholder, attrList);
             case "url":
-                return urlContainer(field, inputType, labelText, placeholder, attrList);
+                return urlContainer(field, ConvertUtility.convert(String.class, value), inputType, labelText, placeholder, attrList);
             case "number":
             case "range":
-                return numberContainer(field, inputType, labelText, placeholder, attrList);
+                return numberContainer(field, ConvertUtility.convert(String.class, value), inputType, labelText, placeholder, attrList);
             case "textarea":
-                return textAreaContainer(field, inputType, labelText, placeholder, attrList);
+                return textAreaContainer(field, ConvertUtility.convert(String.class, value), inputType, labelText, placeholder, attrList);
             case "button":
             case "reset":
                 return buttonContainer(field, inputType, labelText, placeholder, attrList);
             case "submit":
-                return submitContainer(field, inputType, labelText, placeholder, attrList);
+                return submitContainer(field, value, inputType, labelText, placeholder, attrList);
             case "radio":
-                return radioContainer(field, inputType, type, labelText, placeholder, attrList);
+                return radioContainer(field, ConvertUtility.convert(Enum.class, value), inputType, type, labelText, placeholder, attrList);
             case "checkbox":
                 if (isBoolean(type))
                 {
-                    return singleCheckboxContainer(field, inputType, labelText, placeholder, attrList);
+                    return singleCheckboxContainer(field, ConvertUtility.convert(Boolean.class, value), inputType, labelText, placeholder, attrList);
                 }
                 else
                 {
-                    return multiCheckboxContainer(field, inputType, type, labelText, placeholder, parameterTypes[0], attrList);
+                    return multiCheckboxContainer(field, ConvertUtility.convert(EnumSet.class, value), inputType, type, labelText, placeholder, parameterTypes[0], attrList);
                 }
             case "select":
                 if (MultipleSelector.class.isAssignableFrom(type))
                 {
-                    return multipleSelectorContainer(field, inputType, value, labelText, placeholder, attrList);
+                    return multipleSelectorContainer(field, ConvertUtility.convert(MultipleSelector.class, value), inputType, value, labelText, placeholder, attrList);
                 }
                 else
                 {
                     if (SingleSelector.class.isAssignableFrom(type))
                     {
-                        return singleSelectorContainer(field, inputType, value, labelText, placeholder, attrList);
+                        return singleSelectorContainer(field, ConvertUtility.convert(SingleSelector.class, value), inputType, value, labelText, placeholder, attrList);
                     }
                     else
                     {
                         if (type.isEnum())
                         {
-                            return singleSelectContainer(field, labelText, attrList);
+                            return singleSelectContainer(field, (Enum) value, type, labelText, attrList);
                         }
                         else
                         {
                             if (EnumSet.class.equals(type))
                             {
-                                return multiSelectContainer(field, labelText, parameterTypes[0], attrList);
+                                return multiSelectContainer(field, (EnumSet) value, labelText, parameterTypes[0], attrList);
                             }
                             else
                             {
@@ -235,14 +166,14 @@ public class BeanForm<C> extends Form
                     }
                 }
             case "color":
-                return colorContainer(field, inputType, type, labelText, placeholder, attrList);
+                return colorContainer(field, ConvertUtility.convert(String.class, value), inputType, type, labelText, placeholder, attrList);
             case "date":
             case "datetime":
             case "datetime-local":
             case "month":
             case "time":
             case "week":
-                return dateContainer(field, inputType, labelText, placeholder, attrList);
+                return dateContainer(field, ConvertUtility.convert(String.class, value), inputType, labelText, placeholder, attrList);
             case "datalist":
             case "keygen":
             case "output":
@@ -251,7 +182,7 @@ public class BeanForm<C> extends Form
         }
     }
 
-    public ContainerContent textContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public ContainerContent textContainer(String field, String value, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
@@ -259,22 +190,18 @@ public class BeanForm<C> extends Form
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
-        TextInput w = new TextInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, w);
-        input.setAttr("value", w);
+        input.setAttr("value", value);
         return container;
     }
 
-    public ContainerContent textAreaContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public ContainerContent textAreaContainer(String field, String value, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent textAreaContainer = new ContainerContent();
         Element textAreaLabel = new Element("label").setAttr("for", field).addText(labelText);
         textAreaContainer.addElement(textAreaLabel);
         Element input = new Element(inputType).setAttr("id", field).setAttr("name", field).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
-        TextInput w = new TextInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, w);
-        input.addText(w);
+        input.addText(value);
         textAreaContainer.addElement(input);
         return textAreaContainer;
     }
@@ -286,13 +213,11 @@ public class BeanForm<C> extends Form
         return input;
     }
 
-    public Element radioContainer(String field, String inputType, Class<?> type, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public Element radioContainer(String field, Enum value, String inputType, Class<Enum> type, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
-        EnumInput enumInput = new EnumInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, enumInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("legend").addText(labelText);
-        for (Enum e : enumInput.getConstants())
+        for (Enum e : type.getEnumConstants())
         {
             String n = e.toString();
             String id = field+'-'+n;
@@ -300,23 +225,21 @@ public class BeanForm<C> extends Form
             fieldSet.addElement("label").setAttr("for", id).addText(d);
             InputTag input = new InputTag(inputType, field).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
-            input.setAttr(new BooleanAttribute("checked", enumInput.getValue(e)));
+            input.setAttr(new BooleanAttribute("checked", e.equals(value)));
             fieldSet.addTag(input);
         }
         return fieldSet;
     }
 
-    public ContainerContent singleCheckboxContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public ContainerContent singleCheckboxContainer(String field, Boolean value, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
-        BooleanInput booleanInput = new BooleanInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, booleanInput);
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
         container.addElement(textLabel);
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
-        input.setAttr(new BooleanAttribute("checked", booleanInput));
+        input.setAttr(new BooleanAttribute("checked", value));
         return container;
     }
 
@@ -325,17 +248,15 @@ public class BeanForm<C> extends Form
         return boolean.class.equals(type) || Boolean.class.equals(type);
     }
 
-    public Element multiCheckboxContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class innerType, Collection<Attribute> attrs)
+    public Element multiCheckboxContainer(String field, EnumSet enumSet, String inputType, Class type, Content labelText, Content placeholder, Class<Enum> innerType, Collection<Attribute> attrs)
     {
         if (!EnumSet.class.equals(type))
         {
             throw new UnsupportedOperationException(type + " not supported for multi selection");
         }
-        EnumSetInput enumSetInput = new EnumSetInput(document.threadLocalData, document.dataType, innerType, field);
-        document.fieldMap.put(field, enumSetInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("legend").addText(labelText);
-        for (Enum e : enumSetInput.getConstants())
+        for (Enum e : innerType.getEnumConstants())
         {
             String n = e.toString();
             String id = field+'-'+n;
@@ -343,23 +264,23 @@ public class BeanForm<C> extends Form
             fieldSet.addElement("label").setAttr("for", id).addText(d);
             InputTag input = new InputTag(inputType, field).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
-            input.setAttr(new BooleanAttribute("checked", enumSetInput.getValue(e)));
+            input.setAttr(new BooleanAttribute("checked", enumSet.contains(e)));
             fieldSet.addTag(input);
         }
         return fieldSet;
     }
 
-    public Element selectContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Class[] innerType, Collection<Attribute> attrs)
+    public Element selectContainer(String field, Object value, String inputType, Class type, Content labelText, Content placeholder, Class[] innerType, Collection<Attribute> attrs)
     {
         if (type.isEnum())
         {
-            return singleSelectContainer(field, labelText, attrs);
+            return singleSelectContainer(field, (Enum) value, type, labelText, attrs);
         }
         else
         {
             if (EnumSet.class.equals(type))
             {
-                return multiSelectContainer(field, labelText, innerType[0], attrs);
+                return multiSelectContainer(field, (EnumSet) value, labelText, innerType[0], attrs);
             }
             else
             {
@@ -368,44 +289,40 @@ public class BeanForm<C> extends Form
         }
     }
 
-    public Element singleSelectContainer(String field, Content labelText, Collection<Attribute> attrs)
+    public Element singleSelectContainer(String field, Enum value, Class<Enum> type, Content labelText, Collection<Attribute> attrs)
     {
-        EnumInput input = new EnumInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").setAttr("for", field).addText(labelText);
         Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field);
-        for (Enum e : input.getConstants())
+        for (Enum e : type.getEnumConstants())
         {
             String n = e.toString();
             Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
-            option.setAttr(new BooleanAttribute("selected", input.getValue(e)));
+            option.setAttr(new BooleanAttribute("selected", e.equals(value)));
             option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    public Element multiSelectContainer(String field, Content labelText, Class innerType, Collection<Attribute> attrs)
+    public Element multiSelectContainer(String field, EnumSet value, Content labelText, Class<Enum> innerType, Collection<Attribute> attrs)
     {
-        EnumSetInput enumSetInput = new EnumSetInput(document.threadLocalData, document.dataType, innerType, field);
-        document.fieldMap.put(field, enumSetInput);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(labelText);
         Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
         select.setAttr(new BooleanAttribute<>("multiple", true));
-        for (Enum e : enumSetInput.getConstants())
+        for (Enum e : innerType.getEnumConstants())
         {
             String n = e.toString();
             Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
-            option.setAttr(new BooleanAttribute("selected", enumSetInput.getValue(e)));
+            option.setAttr(new BooleanAttribute("selected", e.equals(value)));
             option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    public ContainerContent colorContainer(String field, String inputType, Class type, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public ContainerContent colorContainer(String field, String value, String inputType, Class type, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", field).addText(labelText);
@@ -413,13 +330,11 @@ public class BeanForm<C> extends Form
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
-        ColorInput colorInput = new ColorInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, colorInput);
-        input.setAttr("value", colorInput);
+        input.setAttr("value", value);
         return container;
     }
 
-    public ContainerContent dateContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public ContainerContent dateContainer(String field, String value, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", field).addText(labelText);
@@ -427,13 +342,11 @@ public class BeanForm<C> extends Form
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
-        DateInput dateInput = new DateInput(document.threadLocalData, document.dataType, field, inputType);
-        document.fieldMap.put(field, dateInput);
-        input.setAttr("value", dateInput);
+        input.setAttr("value", value);
         return container;
     }
 
-    public ContainerContent numberContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public ContainerContent numberContainer(String field, String value, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
@@ -441,13 +354,11 @@ public class BeanForm<C> extends Form
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
-        NumberInput w = new NumberInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, w);
-        input.setAttr("value", w);
+        input.setAttr("value", value);
         return container;
     }
 
-    public ContainerContent urlContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public ContainerContent urlContainer(String field, String value, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
@@ -455,18 +366,13 @@ public class BeanForm<C> extends Form
         InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
-        URLInput w = new URLInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, w);
-        input.setAttr("value", w);
+        input.setAttr("value", value);
         return container;
     }
 
-    public Element multipleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public Element multipleSelectorContainer(String field, MultipleSelector selector, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
-        MultipleSelector selector = (MultipleSelector) value;
         List options = selector.getOptions();
-        MultipleSelectorInput<C, Object> input = new MultipleSelectorInput<>(document.threadLocalData, document.dataType, field, selector);
-        document.fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(I18n.getLabel(field));
         Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
@@ -476,18 +382,15 @@ public class BeanForm<C> extends Form
             String n = opt.toString();
             Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
-            option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
+            option.setAttr(new BooleanAttribute("selected", selector.contains(opt)));
             option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    public Element singleSelectorContainer(String field, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public Element singleSelectorContainer(String field, SingleSelector selector, String inputType, Object value, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
-        SingleSelector selector = (SingleSelector) value;
         List options = selector.getOptions();
-        SingleSelectorInput<C, Object> input = new SingleSelectorInput<>(document.threadLocalData, document.dataType, field, selector);
-        document.fieldMap.put(field, input);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(I18n.getLabel(field));
         Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
@@ -496,29 +399,66 @@ public class BeanForm<C> extends Form
             String n = opt.toString();
             Content d = I18n.getLabel(n);
             Element option = select.addElement("option").setAttr("value", n).addText(d);
-            option.setAttr(new BooleanAttribute("selected", input.getValue(opt)));
+            option.setAttr(new BooleanAttribute("selected", opt.equals(selector.getValue())));
             option.setAttr(attrs);
         }
         return fieldSet;
     }
 
-    public Tag submitContainer(String field, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
+    public Tag submitContainer(String field, Object value, String inputType, Content labelText, Content placeholder, Collection<Attribute> attrs)
     {
         Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", labelText);
         input.setAttr(attrs);
-        SubmitInput submitInput = new SubmitInput(document.threadLocalData, document.dataType, field);
-        document.fieldMap.put(field, submitInput);
         return input;
     }
 
-    protected InputTag hiddenContainer(Set<String> fields)
+    public static final String getInputType(Class type)
     {
-        InputTag inputTag = new InputTag("text", JSON);
-        inputTag.setAttr("style", "display: none;");
-        JSONInput input = new JSONInput(document.threadLocalData, fields);
-        document.fieldMap.put("JSON", input);
-        inputTag.setAttr("value", input);
-        return inputTag;
+        if (CharSequence.class.isAssignableFrom(type))
+        {
+            return "text";
+        }
+        if (NumberInput.isInteger(type))
+        {
+            return "number";
+        }
+        if (type.isEnum())
+        {
+            return "radio";
+        }
+        if (boolean.class.equals(type) || Boolean.class.equals(type) || EnumSet.class.equals(type))
+        {
+            return "checkbox";
+        }
+        if (Color.class.equals(type))
+        {
+            return "color";
+        }
+        if (LocalDate.class.equals(type))
+        {
+            return "date";
+        }
+        if (LocalTime.class.equals(type))
+        {
+            return "time";
+        }
+        if (LocalDateTime.class.equals(type))
+        {
+            return "datetime-local";
+        }
+        if (URL.class.equals(type))
+        {
+            return "url";
+        }
+        if (MultipleSelector.class.isAssignableFrom(type))
+        {
+            return "select";
+        }
+        if (SingleSelector.class.isAssignableFrom(type))
+        {
+            return "select";
+        }
+        throw new UnsupportedOperationException(type+" not supported");
     }
 
 }

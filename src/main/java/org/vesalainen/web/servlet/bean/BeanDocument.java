@@ -22,7 +22,6 @@ import java.util.Set;
 import org.vesalainen.bean.BeanField;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Document;
-import org.vesalainen.html.Form;
 
 /**
  *
@@ -34,7 +33,7 @@ public class BeanDocument<C> extends Document
     ThreadLocal<C> threadLocalData;
     protected C context;
     protected Class<C> dataType;
-    protected final Map<String,BeanField> fieldMap = new HashMap<>();
+    //protected final Map<String,BeanField> fieldMap = new HashMap<>();
     protected Set<String> allFields;
 
     public BeanDocument(ThreadLocal<C> threadLocalData)
@@ -65,16 +64,6 @@ public class BeanDocument<C> extends Document
         BeanForm form = new BeanForm(this, method, action);
         body.addElement(form);
         return form;
-    }
-
-    public BeanField getBeanField(String field)
-    {
-        return fieldMap.get(field);
-    }
-
-    public Map<String, BeanField> getFieldMap()
-    {
-        return fieldMap;
     }
 
     public Set<String> getAllFields()
