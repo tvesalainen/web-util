@@ -16,20 +16,13 @@
  */
 package org.vesalainen.html;
 
-import org.vesalainen.util.EnumMapList;
+import java.io.IOException;
 
 /**
  *
  * @author tkv
- * @param <P>
- * @param <K>
  */
-public abstract class AbstractEnumDynContent<P extends DynParam<K>,K extends Enum<K>> extends AbstractDynContent<P,K> implements EnumDynContent<P,K>
+public interface Renderer
 {
-
-    public AbstractEnumDynContent(Class<K> cls)
-    {
-        super(new EnumMapList<K,Placeholder>(cls));
-    }
-
+    void append(Appendable out) throws IOException;
 }

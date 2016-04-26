@@ -25,7 +25,12 @@ public final class InputTag extends Tag
 
     public InputTag(String type, String name)
     {
-        super("input");
+        this(null, type, name);
+    }
+
+    public InputTag(Content parent, String type, String name)
+    {
+        super(parent, "input");
         setAttr("type", type);
         setAttr("name", name);
     }

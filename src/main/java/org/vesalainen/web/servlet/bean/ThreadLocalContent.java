@@ -20,17 +20,32 @@ import java.io.IOException;
 import org.vesalainen.html.Content;
 
 /**
- *
+ * ThreadLocalContent is a content without parent. It got it's model from 
+ * ThreadLocal.
  * @author tkv
- * @param <C> Context type
+ * @param <M> Context type
  */
-public abstract class ThreadLocalContent<C> implements Content
+public abstract class ThreadLocalContent<M> implements Content
 {
-    protected final ThreadLocal<C> local;
+    protected final ThreadLocal<M> local;
 
-    public ThreadLocalContent(ThreadLocal<C> local)
+    public ThreadLocalContent(ThreadLocal<M> local)
     {
         this.local = local;
+    }
+
+    @Override
+    public Content getParent()
+    {
+        return null;
+    }
+    /**
+     * @param parent 
+     */
+    @Override
+    public void setParent(Content parent)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

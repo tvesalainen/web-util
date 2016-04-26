@@ -23,24 +23,26 @@ import org.vesalainen.js.Script;
  *
  * @author tkv
  */
-public class ScriptElement implements Content
+public class ScriptElement extends AbstractContent
 {
     private Element element;
 
-    public ScriptElement()
+    public ScriptElement(Content parent)
     {
-        element = new Element("script");
+        super(parent);
+        element = new Element(parent, "script");
     }
     
-    public ScriptElement(Script script)
+    public ScriptElement(Content parent, Script script)
     {
-        element = new Element("script");
-        element.addContent(script);
+        super(parent);
+        element = new Element(parent, "script");
+        element.addRenderer(script);
     }
     
     public void addScript(Script script)
     {
-        element.addContent(script);
+        element.addRenderer(script);
     }
     @Override
     public void append(Appendable out) throws IOException

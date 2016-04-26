@@ -24,22 +24,35 @@ import java.util.List;
  *
  * @author tkv
  */
-public class ContainerContent implements Container
+public class ContainerContent extends AbstractContent implements Container
 {
-    protected List<Content> content;
+    protected List<Renderer> content;
 
     public ContainerContent()
     {
     }
+
+    public ContainerContent(Content parent)
+    {
+        super(parent);
+    }
+
     /**
      * Add text
+     * @param <T>
      * @param text
      * @return this
      */
     @Override
     public <T> ContainerContent addText(T text)
     {
-        addContent(new Text(text));
+        addContent(new Text(this, text));
+        return this;
+    }
+    @Override
+    public ContainerContent addText(Renderer renderer)
+    {
+        addRenderer(renderer);
         return this;
     }
     /**
@@ -50,7 +63,7 @@ public class ContainerContent implements Container
     @Override
     public Tag addTag(String tagName)
     {
-        Tag tag = new Tag(tagName);
+        Tag tag = new Tag(this, tagName);
         addTag(tag);
         return tag;
     }
@@ -62,6 +75,7 @@ public class ContainerContent implements Container
     @Override
     public ContainerContent addTag(Tag tag)
     {
+        tag.setParent(this);
         addContent(tag);
         return this;
     }
@@ -73,7 +87,7 @@ public class ContainerContent implements Container
     @Override
     public Element addElement(String element)
     {
-        Element el = new Element(element);
+        Element el = new Element(this, element);
         addElement(el);
         return el;
     }
@@ -92,14 +106,19 @@ public class ContainerContent implements Container
     @Override
     public ContainerContent addContent(Content c)
     {
+        c.setParent(this);
+        return addRenderer(c);
+    }
+
+    public ContainerContent addRenderer(Renderer renderer)
+    {
         if (content == null)
         {
             content = new ArrayList<>();
         }
-        content.add(c);
+        content.add(renderer);
         return this;
     }
-
     @Override
     public ContainerContent insertContent(Content c)
     {
@@ -130,7 +149,7 @@ public class ContainerContent implements Container
     {
         if (content != null)
         {
-            for (Content c : content)
+            for (Renderer c : content)
             {
                 c.append(out);
             }

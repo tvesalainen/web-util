@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Content;
+import org.vesalainen.html.Renderer;
 import org.vesalainen.util.Lists;
 
 /**
@@ -30,7 +31,7 @@ import org.vesalainen.util.Lists;
  * @author tkv
  * @param <T>
  */
-public class DynamicQuery<T> implements Content
+public class DynamicQuery<T> implements Renderer
 {   
     private ThreadLocal<T> local;
     private Charset charset;

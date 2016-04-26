@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author tkv
  */
-public class Tag implements AttributedContent
+public class Tag extends AbstractContent implements AttributedContent
 {
     protected String name;
     protected Map<String,Attribute<?>> attributes;
@@ -33,6 +33,12 @@ public class Tag implements AttributedContent
 
     public Tag(String name)
     {
+        this.name = name;
+    }
+
+    public Tag(Content parent, String name)
+    {
+        super(parent);
         this.name = name;
     }
 

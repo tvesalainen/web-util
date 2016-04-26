@@ -22,13 +22,13 @@ package org.vesalainen.html;
  */
 public class Form extends Element
 {
-    public Form(Object action)
+    public Form(Content parent, Object action)
     {
-        this("post", action);
+        this(parent, "post", action);
     }
-    public Form(String method, Object action)
+    public Form(Content parent, String method, Object action)
     {
-        super("form");
+        super(parent, "form");
         setAttr("method", method);
         if (action != null)
         {

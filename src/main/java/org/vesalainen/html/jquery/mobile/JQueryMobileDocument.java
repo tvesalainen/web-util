@@ -57,7 +57,7 @@ public class JQueryMobileDocument<C> extends JQueryDocument<C>
         JQueryMobilePage page = map.get(id);
         if (page == null)
         {
-            page = new JQueryMobilePage(id, this);
+            page = new JQueryMobilePage(body, id, this);
             body.addElement(page);
             map.put(id, page);
         }

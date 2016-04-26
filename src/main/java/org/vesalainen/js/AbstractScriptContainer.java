@@ -19,6 +19,7 @@ package org.vesalainen.js;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.vesalainen.html.AbstractContent;
 import org.vesalainen.html.Contents;
 
 /**

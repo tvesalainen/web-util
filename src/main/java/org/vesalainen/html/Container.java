@@ -65,9 +65,12 @@ public interface Container extends Content
 
     /**
      * Add text
+     * @param <T>
      * @param text
      * @return this
      */
     <T> ContainerContent addText(T text);
+    
+    ContainerContent addText(Renderer renderer);
     
 }

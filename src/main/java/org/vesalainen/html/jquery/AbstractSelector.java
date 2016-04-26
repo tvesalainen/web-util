@@ -17,14 +17,14 @@
 package org.vesalainen.html.jquery;
 
 import java.io.IOException;
+import org.vesalainen.html.AbstractContent;
 import org.vesalainen.js.Script;
-import org.vesalainen.util.Lists;
 
 /**
  *
  * @author tkv
  */
-public abstract class AbstractSelector implements Script
+public abstract class AbstractSelector extends AbstractContent implements Script
 {
     private final String selector;
     private final String action;

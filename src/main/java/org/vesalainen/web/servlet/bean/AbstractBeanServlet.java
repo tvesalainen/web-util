@@ -33,16 +33,16 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
 /**
  *
  * @author tkv
- * @param <D> Document type
- * @param <C> Context type
+ * @param <V> View (Document) type
+ * @param <M> Model type
  */
-public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends AbstractDocumentServlet<D>
+public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends AbstractDocumentServlet<V>
 {
     public static final String JSON = "__JSON__";
     
-    protected final ThreadLocal<C> threadLocalData;
-    protected C empty;
-    protected Class<C> dataType;
+    protected final ThreadLocal<M> threadLocalData;
+    protected M empty;
+    protected Class<M> dataType;
 
     public AbstractBeanServlet()
     {
@@ -54,7 +54,7 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
     {
         empty = createData();
         threadLocalData.set(empty);
-        dataType = (Class<C>) empty.getClass();
+        dataType = (Class<M>) empty.getClass();
         super.init();
     }
 
@@ -62,7 +62,7 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         I18n.setLocale(req.getLocale());
-        C data = createData();
+        M data = createData();
         threadLocalData.set(data);
         String submitField = null;
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
@@ -124,7 +124,7 @@ public abstract class AbstractBeanServlet<D extends BeanDocument,C> extends Abst
         onSubmit(data, submitField, query);
         response(resp, document);
     }
-    protected abstract void onSubmit(C data, String field, Query query);
+    protected abstract void onSubmit(M data, String field, Query query);
 
-    protected abstract C createData();
+    protected abstract M createData();
 }

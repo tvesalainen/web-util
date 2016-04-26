@@ -16,16 +16,19 @@
  */
 package org.vesalainen.html;
 
+import java.io.IOException;
+
 /**
  *
  * @author tkv
  * @param <T>
  */
-public interface Attribute<T> extends Content
+public interface Attribute<T>
 {
 
     String getName();
 
     T getValue();
-    
+    void append(Appendable out) throws IOException;
+
 }

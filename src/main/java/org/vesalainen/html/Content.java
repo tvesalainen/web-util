@@ -16,15 +16,13 @@
  */
 package org.vesalainen.html;
 
-import java.io.IOException;
-
 /**
  *
  * @author tkv
  */
-public interface Content
+public interface Content extends Renderer
 {
-
-    void append(Appendable out) throws IOException;
+    Content getParent();
+    void setParent(Content parent);
     
 }

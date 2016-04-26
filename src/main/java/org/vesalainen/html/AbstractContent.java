@@ -16,13 +16,35 @@
  */
 package org.vesalainen.html;
 
+import java.io.IOException;
+
 /**
  *
  * @author tkv
- * @param <P>
- * @param <E>
  */
-public interface EnumDynContent<P extends DynParam<E>,E extends Enum<E>> extends DynContent<P,E>
+public abstract class AbstractContent implements Content
 {
+    protected Content parent;
+
+    public AbstractContent()
+    {
+    }
+
+    protected AbstractContent(Content parent)
+    {
+        this.parent = parent;
+    }
+
+    @Override
+    public Content getParent()
+    {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Content parent)
+    {
+        this.parent = parent;
+    }
     
 }

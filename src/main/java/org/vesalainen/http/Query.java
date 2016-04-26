@@ -23,14 +23,14 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
-import org.vesalainen.html.Content;
+import org.vesalainen.html.Renderer;
 import org.vesalainen.util.HashMapList;
 
 /**
  *
  * @author tkv
  */
-public class Query extends HashMapList<String,String> implements Content
+public class Query extends HashMapList<String,String> implements Renderer
 {
     public Query()
     {

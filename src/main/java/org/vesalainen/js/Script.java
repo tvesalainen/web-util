@@ -17,12 +17,13 @@
 package org.vesalainen.js;
 
 import org.vesalainen.html.Content;
+import org.vesalainen.html.Renderer;
 
 /**
  *
  * @author tkv
  */
-public interface Script extends Content
+public interface Script extends Renderer
 {
     
 }

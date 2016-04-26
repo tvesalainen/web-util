@@ -23,16 +23,18 @@ import java.io.IOException;
  * @author tkv
  * @param <T>
  */
-public class Placeholder<T> implements Content
+public class Placeholder<T> extends AbstractContent
 {
     protected T value;
 
-    public Placeholder()
+    public Placeholder(Content parent)
     {
+        this(parent, null);
     }
 
-    public Placeholder(T value)
+    public Placeholder(Content parent, T value)
     {
+        super(parent);
         this.value = value;
     }
 

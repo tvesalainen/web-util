@@ -24,12 +24,13 @@ import static org.vesalainen.html.Encoder.encode;
  * @author tkv
  * @param <T>
  */
-public class Text<T> implements Content
+public class Text<T> extends AbstractContent
 {
     private final T text;
 
-    public Text(T text)
+    public Text(Content parent, T text)
     {
+        super(parent);
         this.text = text;
     }
     @Override

@@ -16,44 +16,41 @@
  */
 package org.vesalainen.web.servlet.bean;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import org.vesalainen.bean.BeanField;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Document;
 
 /**
  *
  * @author tkv
- * @param <C>
+ * @param <M>
  */
-public class BeanDocument<C> extends Document
+public class BeanDocument<M> extends Document
 {
-    ThreadLocal<C> threadLocalData;
-    protected C context;
-    protected Class<C> dataType;
+    ThreadLocal<M> threadLocalData;
+    protected M context;
+    protected Class<M> dataType;
     //protected final Map<String,BeanField> fieldMap = new HashMap<>();
     protected Set<String> allFields;
 
-    public BeanDocument(ThreadLocal<C> threadLocalData)
+    public BeanDocument(ThreadLocal<M> threadLocalData)
     {
         this(threadLocalData, null);
     }
 
-    public BeanDocument(ThreadLocal<C> threadLocalData, String title)
+    public BeanDocument(ThreadLocal<M> threadLocalData, String title)
     {
         super(title);
         this.threadLocalData = threadLocalData;
         this.context = threadLocalData.get();
-        this.dataType = (Class<C>) context.getClass();
+        this.dataType = (Class<M>) context.getClass();
         allFields = BeanHelper.getProperties(context.getClass());
     }
 
     @Override
     public BeanForm addForm(Object action)
     {
-        BeanForm form = new BeanForm(this, "POST", action);
+        BeanForm form = new BeanForm(body, threadLocalData, "POST", action);
         body.addElement(form);
         return form;
     }
@@ -61,7 +58,7 @@ public class BeanDocument<C> extends Document
     @Override
     public BeanForm addForm(String method, Object action)
     {
-        BeanForm form = new BeanForm(this, method, action);
+        BeanForm form = new BeanForm(body, threadLocalData, method, action);
         body.addElement(form);
         return form;
     }
@@ -71,12 +68,12 @@ public class BeanDocument<C> extends Document
         return allFields;
     }
 
-    public ThreadLocal<C> getThreadLocalData()
+    public ThreadLocal<M> getThreadLocalData()
     {
         return threadLocalData;
     }
 
-    public Class<C> getDataType()
+    public Class<M> getDataType()
     {
         return dataType;
     }

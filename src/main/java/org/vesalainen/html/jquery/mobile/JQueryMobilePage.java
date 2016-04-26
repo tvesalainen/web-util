@@ -17,7 +17,7 @@
 package org.vesalainen.html.jquery.mobile;
 
 import java.nio.charset.Charset;
-import java.util.Locale;
+import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Page;
 import org.vesalainen.js.AbstractScriptContainer;
@@ -26,25 +26,25 @@ import org.vesalainen.js.ScriptContainer;
 /**
  *
  * @author tkv
- * @param <C>
+ * @param <M>
  */
-public class JQueryMobilePage<C> extends Element implements Page
+public class JQueryMobilePage<M> extends Element implements Page
 {
     protected Object id;
     protected Element header;
     protected Element main;
     protected Element footer;
     protected ScriptContainer script;
-    private final JQueryMobileDocument<C> document;
+    private final JQueryMobileDocument<M> document;
 
-    public JQueryMobilePage(Object id, final JQueryMobileDocument<C> document)
+    public JQueryMobilePage(Content parent, Object id, final JQueryMobileDocument<M> document)
     {
-        super("div");
+        super(parent, "div");
         this.document = document;
         this.id = id;
         setAttr("data-role", "page");
         setAttr("id", id);
-        main = new Element("div").setAttr("data-role", "main").addClasses("ui-content");
+        main = new Element(this, "div").setAttr("data-role", "main").addClasses("ui-content");
         addContent(main);
     }
 
@@ -57,7 +57,7 @@ public class JQueryMobilePage<C> extends Element implements Page
     {
         if (header == null)
         {
-            header = new Element("div").setAttr("data-role", "header");
+            header = new Element(this, "div").setAttr("data-role", "header");
             insertContent(header);
         }
         return header;
@@ -72,7 +72,7 @@ public class JQueryMobilePage<C> extends Element implements Page
     {
         if (footer == null)
         {
-            footer = new Element("div").setAttr("data-role", "footer");
+            footer = new Element(this, "div").setAttr("data-role", "footer");
             addContent(footer);
         }
         return footer;
@@ -105,7 +105,7 @@ public class JQueryMobilePage<C> extends Element implements Page
     @Override
     public JQueryMobileForm addForm(String method, Object action)
     {
-        JQueryMobileForm form = new JQueryMobileForm(document, this, method, action);
+        JQueryMobileForm form = new JQueryMobileForm(this, document, this, method, action);
         main.addElement(form);
         return form;
     }

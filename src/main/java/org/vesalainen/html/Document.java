@@ -45,7 +45,7 @@ public class Document implements Page
     }
     public Document(String title)
     {
-        html = new Element("html");
+        html = new Element(null, "html");
         head = html.addElement("head");
         charset = new SimpleAttribute<>("charset", StandardCharsets.UTF_8);
         head.addTag("meta")
@@ -67,7 +67,7 @@ public class Document implements Page
     @Override
     public Form addForm(String method, Object action)
     {
-        Form form = new Form(method, action);
+        Form form = new Form(body, method, action);
         body.addElement(form);
         return form;
     }
@@ -96,7 +96,7 @@ public class Document implements Page
         {
             Element se = head.addElement("script");
             script = new AbstractScriptContainer("", "");
-            se.addContent(script);
+            se.addRenderer(script);
         }
         return script;
     }

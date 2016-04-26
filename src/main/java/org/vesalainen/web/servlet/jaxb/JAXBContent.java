@@ -34,45 +34,46 @@ import org.vesalainen.web.servlet.bean.ThreadLocalContent;
 /**
  *
  * @author tkv
- * @param <C>
+ * @param <M>
  */
-public class JAXBContent<C> extends ThreadLocalContent<C>
+public class JAXBContent<M> extends ThreadLocalContent<M>
 {
-    private BeanDocument document;
     private String action;
     
-    public JAXBContent(ThreadLocal<C> local, BeanDocument document, String action)
+    public JAXBContent(ThreadLocal<M> local, BeanDocument document, String action)
     {
         super(local);
-        this.document = document;
         this.action = action;
     }
 
     @Override
     public void append(Appendable out) throws IOException
     {
-        C data = local.get();
-        BeanForm form = new BeanForm(document, action);
+        M data = local.get();
+        BeanForm form = new BeanForm(this, local, action);
         BeanHelper.stream(data)
-                .filter((String s)->{return filter(data, s);})
+                .filter((String s)->{return filter(data, s, XmlAttribute.class, XmlElement.class, XmlElements.class);})
                 //.sorted(new ComparatorImpl<>(data))
-                .forEach((String pattern)->addProperty(data, form, pattern));
+                .forEach((String pattern)->
+        {
+            Annotation[] annotations = BeanHelper.getAnnotations(data, pattern);
+            List<Attribute> attributes = new ArrayList<>();
+            Xml2Html.inject(annotations, attributes);
+            form.createInput(pattern, attributes);
+        });
     }
     
-    public void addProperty(C data, BeanForm form, String pattern)
-    {
-        Class type = BeanHelper.getType(data, pattern);
-        Object value = BeanHelper.getValue(data, pattern);
-        Annotation[] annotations = BeanHelper.getAnnotations(data, pattern);
-        List<Attribute> attributes = new ArrayList<>();
-        Xml2Html.inject(annotations, attributes);
-        form.createInput(pattern, attributes);
-    }
-    private boolean filter(C data, String pattern)
+    private boolean filter(M data, String pattern, Class<? extends Annotation>... allowed)
     {
         AnnotatedElement ae = BeanHelper.getAnnotatedElement(data, pattern);
-        return
-                ae.isAnnotationPresent(XmlAttribute.class) || ae.isAnnotationPresent(XmlElement.class)|| ae.isAnnotationPresent(XmlElements.class);
+        for (Class<? extends Annotation> ac : allowed)
+        {
+            if (ae.isAnnotationPresent(ac))
+            {
+                return true;
+            }
+        }
+        return false;
     }
     private static class ComparatorImpl<C> implements Comparator<String>
     {

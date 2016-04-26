@@ -36,6 +36,12 @@ public class Element extends ContainerContent implements AttributedContent
         this.name = name;
     }
 
+    public Element(Content parent, String name)
+    {
+        super(parent);
+        this.name = name;
+    }
+
     @Override
     public Element addContent(Content c)
     {
@@ -66,6 +72,12 @@ public class Element extends ContainerContent implements AttributedContent
     public <T> Element addText(T text)
     {
         return (Element) super.addText(text);
+    }
+    
+    @Override
+    public Element addText(Renderer renderer)
+    {
+        return (Element) super.addText(renderer);
     }
     
     /**

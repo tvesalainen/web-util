@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.vesalainen.html.Content;
+import org.vesalainen.html.Renderer;
 
 /**
  *
@@ -56,7 +57,7 @@ public class I18n
         I18n.i18n = i18n;
     }
 
-    public static final Content getLabel(Object key)
+    public static final Renderer getLabel(Object key)
     {
         LabelWrap wrap = labelMap.get(key);
         if (wrap == null)
@@ -67,7 +68,7 @@ public class I18n
         return wrap;
     }
 
-    public static final Content getPlaceholder(Object key)
+    public static final Renderer getPlaceholder(Object key)
     {
         LabelWrap wrap = placeholderMap.get(key);
         if (wrap == null)
@@ -91,7 +92,7 @@ public class I18n
             System.err.println(key+" = ");
         }
     }
-    public static class LabelWrap implements Content
+    public static class LabelWrap implements Renderer
     {
         private final Object key;
         private final boolean placeholder;
