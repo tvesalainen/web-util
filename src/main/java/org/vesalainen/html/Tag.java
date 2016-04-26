@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author tkv
  */
-public class Tag extends AbstractContent implements AttributedContent
+public class Tag extends AbstractContent implements AttributedContent, NamedContent
 {
     protected String name;
     protected Map<String,Attribute<?>> attributes;
@@ -40,6 +40,11 @@ public class Tag extends AbstractContent implements AttributedContent
     {
         super(parent);
         this.name = name;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 
     /**
@@ -76,20 +81,26 @@ public class Tag extends AbstractContent implements AttributedContent
     @Override
     public <T> Tag setAttr(Attribute<T> attr)
     {
-        if (attributes == null)
+        if (attr != null)
         {
-            attributes = new HashMap<>();
+            if (attributes == null)
+            {
+                attributes = new HashMap<>();
+            }
+            attributes.put(attr.getName(), attr);
         }
-        attributes.put(attr.getName(), attr);
         return this;
     }
 
     @Override
     public AttributedContent setAttr(Collection<Attribute> all)
     {
-        for (Attribute a : all)
+        if (all != null)
         {
-            setAttr(a);
+            for (Attribute a : all)
+            {
+                setAttr(a);
+            }
         }
         return this;
     }

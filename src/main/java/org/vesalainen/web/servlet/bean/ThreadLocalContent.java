@@ -27,11 +27,11 @@ import org.vesalainen.html.Content;
  */
 public abstract class ThreadLocalContent<M> implements Content
 {
-    protected final ThreadLocal<M> local;
+    protected final ThreadLocal<M> threadLocalModel;
 
     public ThreadLocalContent(ThreadLocal<M> local)
     {
-        this.local = local;
+        this.threadLocalModel = local;
     }
 
     @Override
@@ -45,7 +45,6 @@ public abstract class ThreadLocalContent<M> implements Content
     @Override
     public void setParent(Content parent)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

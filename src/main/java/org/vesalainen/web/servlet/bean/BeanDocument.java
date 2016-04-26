@@ -30,8 +30,6 @@ public class BeanDocument<M> extends Document
     ThreadLocal<M> threadLocalData;
     protected M context;
     protected Class<M> dataType;
-    //protected final Map<String,BeanField> fieldMap = new HashMap<>();
-    protected Set<String> allFields;
 
     public BeanDocument(ThreadLocal<M> threadLocalData)
     {
@@ -44,7 +42,6 @@ public class BeanDocument<M> extends Document
         this.threadLocalData = threadLocalData;
         this.context = threadLocalData.get();
         this.dataType = (Class<M>) context.getClass();
-        allFields = BeanHelper.getProperties(context.getClass());
     }
 
     @Override
@@ -61,11 +58,6 @@ public class BeanDocument<M> extends Document
         BeanForm form = new BeanForm(body, threadLocalData, method, action);
         body.addElement(form);
         return form;
-    }
-
-    public Set<String> getAllFields()
-    {
-        return allFields;
     }
 
     public ThreadLocal<M> getThreadLocalData()

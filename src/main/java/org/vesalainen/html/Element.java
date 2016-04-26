@@ -25,7 +25,7 @@ import java.util.TreeMap;
  *
  * @author tkv
  */
-public class Element extends ContainerContent implements AttributedContent
+public class Element extends ContainerContent implements AttributedContent, NamedContent
 {
     protected String name;
     protected Map<String,Attribute<?>> attributes;
@@ -40,6 +40,11 @@ public class Element extends ContainerContent implements AttributedContent
     {
         super(parent);
         this.name = name;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 
     @Override

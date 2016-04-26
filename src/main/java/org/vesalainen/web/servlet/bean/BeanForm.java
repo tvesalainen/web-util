@@ -82,11 +82,12 @@ public class BeanForm<M> extends Form
     }
     public Content createInput(String field, List<Attribute> attrList)
     {
-        String inputType = "text";
         M model = threadLocalData.get();
-        Class type = BeanHelper.getType(model, field);
-        Object value = BeanHelper.getValue(model, field);
-        Class[] parameterTypes = BeanHelper.getParameterTypes(model, field);
+        return createInput(model, BeanHelper.getType(model, field), BeanHelper.getValue(model, field), BeanHelper.getParameterTypes(model, field), field, attrList);
+    }
+    public Content createInput(M model, Class type, Object value, Class[] parameterTypes, String field, List<Attribute> attrList)
+    {
+        String inputType = "text";
         InputType inputTypeAnnotation = BeanHelper.getAnnotation(model, field, InputType.class);
         if (inputTypeAnnotation != null)
         {
@@ -179,6 +180,14 @@ public class BeanForm<M> extends Form
             default:
                 throw new IllegalArgumentException(inputType + " unknown input type");
         }
+    }
+
+    public InputTag bareTextInput(String field, String value, String inputType, Collection<Attribute> attrs)
+    {
+        InputTag input = new InputTag(inputType, field).setAttr("id", field);
+        input.setAttr(attrs);
+        input.setAttr("value", value);
+        return input;
     }
 
     public ContainerContent textContainer(String field, String value, String inputType, Renderer label, Renderer placeholder, Collection<Attribute> attrs)

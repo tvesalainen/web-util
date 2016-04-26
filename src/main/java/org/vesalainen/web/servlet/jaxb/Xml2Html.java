@@ -238,4 +238,10 @@ public class Xml2Html
             }
         }
     }
+
+    public static void injectArea(String text, List<Attribute> attributes)
+    {
+        attributes.add(new SimpleAttribute("rows", 4));
+        attributes.add(new SimpleAttribute("cols", 80));
+    }
 }
