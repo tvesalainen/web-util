@@ -16,8 +16,6 @@
  */
 package org.vesalainen.web.servlet.bean;
 
-import java.util.Set;
-import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Document;
 
 /**
@@ -29,7 +27,6 @@ public class BeanDocument<M> extends Document
 {
     ThreadLocal<M> threadLocalData;
     protected M context;
-    protected Class<M> dataType;
 
     public BeanDocument(ThreadLocal<M> threadLocalData)
     {
@@ -41,7 +38,6 @@ public class BeanDocument<M> extends Document
         super(title);
         this.threadLocalData = threadLocalData;
         this.context = threadLocalData.get();
-        this.dataType = (Class<M>) context.getClass();
     }
 
     @Override
@@ -63,11 +59,6 @@ public class BeanDocument<M> extends Document
     public ThreadLocal<M> getThreadLocalData()
     {
         return threadLocalData;
-    }
-
-    public Class<M> getDataType()
-    {
-        return dataType;
     }
 
 }

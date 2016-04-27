@@ -18,6 +18,7 @@ package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,24 +39,12 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
  */
 public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends AbstractDocumentServlet<V>
 {
-    public static final String JSON = "__JSON__";
-    
     protected final ThreadLocal<M> threadLocalData;
-    protected M empty;
-    protected Class<M> dataType;
+    protected BiFunction<Class<?>,String,Object> objectFactory = BeanHelper::defaultFactory;
 
     public AbstractBeanServlet()
     {
         threadLocalData = new ThreadLocal<>();
-    }
-
-    @Override
-    public void init() throws ServletException
-    {
-        empty = createData();
-        threadLocalData.set(empty);
-        dataType = (Class<M>) empty.getClass();
-        super.init();
     }
 
     @Override
@@ -92,28 +81,11 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
             }
             else
             {
-                System.err.println(field);
-                if (JSON.equals(field))
-                {
-                    JSONObject json = new JSONObject(arr[0]);
-                    JsonHelper.setValues(json, data);
-                }
-                else
+                if (!BeanHelper.applyList(data, field, (Class<Object> c, String h)->{return createObject(data, field, c, h);}))
                 {
                     submitField = field;
                 }
             }
-            /*
-            BeanField bf = document.getBeanField(field);
-            if (bf != null)
-            {
-                bf.set(value);
-                if (bf instanceof SubmitInput)
-                {
-                    submitField = field;
-                }
-            }
-                    */
         }
         Query query = null;
         String queryString = req.getQueryString();
@@ -127,4 +99,9 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
     protected abstract void onSubmit(M data, String field, Query query);
 
     protected abstract M createData();
+    
+    protected <T> T createObject(M data, String field, Class<T> cls, String hint)
+    {
+        return BeanHelper.defaultFactory(cls, hint);
+    }
 }

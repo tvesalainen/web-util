@@ -19,6 +19,8 @@ package org.vesalainen.web.servlet.jaxb;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -84,7 +86,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                 String name = xmlType.name();
                 if (name != null)
                 {
-                    collapsible.addElement("h1").addText(I18n.getLabel(name));
+                    collapsible.addElement("h1").addText(I18n.getLabel(name)+" "+describe(value));
                 }
                 levelHandler.push(pattern, collapsible);
             }
@@ -114,8 +116,8 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                         Tag tag = form.submitContainer(pattern+'+', null, "submit", I18n.getLabel("add-"+suffix), I18n.getPlaceholder("add-"+suffix), attributes);
                         levelHandler.add(tag);
                     }
-                    Element table = new Element("ul").setDataAttr("role", "listview");
-                    levelHandler.push(pattern, table);
+                    Element ul = new Element("ul").setDataAttr("role", "listview");
+                    levelHandler.push(pattern, ul);
                 }
                 else
                 {
@@ -151,6 +153,38 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
         form.append(out);
     }
     
+    public String describe(Object ob)
+    {
+        if (ob == null)
+        {
+            return "";
+        }
+        try
+        {
+            Method toString = ob.getClass().getDeclaredMethod("toString");
+            return (String) toString.invoke(ob);
+        }
+        catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
+        {
+            try
+            {
+                Method getName = ob.getClass().getMethod("getName");
+                return (String) getName.invoke(ob);
+            }
+            catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex1)
+            {
+                try
+                {
+                    Method name = ob.getClass().getMethod("name");
+                    return (String) name.invoke(ob);
+                }
+                catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex2)
+                {
+                    return "";
+                }
+            }
+        }
+    }
     private boolean filter(M data, String pattern, Class<? extends Annotation>... allowed)
     {
         Class type = BeanHelper.getType(data, pattern);

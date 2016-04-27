@@ -19,11 +19,18 @@ package org.vesalainen.web.servlet.jaxb;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.function.BiFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.http.Query;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 import org.vesalainen.web.servlet.bean.BeanDocument;
@@ -99,4 +106,52 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
         doc.getBody().addContent(new JAXBContent(threadLocalData, doc, action));
         return doc;
     }
+
+    @Override
+    protected <T> T createObject(C data, String property, Class<T> cls, String hint)
+    {
+        if (hint == null)
+        {
+            return super.createObject(data, property, cls, hint);
+        }
+        String prefix = BeanHelper.prefix(property);
+        if (BeanHelper.isListItem(prefix))
+        {
+            prefix = BeanHelper.prefix(prefix);
+        }
+        XmlElements xmlElements = BeanHelper.getAnnotation(data, prefix, XmlElements.class);
+        if (xmlElements != null)
+        {
+            for (XmlElement xmlElement : xmlElements.value())
+            {
+                if (hint.equals(xmlElement.name()))
+                {
+                    Class type = xmlElement.type();
+                    if (type != null)
+                    {
+                        for (Method method : factory.getClass().getMethods())
+                        {
+                            if (
+                                    method.getName().startsWith("create")
+                                    && method.getParameterCount() == 0
+                                    && type.equals(method.getReturnType())
+                                    )
+                            {
+                                try
+                                {
+                                    return (T) method.invoke(factory);
+                                }
+                                catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
+                                {
+                                    throw new IllegalArgumentException(ex);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        throw new IllegalArgumentException("no creator for "+cls+": "+hint);
+    }
+    
 }

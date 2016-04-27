@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import org.vesalainen.html.Attribute;
 import org.vesalainen.html.AttributedContent;
+import org.vesalainen.html.BooleanAttribute;
 import org.vesalainen.html.SimpleAttribute;
 import org.vesalainen.util.Bijection;
 import org.vesalainen.util.HashBijection;
@@ -63,7 +64,7 @@ public class Xml2Html
                 XmlElement element = (XmlElement) a;
                 if (element != null && element.required())
                 {
-                    attributes.add(new SimpleAttribute("required", true));
+                    attributes.add(new BooleanAttribute("required", true));
                 }
             }
             if (a instanceof XmlAttribute)
@@ -71,7 +72,7 @@ public class Xml2Html
                 XmlAttribute attribute = (XmlAttribute) a;
                 if (attribute != null && attribute.required())
                 {
-                    attributes.add(new SimpleAttribute("required", true));
+                    attributes.add(new BooleanAttribute("required", true));
                 }
             }
             if (a instanceof XmlSchemaType)
@@ -122,7 +123,7 @@ public class Xml2Html
                             break;
                         case "gMonthDay":  // 	Defines a part of a date - the month and day (MM-DD)
                             attributes.add(new SimpleAttribute("type", "text"));
-                            attributes.add(new SimpleAttribute("pattern", "[0-9]{2}-[0-9]{2}"));
+                            attributes.add(new SimpleAttribute("pattern", "[0-1][0-9]-[0-3][0-9]"));
                             attributes.add(new SimpleAttribute("placeholder", "99-99"));
                             break;
                         case "gYear":  // 	Defines a part of a date - the year (YYYY)
@@ -132,7 +133,7 @@ public class Xml2Html
                             break;
                         case "gYearMonth":  // 	Defines a part of a date - the year and month (YYYY-MM)
                             attributes.add(new SimpleAttribute("type", "text"));
-                            attributes.add(new SimpleAttribute("pattern", "[0-9]{4}-[0-9]{2}"));
+                            attributes.add(new SimpleAttribute("pattern", "[0-9]{4}-[0-1][0-9]"));
                             attributes.add(new SimpleAttribute("placeholder", "9999-99"));
                             break;
                         case "time":  // 	Defines a time value 09:00:00 / 09:30:10Z / 09:30:10+06:00
@@ -143,7 +144,7 @@ public class Xml2Html
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", Byte.MIN_VALUE));
                             attributes.add(new SimpleAttribute("max", Byte.MAX_VALUE));
-                            attributes.add(new SimpleAttribute("placeholder", "byte"));
+                            attributes.add(new SimpleAttribute("placeholder", Byte.MIN_VALUE+" - "+Byte.MAX_VALUE));
                             break;
                         case "decimal":  // 	A decimal value
                         case "double":  // 	 
@@ -157,63 +158,63 @@ public class Xml2Html
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", Integer.MIN_VALUE));
                             attributes.add(new SimpleAttribute("max", Integer.MAX_VALUE));
-                            attributes.add(new SimpleAttribute("placeholder", "int"));
+                            attributes.add(new SimpleAttribute("placeholder", Integer.MIN_VALUE+" - "+Integer.MAX_VALUE));
                             break;
                         case "long":  // 	A signed 64-bit integer
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", Long.MIN_VALUE));
                             attributes.add(new SimpleAttribute("max", Long.MAX_VALUE));
-                            attributes.add(new SimpleAttribute("placeholder", "long"));
+                            attributes.add(new SimpleAttribute("placeholder", Long.MIN_VALUE+" - "+Long.MAX_VALUE));
                             break;
                         case "negativeInteger":  // 	An integer containing only negative values (..,-2,-1)
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("max", "-1"));
-                            attributes.add(new SimpleAttribute("placeholder", "long"));
+                            attributes.add(new SimpleAttribute("placeholder", " - -1"));
                             break;
                         case "nonNegativeInteger":  // 	An integer containing only non-negative values (0,1,2,..)
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", "0"));
-                            attributes.add(new SimpleAttribute("placeholder", "long"));
+                            attributes.add(new SimpleAttribute("placeholder", "0 - "));
                             break;
                         case "nonPositiveInteger":  // 	An integer containing only non-positive values (..,-2,-1,0)
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("max", "0"));
-                            attributes.add(new SimpleAttribute("placeholder", "long"));
+                            attributes.add(new SimpleAttribute("placeholder", " - 0"));
                             break;
                         case "positiveInteger":  // 	An integer containing only positive values (1,2,..)
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", "1"));
-                            attributes.add(new SimpleAttribute("placeholder", "long"));
+                            attributes.add(new SimpleAttribute("placeholder", "1 - "));
                             break;
                         case "short":  // 	A signed 16-bit integer
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", Short.MIN_VALUE));
                             attributes.add(new SimpleAttribute("max", Short.MAX_VALUE));
-                            attributes.add(new SimpleAttribute("placeholder", "short"));
+                            attributes.add(new SimpleAttribute("placeholder", Short.MIN_VALUE+" - "+Short.MAX_VALUE));
                             break;
                         case "unsignedLong":  // 	An unsigned 64-bit integer
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", "0"));
                             attributes.add(new SimpleAttribute("max", Long.toUnsignedString(Long.MIN_VALUE)));
-                            attributes.add(new SimpleAttribute("placeholder", "unsignedLong"));
+                            attributes.add(new SimpleAttribute("placeholder", "0 - "+Long.toUnsignedString(Long.MIN_VALUE)));
                             break;
                         case "unsignedInt":  // 	An unsigned 32-bit integer
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", "0"));
                             attributes.add(new SimpleAttribute("max", Integer.toUnsignedString(Integer.MIN_VALUE)));
-                            attributes.add(new SimpleAttribute("placeholder", "unsignedInt"));
+                            attributes.add(new SimpleAttribute("placeholder", "0 - "+Integer.toUnsignedString(Integer.MIN_VALUE)));
                             break;
                         case "unsignedShort":  // 	An unsigned 16-bit integer
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", "0"));
                             attributes.add(new SimpleAttribute("max", Short.toUnsignedInt(Short.MIN_VALUE)));
-                            attributes.add(new SimpleAttribute("placeholder", "unsignedInt"));
+                            attributes.add(new SimpleAttribute("placeholder", "0 - "+Short.toUnsignedInt(Short.MIN_VALUE)));
                             break;
                         case "unsignedByte":  // 	An unsigned 8-bit integer                    
                             attributes.add(new SimpleAttribute("type", "number"));
                             attributes.add(new SimpleAttribute("min", "0"));
-                            attributes.add(new SimpleAttribute("max", Short.toUnsignedInt(Short.MIN_VALUE)));
-                            attributes.add(new SimpleAttribute("placeholder", "unsignedInt"));
+                            attributes.add(new SimpleAttribute("max", Short.toUnsignedInt(Byte.MIN_VALUE)));
+                            attributes.add(new SimpleAttribute("placeholder", "0 - "+Short.toUnsignedInt(Byte.MIN_VALUE)));
                             break;
 
                         case "anyURI":  // 	 
