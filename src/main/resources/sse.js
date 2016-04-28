@@ -84,7 +84,7 @@ $(document).ready(function () {
                 $(this).attr("data-ttv", val);
                 $(this).show();
             }
-        })
+        });
     }
     var removeId = setInterval(remove, 1000);
     function remove()
@@ -100,6 +100,6 @@ $(document).ready(function () {
             {
                 $(this).attr("data-ttl", val);
             }
-        })
+        });
     }
 });
