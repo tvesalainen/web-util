@@ -31,13 +31,15 @@ import org.vesalainen.util.MimeTypes;
  */
 public class JarServlet extends HttpServlet
 {
-    private static final String eTag = String.valueOf(System.currentTimeMillis());
+    private static final String eTag = "\""+String.valueOf(System.currentTimeMillis())+"\"";
     
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException,
             IOException
     {
+        log(request.toString());
+        log(request.getRemoteAddr());
         String ifNoneMatch = request.getHeader("If-None-Match");
         if (eTag.equals(ifNoneMatch))
         {

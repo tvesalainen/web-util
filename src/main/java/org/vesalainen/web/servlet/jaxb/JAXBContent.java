@@ -63,14 +63,13 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
     public void append(Appendable out) throws IOException
     {
         M model = threadLocalModel.get();
-        BeanForm form = new BeanForm(this, threadLocalModel, action);
+        BeanForm form = new BeanForm(null, threadLocalModel, action);
         LevelHandler levelHandler = new LevelHandler(form);
         BeanHelper.stream(model)
                 //.filter((String s)->{return filter(model, s, XmlType.class, XmlValue.class, XmlAttribute.class, XmlElement.class, XmlElements.class);})
                 //.sorted(new ComparatorImpl<>(data))
                 .forEach((String pattern)->
         {
-            System.err.println(pattern);
             List<Attribute> attributes = new ArrayList<>();
             levelHandler.pop(pattern);
             AnnotatedElement annotatedElement = BeanHelper.getAnnotatedElement(model, pattern);
@@ -82,42 +81,47 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
             XmlType xmlType = annotatedElement.getAnnotation(XmlType.class);
             if (xmlType != null)
             {
-                Element collapsible = new Element("div").setDataAttr("role", "collapsible");
+                Element collapsible = new Element("div").setDataAttr("role", "collapsible").setAttr("id", pattern);
                 String name = xmlType.name();
                 if (name != null)
                 {
                     collapsible.addElement("h1").addText(I18n.getLabel(name)+" "+describe(value));
                 }
+                Element navbar = collapsible.addElement("div").setDataAttr("role", "navbar");
+                Element ul = navbar.addElement("ul");
+                Element li = ul.addElement("li");
+                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "delete").addClasses("delete");
                 levelHandler.push(pattern, collapsible);
             }
             else
             {
                 if (List.class.isAssignableFrom(type))
                 {
+                    Element collapsible = new Element("div").setDataAttr("role", "collapsible");
+                    collapsible.addElement("h1").addText(I18n.getLabel("add"));
+                    Element navbar = collapsible.addElement("div").setDataAttr("role", "navbar");
+                    Element ul = navbar.addElement("ul");
+                    Element li = ul.addElement("li");
                     XmlElements xmlElements = annotatedElement.getAnnotation(XmlElements.class);
                     if (xmlElements != null)
                     {
-                        Element collapsible = new Element("div").setDataAttr("role", "collapsible");
-                        collapsible.addElement("h1").addText(I18n.getLabel("add"));
                         for (XmlElement xmlElement : xmlElements.value())
                         {
                             Class t = xmlElement.type();
                             String name = xmlElement.name();
                             if (t != null && name != null)
                             {
-                                Tag tag = form.submitContainer(pattern+'+'+name, null, "submit", I18n.getLabel("add-"+name), I18n.getPlaceholder("add-"+name), attributes);
-                                collapsible.addContent(tag);
+                                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+name)).addClasses("add");
                             }
                         }
-                        levelHandler.add(collapsible);
                     }
                     else
                     {
-                        Tag tag = form.submitContainer(pattern+'+', null, "submit", I18n.getLabel("add-"+suffix), I18n.getPlaceholder("add-"+suffix), attributes);
-                        levelHandler.add(tag);
+                        li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+suffix)).addClasses("add");
                     }
-                    Element ul = new Element("ul").setDataAttr("role", "listview");
-                    levelHandler.push(pattern, ul);
+                    levelHandler.add(collapsible, pattern);
+                    Element ul2 = new Element("ul").setDataAttr("role", "listview");
+                    levelHandler.push(pattern, ul2);
                 }
                 else
                 {
@@ -127,7 +131,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                         String string = ConvertUtility.convert(String.class, value);
                         Xml2Html.injectArea(string, attributes);
                         ContainerContent textAreaContainer = form.textAreaContainer(pattern, string, "textarea", I18n.getLabel(suffix), I18n.getPlaceholder(suffix), attributes);
-                        levelHandler.add(textAreaContainer);
+                        levelHandler.add(textAreaContainer, pattern);
                     }
                     else
                     {
@@ -135,7 +139,15 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                         if (xmlAttribute != null)
                         {
                             Content input = form.createInput(model, type, value, parameterTypes, pattern, attributes);
-                            levelHandler.add(input);
+                            levelHandler.add(input, pattern);
+                            if (xmlAttribute.required())
+                            {
+                                String string = ConvertUtility.convert(String.class, value);
+                                if (string == null || string.isEmpty())
+                                {
+                                    levelHandler.openCollapsibles();
+                                }
+                            }
                         }
                         else
                         {
@@ -143,7 +155,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                             {
                                 String string = ConvertUtility.convert(String.class, value);
                                 InputTag input = form.bareTextInput(pattern, string, "text", attributes);
-                                levelHandler.add(input);
+                                levelHandler.add(input, pattern);
                             }
                         }
                     }
@@ -258,12 +270,14 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
         {
             return "ul".equals(current.getName());
         }
-        void add(Content content)
+        void add(Content content, String pattern)
         {
             if (isList())
             {
-                Element tr = current.addElement("li");
-                tr.addContent(content);
+                Element li = current.addElement("li").setAttr("id", pattern);
+                Element a1 = li.addElement("a").setAttr("href", "#");
+                a1.addContent(content);
+                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "delete").addClasses("delete");
             }
             else
             {
@@ -282,6 +296,20 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
             {
                 stack.pop();
                 current = (Element) current.getParent();
+            }
+        }
+
+        private void openCollapsibles()
+        {
+            Element e = current;
+            while (e != null)
+            {
+                Attribute<?> attr = e.getAttr("data-role");
+                if (attr != null && "collapsible".equals(attr.getValue()))
+                {
+                    e.setDataAttr("collapsed", false);
+                }
+                e = (Element) e.getParent();
             }
         }
     }

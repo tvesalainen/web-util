@@ -103,6 +103,8 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     protected D createDocument()
     {
         D doc = documentFactory.apply(threadLocalData, title);
+        doc.getHead().addElement("script").setAttr("src", "/form-control.js");
+
         doc.getBody().addContent(new JAXBContent(threadLocalData, doc, action));
         return doc;
     }
@@ -110,7 +112,7 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     @Override
     protected <T> T createObject(C data, String property, Class<T> cls, String hint)
     {
-        if (hint == null)
+        if (hint == null || hint.isEmpty())
         {
             return super.createObject(data, property, cls, hint);
         }
