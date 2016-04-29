@@ -27,6 +27,7 @@ import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
 import org.vesalainen.nmea.jaxb.router.NmeaType;
 import org.vesalainen.web.server.EmbeddedServer;
 import org.vesalainen.web.server.EmbeddedServerT;
+import org.vesalainen.web.servlet.bean.Context;
 
 /**
  *
@@ -60,7 +61,7 @@ public class AbstractJAXBServletT
     private static class RouterConfigServlet extends AbstractJAXBServlet<JQueryMobileDocument,JAXBElement<NmeaType>>
     {
 
-        public RouterConfigServlet(String packageName, File storage, String action, BiFunction<ThreadLocal<JAXBElement<NmeaType>>,String,JQueryMobileDocument> documentFactory)
+        public RouterConfigServlet(String packageName, File storage, String action, BiFunction<ThreadLocal<Context<JAXBElement<NmeaType>>>,String,JQueryMobileDocument> documentFactory)
         {
             super(packageName, storage, action, documentFactory);
         }

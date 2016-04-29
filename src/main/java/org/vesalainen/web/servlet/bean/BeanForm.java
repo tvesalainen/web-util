@@ -50,17 +50,17 @@ import org.vesalainen.web.SingleSelector;
  */
 public class BeanForm<M> extends Form
 {
-    protected ThreadLocal<M> threadLocalData;
+    protected ThreadLocal<Context<M>> threadLocalContext;
 
-    public BeanForm(Content parent, ThreadLocal<M> threadLocalData, Object action)
+    public BeanForm(Content parent, ThreadLocal<Context<M>> threadLocalData, Object action)
     {
         this(parent, threadLocalData, "post", action);
     }
 
-    public BeanForm(Content parent, ThreadLocal<M> threadLocalData, String method, Object action)
+    public BeanForm(Content parent, ThreadLocal<Context<M>> threadLocalData, String method, Object action)
     {
         super(parent, method, action);
-        this.threadLocalData = threadLocalData;
+        this.threadLocalContext = threadLocalData;
     }
 
     public void addInputs(String... fields)
@@ -82,7 +82,8 @@ public class BeanForm<M> extends Form
     }
     public Content createInput(String field, List<Attribute> attrList)
     {
-        M model = threadLocalData.get();
+        Context<M> context = threadLocalContext.get();
+        M model = context.getModel();
         return createInput(model, BeanHelper.getType(model, field), BeanHelper.getValue(model, field), BeanHelper.getParameterTypes(model, field), field, attrList);
     }
     public Content createInput(M model, Class type, Object value, Class[] parameterTypes, String field, List<Attribute> attrList)
@@ -184,7 +185,7 @@ public class BeanForm<M> extends Form
 
     public InputTag bareTextInput(String field, String value, String inputType, Collection<Attribute> attrs)
     {
-        InputTag input = new InputTag(inputType, field).setAttr("id", field);
+        InputTag input = new InputTag(inputType, field).setAttr("name", threadLocalContext.get().inputName(field));
         input.setAttr(attrs);
         input.setAttr("value", value);
         return input;
@@ -192,10 +193,11 @@ public class BeanForm<M> extends Form
 
     public ContainerContent textContainer(String field, String value, String inputType, Renderer label, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
-        Element textLabel = new Element("label").setAttr("for", field).addText(label);
+        Element textLabel = new Element("label").setAttr("for", inputName).addText(label);
         container.addElement(textLabel);
-        InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
+        InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
         input.setAttr("value", value);
@@ -204,10 +206,11 @@ public class BeanForm<M> extends Form
 
     public ContainerContent textAreaContainer(String field, String value, String inputType, Renderer label, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         ContainerContent textAreaContainer = new ContainerContent();
-        Element textAreaLabel = new Element("label").setAttr("for", field).addText(label);
+        Element textAreaLabel = new Element("label").setAttr("for", inputName).addText(label);
         textAreaContainer.addElement(textAreaLabel);
-        Element input = new Element(inputType).setAttr("id", field).setAttr("name", field).setAttr("placeholder", placeholder);
+        Element input = new Element(inputType).setAttr("id", inputName).setAttr("name", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         input.addText(value);
         textAreaContainer.addElement(input);
@@ -216,22 +219,24 @@ public class BeanForm<M> extends Form
 
     public Tag buttonContainer(String field, String inputType, Renderer label, Renderer placeholder, Collection<Attribute> attrs)
     {
-        Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", label).setAttr("placeholder", placeholder);
+        String inputName = inputName(field);
+        Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", inputName).setAttr("value", label).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         return input;
     }
 
     public Element radioContainer(String field, Enum value, String inputType, Class<Enum> type, Renderer label, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("legend").addText(label);
         for (Enum e : type.getEnumConstants())
         {
             String n = e.toString();
-            String id = field+'-'+n;
+            String id = inputName+'-'+n;
             Renderer d = I18n.getLabel(n);
             fieldSet.addElement("label").setAttr("for", id).addText(d);
-            InputTag input = new InputTag(inputType, field).setAttr("id", id).setAttr("value", n);
+            InputTag input = new InputTag(inputType, inputName).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
             input.setAttr(new BooleanAttribute("checked", e.equals(value)));
             fieldSet.addTag(input);
@@ -241,10 +246,11 @@ public class BeanForm<M> extends Form
 
     public ContainerContent singleCheckboxContainer(String field, Boolean value, String inputType, Renderer label, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
-        Element textLabel = new Element("label").setAttr("for", field).addText(label);
+        Element textLabel = new Element("label").setAttr("for", inputName).addText(label);
         container.addElement(textLabel);
-        InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
+        InputTag input = new InputTag(inputType, field).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
         input.setAttr(new BooleanAttribute("checked", value));
@@ -258,6 +264,7 @@ public class BeanForm<M> extends Form
 
     public Element multiCheckboxContainer(String field, EnumSet enumSet, String inputType, Class type, Renderer label, Renderer placeholder, Class<Enum> innerType, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         if (!EnumSet.class.equals(type))
         {
             throw new UnsupportedOperationException(type + " not supported for multi selection");
@@ -267,10 +274,10 @@ public class BeanForm<M> extends Form
         for (Enum e : innerType.getEnumConstants())
         {
             String n = e.toString();
-            String id = field+'-'+n;
+            String id = inputName+'-'+n;
             Renderer d = I18n.getLabel(n);
             fieldSet.addElement("label").setAttr("for", id).addText(d);
-            InputTag input = new InputTag(inputType, field).setAttr("id", id).setAttr("value", n);
+            InputTag input = new InputTag(inputType, inputName).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
             input.setAttr(new BooleanAttribute("checked", enumSet.contains(e)));
             fieldSet.addTag(input);
@@ -299,9 +306,10 @@ public class BeanForm<M> extends Form
 
     public Element singleSelectContainer(String field, Enum value, Class<Enum> type, Renderer labelText, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         Element fieldSet = new Element("fieldset");
-        fieldSet.addElement("label").setAttr("for", field).addText(labelText);
-        Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field);
+        fieldSet.addElement("label").setAttr("for", inputName).addText(labelText);
+        Element select = fieldSet.addElement("select").setAttr("name", inputName).setAttr("id", inputName);
         for (Enum e : type.getEnumConstants())
         {
             String n = e.toString();
@@ -315,9 +323,10 @@ public class BeanForm<M> extends Form
 
     public Element multiSelectContainer(String field, EnumSet value, Renderer labelText, Class<Enum> innerType, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(labelText);
-        Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
+        Element select = fieldSet.addElement("select").setAttr("name", inputName).setAttr("id", inputName).setAttr("data-native-menu", false);
         select.setAttr(new BooleanAttribute<>("multiple", true));
         for (Enum e : innerType.getEnumConstants())
         {
@@ -332,10 +341,11 @@ public class BeanForm<M> extends Form
 
     public ContainerContent colorContainer(String field, String value, String inputType, Class type, Renderer labelText, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
-        Element label = new Element("label").setAttr("for", field).addText(labelText);
+        Element label = new Element("label").setAttr("for", inputName).addText(labelText);
         container.addElement(label);
-        InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
+        InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
         input.setAttr("value", value);
@@ -344,10 +354,11 @@ public class BeanForm<M> extends Form
 
     public ContainerContent dateContainer(String field, String value, String inputType, Renderer labelText, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
-        Element label = new Element("label").setAttr("for", field).addText(labelText);
+        Element label = new Element("label").setAttr("for", inputName).addText(labelText);
         container.addElement(label);
-        InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
+        InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
         input.setAttr("value", value);
@@ -356,10 +367,11 @@ public class BeanForm<M> extends Form
 
     public ContainerContent numberContainer(String field, String value, String inputType, Renderer labelText, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
-        Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
+        Element textLabel = new Element("label").setAttr("for", inputName).addText(labelText);
         container.addElement(textLabel);
-        InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
+        InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
         input.setAttr("value", value);
@@ -368,10 +380,11 @@ public class BeanForm<M> extends Form
 
     public ContainerContent urlContainer(String field, String value, String inputType, Renderer labelText, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
-        Element textLabel = new Element("label").setAttr("for", field).addText(labelText);
+        Element textLabel = new Element("label").setAttr("for", inputName).addText(labelText);
         container.addElement(textLabel);
-        InputTag input = new InputTag(inputType, field).setAttr("id", field).setAttr("placeholder", placeholder);
+        InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         container.addTag(input);
         input.setAttr("value", value);
@@ -380,10 +393,11 @@ public class BeanForm<M> extends Form
 
     public Element multipleSelectorContainer(String field, MultipleSelector selector, String inputType, Object value, Renderer labelText, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         List options = selector.getOptions();
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(I18n.getLabel(field));
-        Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
+        Element select = fieldSet.addElement("select").setAttr("name", inputName).setAttr("id", inputName).setAttr("data-native-menu", false);
         select.setAttr(new BooleanAttribute("multiple", true));
         for (Object opt : options)
         {
@@ -398,10 +412,11 @@ public class BeanForm<M> extends Form
 
     public Element singleSelectorContainer(String field, SingleSelector selector, String inputType, Object value, Renderer label, Renderer placeholder, Collection<Attribute> attrs)
     {
+        String inputName = inputName(field);
         List options = selector.getOptions();
         Element fieldSet = new Element("fieldset");
         fieldSet.addElement("label").addText(I18n.getLabel(field));
-        Element select = fieldSet.addElement("select").setAttr("name", field).setAttr("id", field).setAttr("data-native-menu", false);
+        Element select = fieldSet.addElement("select").setAttr("name", inputName).setAttr("id", inputName).setAttr("data-native-menu", false);
         for (Object opt : options)
         {
             String n = opt.toString();
@@ -415,7 +430,8 @@ public class BeanForm<M> extends Form
 
     public Tag submitContainer(String field, Object value, String inputType, Renderer label, Renderer placeholder, Collection<Attribute> attrs)
     {
-        Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", field).setAttr("value", label);
+        String inputName = inputName(field);
+        Tag input = new Tag("input").setAttr("type", inputType).setAttr("name", inputName).setAttr("value", label);
         input.setAttr(attrs);
         return input;
     }
@@ -469,4 +485,8 @@ public class BeanForm<M> extends Form
         throw new UnsupportedOperationException(type+" not supported");
     }
 
+    private String inputName(String pattern)
+    {
+        return threadLocalContext.get().inputName(pattern);
+    }
 }

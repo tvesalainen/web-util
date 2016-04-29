@@ -42,6 +42,7 @@ import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.servlet.bean.BeanDocument;
 import org.vesalainen.web.servlet.bean.BeanForm;
+import org.vesalainen.web.servlet.bean.Context;
 import org.vesalainen.web.servlet.bean.ThreadLocalContent;
 
 /**
@@ -53,7 +54,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
 {
     private String action;
     
-    public JAXBContent(ThreadLocal<M> model, BeanDocument document, String action)
+    public JAXBContent(ThreadLocal<Context<M>> model, BeanDocument document, String action)
     {
         super(model);
         this.action = action;
@@ -62,7 +63,8 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
     @Override
     public void append(Appendable out) throws IOException
     {
-        M model = threadLocalModel.get();
+        Context<M> ctx = threadLocalModel.get();
+        M model = ctx.getModel();
         BeanForm form = new BeanForm(null, threadLocalModel, action);
         LevelHandler levelHandler = new LevelHandler(form);
         BeanHelper.stream(model)
@@ -72,6 +74,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
         {
             List<Attribute> attributes = new ArrayList<>();
             levelHandler.pop(pattern);
+            String inputName = ctx.inputName(pattern);
             AnnotatedElement annotatedElement = BeanHelper.getAnnotatedElement(model, pattern);
             Xml2Html.inject(annotatedElement.getAnnotations(), attributes);
             Class type = BeanHelper.getType(model, pattern);
@@ -81,7 +84,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
             XmlType xmlType = annotatedElement.getAnnotation(XmlType.class);
             if (xmlType != null)
             {
-                Element collapsible = new Element("div").setDataAttr("role", "collapsible").setAttr("id", pattern);
+                Element collapsible = new Element("div").setDataAttr("role", "collapsible").setAttr("id", inputName);
                 String name = xmlType.name();
                 if (name != null)
                 {
@@ -90,7 +93,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                 Element navbar = collapsible.addElement("div").setDataAttr("role", "navbar");
                 Element ul = navbar.addElement("ul");
                 Element li = ul.addElement("li");
-                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "delete").addClasses("delete");
+                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", inputName).setDataAttr("icon", "delete").addClasses("delete");
                 levelHandler.push(pattern, collapsible);
             }
             else
@@ -111,13 +114,13 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                             String name = xmlElement.name();
                             if (t != null && name != null)
                             {
-                                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+name)).addClasses("add");
+                                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", ctx.inputName(name)).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+name)).addClasses("add");
                             }
                         }
                     }
                     else
                     {
-                        li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+suffix)).addClasses("add");
+                        li.addElement("a").setAttr("href", "#").setDataAttr("pattern", inputName).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+suffix)).addClasses("add");
                     }
                     levelHandler.add(collapsible, pattern);
                     Element ul2 = new Element("ul").setDataAttr("role", "listview");
@@ -274,10 +277,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
         {
             if (isList())
             {
-                Element li = current.addElement("li").setAttr("id", pattern);
-                Element a1 = li.addElement("a").setAttr("href", "#");
-                a1.addContent(content);
-                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", pattern).setDataAttr("icon", "delete").addClasses("delete");
+                wrap(content);
             }
             else
             {
@@ -286,8 +286,16 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
         }
         void push(String pattern, Element element)
         {
-            current.addElement(element);
-            current = element;
+            if (isList())
+            {
+                Element li = wrap(element);
+                current = li;
+            }
+            else
+            {
+                current.addElement(element);
+                current = element;
+            }
             stack.push(pattern);
         }
         void pop(String pattern)
@@ -311,6 +319,25 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                 }
                 e = (Element) e.getParent();
             }
+        }
+
+        private Element wrap(Content content)
+        {
+            Element li = current.addElement("li");
+            Element a1 = li.addElement("a").setAttr("href", "#");
+            a1.addContent(content);
+            if (content instanceof Element)
+            {
+                Element element = (Element) content;
+                Attribute<?> id = element.getAttr("id");
+                if (id != null)
+                {
+                    element.removeAttr("id");
+                    li.setAttr("id", id);
+                    li.addElement("a").setAttr("href", "#").setDataAttr("pattern", id).setDataAttr("icon", "delete").addClasses("delete");
+                }
+            }
+            return li;
         }
     }
 }

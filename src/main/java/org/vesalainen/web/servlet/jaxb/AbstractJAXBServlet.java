@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.BiFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -34,6 +32,7 @@ import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.http.Query;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 import org.vesalainen.web.servlet.bean.BeanDocument;
+import org.vesalainen.web.servlet.bean.Context;
 
 /**
  *
@@ -47,9 +46,9 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     private final JAXBContext jaxbCtx;
     private final Object factory;
     private final String action;
-    private BiFunction<ThreadLocal<C>,String,D> documentFactory;
+    private BiFunction<ThreadLocal<Context<C>>,String,D> documentFactory;
 
-    public AbstractJAXBServlet(String packageName, File storage, String action, BiFunction<ThreadLocal<C>,String,D> documentFactory)
+    public AbstractJAXBServlet(String packageName, File storage, String action, BiFunction<ThreadLocal<Context<C>>,String,D> documentFactory)
     {
         try
         {

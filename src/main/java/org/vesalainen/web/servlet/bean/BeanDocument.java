@@ -25,19 +25,17 @@ import org.vesalainen.html.Document;
  */
 public class BeanDocument<M> extends Document
 {
-    ThreadLocal<M> threadLocalData;
-    protected M context;
+    ThreadLocal<Context<M>> threadLocalData;
 
-    public BeanDocument(ThreadLocal<M> threadLocalData)
+    public BeanDocument(ThreadLocal<Context<M>> threadLocalData)
     {
         this(threadLocalData, null);
     }
 
-    public BeanDocument(ThreadLocal<M> threadLocalData, String title)
+    public BeanDocument(ThreadLocal<Context<M>> threadLocalData, String title)
     {
         super(title);
         this.threadLocalData = threadLocalData;
-        this.context = threadLocalData.get();
     }
 
     @Override
@@ -56,7 +54,7 @@ public class BeanDocument<M> extends Document
         return form;
     }
 
-    public ThreadLocal<M> getThreadLocalData()
+    public ThreadLocal<Context<M>> getThreadLocalData()
     {
         return threadLocalData;
     }

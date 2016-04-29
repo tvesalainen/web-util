@@ -22,10 +22,9 @@ import java.util.function.BiFunction;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.JSONObject;
+import javax.servlet.http.HttpSession;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.http.Query;
-import org.vesalainen.json.JsonHelper;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.SingleSelector;
@@ -39,7 +38,8 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
  */
 public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends AbstractDocumentServlet<V>
 {
-    protected final ThreadLocal<M> threadLocalData;
+    private static final String Model = "__mOdEl__";
+    protected final ThreadLocal<Context<M>> threadLocalData;
     protected BiFunction<Class<?>,String,Object> objectFactory = BeanHelper::defaultFactory;
 
     public AbstractBeanServlet()
@@ -51,37 +51,49 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         I18n.setLocale(req.getLocale());
-        M data = createData();
-        threadLocalData.set(data);
+        HttpSession session = req.getSession(true);
+        M model;
+        Context<M> context = (Context<M>) session.getAttribute(Model);
+        if (context == null)
+        {
+            model = createData();
+            context = new Context(model);
+            session.setAttribute(Model, context);
+        }
+        else
+        {
+            model = context.getModel();
+        }
+        threadLocalData.set(context);
         String submitField = null;
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
-            String field = e.getKey();
+            String field = context.modelName(e.getKey());
             String[] arr = e.getValue();
-            if (BeanHelper.hasProperty(data, field))
+            if (BeanHelper.hasProperty(model, field))
             {
-                Object value = BeanHelper.getValue(data, field);
+                Object value = BeanHelper.getValue(model, field);
                 if (value instanceof SingleSelector)
                 {
                     SingleSelector ss = (SingleSelector) value;
-                    Class[] pt = BeanHelper.getParameterTypes(data, field);
+                    Class[] pt = BeanHelper.getParameterTypes(model, field);
                     ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
                 }
                 else
                 {
                     if (arr.length == 1 && arr[0].isEmpty())
                     {
-                        BeanHelper.setValue(data, field, null);
+                        BeanHelper.setValue(model, field, null);
                     }
                     else
                     {
-                        BeanHelper.setValue(data, field, arr);
+                        BeanHelper.setValue(model, field, arr);
                     }
                 }
             }
             else
             {
-                if (!BeanHelper.applyList(data, field, (Class<Object> c, String h)->{return createObject(data, field, c, h);}))
+                if (!BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);}))
                 {
                     submitField = field;
                 }
@@ -93,7 +105,7 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         {
             query = new Query(queryString);
         }
-        onSubmit(data, submitField, query);
+        onSubmit(model, submitField, query);
         response(resp, document);
     }
     protected abstract void onSubmit(M data, String field, Query query);

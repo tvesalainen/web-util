@@ -19,6 +19,9 @@ package org.vesalainen.web.server;
 import org.vesalainen.web.servlet.JarServlet;
 import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.session.HashSessionIdManager;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -47,7 +50,13 @@ public class EmbeddedServer
     {
         server = new Server(port);
         handler = new ServletHandler();
-        server.setHandler(handler);
+        //server.setHandler(handler);
+        SessionHandler sessionHandler = new SessionHandler();
+        sessionHandler.setSessionManager(new HashSessionManager());
+        sessionHandler.setHandler(handler);
+        server.setHandler(sessionHandler);
+        HashSessionIdManager sessionIdManager = new HashSessionIdManager();
+        server.setSessionIdManager(sessionIdManager);
     }
     
     public void addServlet(HttpServlet servlet, String mapping)

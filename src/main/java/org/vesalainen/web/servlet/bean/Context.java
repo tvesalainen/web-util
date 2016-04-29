@@ -14,41 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.html.jquery;
+package org.vesalainen.web.servlet.bean;
 
-import org.vesalainen.js.ScriptContainer;
-import org.vesalainen.web.servlet.bean.BeanDocument;
-import org.vesalainen.web.servlet.bean.Context;
+import org.vesalainen.util.Bijection;
+import org.vesalainen.util.HashBijection;
 
 /**
  *
  * @author tkv
  * @param <M>
  */
-public class JQueryDocument<M> extends BeanDocument<M>
+public class Context<M>
 {
-    private DocumentReadyEvent readyEvent;
-    
-    public JQueryDocument(ThreadLocal<Context<M>> threadLocalData)
+    private M model;
+    private Bijection<String,String> map = new HashBijection<>();
+    private int number;
+
+    public Context(M model)
     {
-        super(threadLocalData);
+        this.model = model;
     }
 
-    public JQueryDocument(ThreadLocal<Context<M>> threadLocalData, String title)
+    public String inputName(String name)
     {
-        super(threadLocalData, title);
-    }
-
-    @Override
-    public ScriptContainer getScriptContainer()
-    {
-        if (readyEvent == null)
+        String id = map.getSecond(name);
+        if (id == null)
         {
-            ScriptContainer sc = super.getScriptContainer();
-            readyEvent = new DocumentReadyEvent();
-            sc.addScript(readyEvent);
+            id = "id"+number;
+            number++;
+            map.put(name, id);
         }
-        return readyEvent;
+        return id;
+    }
+    public String modelName(String inputName)
+    {
+        return map.getFirst(inputName);
+    }
+    public M getModel()
+    {
+        return model;
     }
     
 }

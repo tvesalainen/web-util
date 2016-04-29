@@ -20,23 +20,24 @@ import java.util.HashMap;
 import java.util.Map;
 import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.JQueryDocument;
+import org.vesalainen.web.servlet.bean.Context;
 
 /**
  *
  * @author tkv
- * @param <C>
+ * @param <M>
  */
-public class JQueryMobileDocument<C> extends JQueryDocument<C>
+public class JQueryMobileDocument<M> extends JQueryDocument<M>
 {
     private final Map<String,JQueryMobilePage> map = new HashMap<>();
     private boolean ajax = true;
     
-    public JQueryMobileDocument(ThreadLocal<C> threadLocalData)
+    public JQueryMobileDocument(ThreadLocal<Context<M>> threadLocalData)
     {
         this(threadLocalData, null);
     }
 
-    public JQueryMobileDocument(ThreadLocal<C> threadLocalData, String title)
+    public JQueryMobileDocument(ThreadLocal<Context<M>> threadLocalData, String title)
     {
         super(threadLocalData, title);
         use(Frameworks.JQueryMobile);

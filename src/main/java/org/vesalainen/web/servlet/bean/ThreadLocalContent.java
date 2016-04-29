@@ -27,9 +27,9 @@ import org.vesalainen.html.Content;
  */
 public abstract class ThreadLocalContent<M> implements Content
 {
-    protected final ThreadLocal<M> threadLocalModel;
+    protected final ThreadLocal<Context<M>> threadLocalModel;
 
-    public ThreadLocalContent(ThreadLocal<M> local)
+    public ThreadLocalContent(ThreadLocal<Context<M>> local)
     {
         this.threadLocalModel = local;
     }
