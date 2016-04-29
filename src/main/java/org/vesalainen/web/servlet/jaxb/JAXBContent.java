@@ -37,7 +37,7 @@ import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.InputTag;
-import org.vesalainen.html.Tag;
+import org.vesalainen.html.PrettyPrinter;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.servlet.bean.BeanDocument;
@@ -162,7 +162,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                 }
             }
         });
-        form.append(out);
+        form.append(new PrettyPrinter(out));
     }
     
     public String describe(Object ob)
