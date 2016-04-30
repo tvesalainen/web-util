@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author tkv
  */
-public class Tag extends AbstractContent implements AttributedContent, NamedContent
+public class Tag extends AbstractContent implements AttributedContent
 {
     protected String name;
     protected Map<String,Attribute<?>> attributes;

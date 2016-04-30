@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Page;
+import org.vesalainen.html.Renderer;
+import org.vesalainen.html.Tag;
 import org.vesalainen.js.AbstractScriptContainer;
 import org.vesalainen.js.ScriptContainer;
 
@@ -68,6 +70,42 @@ public class JQueryMobilePage<M> extends Element implements Page
         return main;
     }
 
+    @Override
+    public Element addText(Renderer renderer)
+    {
+        return main.addText(renderer);
+    }
+
+    @Override
+    public <T> Element addText(T text)
+    {
+        return main.addText(text);
+    }
+
+    @Override
+    public Tag addTag(String tagName)
+    {
+        return main.addTag(tagName);
+    }
+
+    @Override
+    public Element addTag(Tag tag)
+    {
+        return main.addTag(tag);
+    }
+
+    @Override
+    public Element addElement(Element element)
+    {
+        return main.addElement(element);
+    }
+
+    @Override
+    public Element addContent(Content c)
+    {
+        return main.addContent(c);
+    }
+
     public Element getFooter()
     {
         if (footer == null)
@@ -105,7 +143,7 @@ public class JQueryMobilePage<M> extends Element implements Page
     @Override
     public JQueryMobileForm addForm(String method, Object action)
     {
-        JQueryMobileForm form = new JQueryMobileForm(this, document, this, method, action);
+        JQueryMobileForm form = new JQueryMobileForm(this, document, method, action);
         main.addElement(form);
         return form;
     }

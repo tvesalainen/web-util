@@ -66,38 +66,51 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         }
         threadLocalData.set(context);
         String submitField = null;
+        String removeAction = null;
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
-            String field = context.modelName(e.getKey());
-            String[] arr = e.getValue();
-            if (BeanHelper.hasProperty(model, field))
+            String key = e.getKey();
+            if (key.endsWith("#"))
             {
-                Object value = BeanHelper.getValue(model, field);
-                if (value instanceof SingleSelector)
-                {
-                    SingleSelector ss = (SingleSelector) value;
-                    Class[] pt = BeanHelper.getParameterTypes(model, field);
-                    ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
-                }
-                else
-                {
-                    if (arr.length == 1 && arr[0].isEmpty())
-                    {
-                        BeanHelper.setValue(model, field, null);
-                    }
-                    else
-                    {
-                        BeanHelper.setValue(model, field, arr);
-                    }
-                }
+                removeAction = context.modelName(key.substring(0, key.length()-1))+"#";
             }
             else
             {
-                if (!BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);}))
+                String field = context.modelName(key);
+                String[] arr = e.getValue();
+                if (BeanHelper.hasProperty(model, field))
                 {
-                    submitField = field;
+                    Object value = BeanHelper.getValue(model, field);
+                    if (value instanceof SingleSelector)
+                    {
+                        SingleSelector ss = (SingleSelector) value;
+                        Class[] pt = BeanHelper.getParameterTypes(model, field);
+                        ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
+                    }
+                    else
+                    {
+                        if (arr.length == 1 && arr[0].isEmpty())
+                        {
+                            BeanHelper.setValue(model, field, null);
+                        }
+                        else
+                        {
+                            BeanHelper.setValue(model, field, arr);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);}))
+                    {
+                        submitField = field;
+                    }
                 }
             }
+        }
+        if (removeAction != null)
+        {
+            BeanHelper.applyList(model, removeAction);
         }
         Query query = null;
         String queryString = req.getQueryString();

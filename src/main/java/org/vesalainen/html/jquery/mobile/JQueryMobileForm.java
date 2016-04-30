@@ -37,11 +37,11 @@ public class JQueryMobileForm<M> extends BeanForm<M>
 {
     private static final SimpleAttribute<String> ControlGroup = new SimpleAttribute<>("data-role", "controlgroup");
     
-    private final Page page;
+    private final Element page;
     
-    JQueryMobileForm(Content parent, JQueryMobileDocument document, Page page, String method, Object action)
+    JQueryMobileForm(Element page, JQueryMobileDocument document, String method, Object action)
     {
-        super(parent, document.getThreadLocalData(), method, action);
+        super(page, document.getThreadLocalData(), method, action);
         this.page = page;
         this.setAttr("data-ajax", document.isAjax());
     }

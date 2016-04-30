@@ -22,7 +22,7 @@ import java.util.Collection;
  *
  * @author tkv
  */
-public interface AttributedContent extends Content
+public interface AttributedContent extends Content, NamedContent
 {
     /**
      * Set Attribute

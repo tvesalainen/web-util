@@ -18,8 +18,11 @@ package org.vesalainen.html.jquery.mobile;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.vesalainen.html.Element;
 import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.JQueryDocument;
+import org.vesalainen.js.ScriptContainer;
+import org.vesalainen.web.servlet.bean.BeanForm;
 import org.vesalainen.web.servlet.bean.Context;
 
 /**
@@ -31,6 +34,7 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
 {
     private final Map<String,JQueryMobilePage> map = new HashMap<>();
     private boolean ajax = true;
+    protected JQueryMobilePage defaultPage;
     
     public JQueryMobileDocument(ThreadLocal<Context<M>> threadLocalData)
     {
@@ -63,6 +67,35 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
             map.put(id, page);
         }
         return page;
+    }
+
+    @Override
+    public ScriptContainer getScriptContainer()
+    {
+        return getDefaultPage().getScriptContainer();
+    }
+
+    @Override
+    public BeanForm addForm(String method, Object action)
+    {
+        JQueryMobilePage defPage = getDefaultPage();
+        JQueryMobileForm form = new JQueryMobileForm(defPage, this, method, action);
+        defPage.addElement(form);
+        return form;
+    }
+
+    public JQueryMobilePage getDefaultPage()
+    {
+        if (defaultPage == null)
+        {
+            defaultPage = getPage("defPage");
+        }
+        return defaultPage;
+    }
+    @Override
+    public Element getBody()
+    {
+        return getDefaultPage();
     }
     
     

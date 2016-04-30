@@ -68,6 +68,7 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     @Override
     protected void onSubmit(C data, String field, Query query)
     {
+        /*
         try
         {
             try (FileOutputStream out = new FileOutputStream(storage))
@@ -82,6 +83,7 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
         {
             throw new IllegalArgumentException(ex);
         }
+        */
     }
 
     @Override

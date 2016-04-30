@@ -185,7 +185,8 @@ public class BeanForm<M> extends Form
 
     public InputTag bareTextInput(String field, String value, String inputType, Collection<Attribute> attrs)
     {
-        InputTag input = new InputTag(inputType, field).setAttr("name", threadLocalContext.get().inputName(field));
+        String inputName = inputName(field);
+        InputTag input = new InputTag(inputType, field).setAttr("id", inputName).setAttr("name", threadLocalContext.get().inputName(field));
         input.setAttr(attrs);
         input.setAttr("value", value);
         return input;

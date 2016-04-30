@@ -25,7 +25,7 @@ import java.util.TreeMap;
  *
  * @author tkv
  */
-public class Element extends ContainerContent implements AttributedContent, NamedContent
+public class Element extends ContainerContent implements AttributedContent
 {
     protected String name;
     protected Map<String,Attribute<?>> attributes;

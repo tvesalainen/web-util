@@ -25,7 +25,7 @@ import org.vesalainen.html.Document;
  */
 public class BeanDocument<M> extends Document
 {
-    ThreadLocal<Context<M>> threadLocalData;
+    protected ThreadLocal<Context<M>> threadLocalData;
 
     public BeanDocument(ThreadLocal<Context<M>> threadLocalData)
     {

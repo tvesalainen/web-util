@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Attribute;
+import org.vesalainen.html.AttributedContent;
 import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
@@ -122,7 +123,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                     {
                         li.addElement("a").setAttr("href", "#").setDataAttr("pattern", inputName).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+suffix)).addClasses("add");
                     }
-                    levelHandler.add(collapsible, pattern);
+                    levelHandler.add(collapsible);
                     Element ul2 = new Element("ul").setDataAttr("role", "listview");
                     levelHandler.push(pattern, ul2);
                 }
@@ -134,7 +135,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                         String string = ConvertUtility.convert(String.class, value);
                         Xml2Html.injectArea(string, attributes);
                         ContainerContent textAreaContainer = form.textAreaContainer(pattern, string, "textarea", I18n.getLabel(suffix), I18n.getPlaceholder(suffix), attributes);
-                        levelHandler.add(textAreaContainer, pattern);
+                        levelHandler.add(textAreaContainer);
                     }
                     else
                     {
@@ -142,7 +143,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                         if (xmlAttribute != null)
                         {
                             Content input = form.createInput(model, type, value, parameterTypes, pattern, attributes);
-                            levelHandler.add(input, pattern);
+                            levelHandler.add(input);
                             if (xmlAttribute.required())
                             {
                                 String string = ConvertUtility.convert(String.class, value);
@@ -158,7 +159,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                             {
                                 String string = ConvertUtility.convert(String.class, value);
                                 InputTag input = form.bareTextInput(pattern, string, "text", attributes);
-                                levelHandler.add(input, pattern);
+                                levelHandler.add(input);
                             }
                         }
                     }
@@ -273,7 +274,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
         {
             return "ul".equals(current.getName());
         }
-        void add(Content content, String pattern)
+        void add(Content content )
         {
             if (isList())
             {
@@ -288,14 +289,14 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
         {
             if (isList())
             {
-                Element li = wrap(element);
-                current = li;
+                wrap(element);
+                stack.push(pattern);
             }
             else
             {
                 current.addElement(element);
-                current = element;
             }
+            current = element;
             stack.push(pattern);
         }
         void pop(String pattern)
@@ -321,23 +322,28 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
             }
         }
 
-        private Element wrap(Content content)
+        private void wrap(Content content)
         {
             Element li = current.addElement("li");
-            Element a1 = li.addElement("a").setAttr("href", "#");
-            a1.addContent(content);
-            if (content instanceof Element)
+            if (content instanceof AttributedContent)
             {
-                Element element = (Element) content;
+                AttributedContent element = (AttributedContent) content;
                 Attribute<?> id = element.getAttr("id");
                 if (id != null)
                 {
                     element.removeAttr("id");
-                    li.setAttr("id", id);
-                    li.addElement("a").setAttr("href", "#").setDataAttr("pattern", id).setDataAttr("icon", "delete").addClasses("delete");
+                    li.setAttr("id", id.getValue());
+                }
+                if ("input".equals(element.getName()))
+                {
+                    li.addElement("a").setAttr("href", "#").addContent(content);
+                    li.addElement("a").setAttr("href", "#").setDataAttr("pattern", id.getValue()).setDataAttr("icon", "delete").addClasses("delete");
+                }
+                else
+                {
+                    li.addContent(content);
                 }
             }
-            return li;
         }
     }
 }

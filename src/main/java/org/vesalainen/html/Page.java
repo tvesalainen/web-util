@@ -30,7 +30,7 @@ public interface Page
     Form addForm(Object action);
 
     Form addForm(String method, Object action);
-
+    
     Charset getCharset();
 
     ScriptContainer getScriptContainer();
