@@ -32,6 +32,7 @@ import org.vesalainen.util.MimeTypes;
 public class JarServlet extends HttpServlet
 {
     private static final String eTag = "\""+String.valueOf(System.currentTimeMillis())+"\"";
+    private static final String Path = "/org/vesalainen/web/jar";
     
     @Override
     protected void doGet(HttpServletRequest request,
@@ -48,7 +49,7 @@ public class JarServlet extends HttpServlet
         }
         response.setHeader("ETag", eTag);
         String pathInfo = request.getPathInfo();
-        InputStream is = JarServlet.class.getResourceAsStream(pathInfo);
+        InputStream is = JarServlet.class.getResourceAsStream(Path+pathInfo);
         if (is != null)
         {
             String mimeType = MimeTypes.getMimeType(pathInfo);
