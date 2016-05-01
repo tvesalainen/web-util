@@ -17,14 +17,11 @@
 package org.vesalainen.web.servlet.jaxb;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
@@ -104,7 +101,6 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     protected D createDocument()
     {
         D doc = documentFactory.apply(threadLocalData, title);
-        doc.getHead().addElement("script").setAttr("src", "/form-control.js");
 
         doc.getBody().addContent(new JAXBContent(threadLocalData, doc, action));
         return doc;

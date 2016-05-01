@@ -50,6 +50,7 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
+        System.err.println(req);
         I18n.setLocale(req.getLocale());
         HttpSession session = req.getSession(true);
         M model;
@@ -66,51 +67,58 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         }
         threadLocalData.set(context);
         String submitField = null;
-        String removeAction = null;
+        String action = null;
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String key = e.getKey();
-            if (key.endsWith("#"))
+            if (key.endsWith("#") || key.endsWith("+"))
             {
-                removeAction = context.modelName(key.substring(0, key.length()-1))+"#";
+                action = context.modelName(key.substring(0, key.length()-1))+key.charAt(key.length()-1);
             }
             else
             {
                 String field = context.modelName(key);
                 String[] arr = e.getValue();
-                if (BeanHelper.hasProperty(model, field))
+                try
                 {
-                    Object value = BeanHelper.getValue(model, field);
-                    if (value instanceof SingleSelector)
+                    if (BeanHelper.hasProperty(model, field))
                     {
-                        SingleSelector ss = (SingleSelector) value;
-                        Class[] pt = BeanHelper.getParameterTypes(model, field);
-                        ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
-                    }
-                    else
-                    {
-                        if (arr.length == 1 && arr[0].isEmpty())
+                        Object value = BeanHelper.getValue(model, field);
+                        if (value instanceof SingleSelector)
                         {
-                            BeanHelper.setValue(model, field, null);
+                            SingleSelector ss = (SingleSelector) value;
+                            Class[] pt = BeanHelper.getParameterTypes(model, field);
+                            ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
                         }
                         else
                         {
-                            BeanHelper.setValue(model, field, arr);
+                            if (arr.length == 1 && arr[0].isEmpty())
+                            {
+                                BeanHelper.setValue(model, field, null);
+                            }
+                            else
+                            {
+                                BeanHelper.setValue(model, field, arr);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);}))
+                        {
+                            submitField = field;
                         }
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    if (!BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);}))
-                    {
-                        submitField = field;
-                    }
+                    throw new ServletException("problem with "+field, ex);
                 }
             }
         }
-        if (removeAction != null)
+        if (action != null)
         {
-            BeanHelper.applyList(model, removeAction);
+            BeanHelper.applyList(model, action);
         }
         Query query = null;
         String queryString = req.getQueryString();

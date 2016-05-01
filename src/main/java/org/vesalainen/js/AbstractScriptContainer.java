@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.vesalainen.html.AbstractContent;
 import org.vesalainen.html.Contents;
+import org.vesalainen.html.Renderer;
 
 /**
  *
@@ -30,7 +31,7 @@ public class AbstractScriptContainer implements ScriptContainer
 {
     protected Object prefix;
     protected Object suffix;
-    protected List<Script> content = new ArrayList<>();
+    protected List<Renderer> content = new ArrayList<>();
 
     public AbstractScriptContainer()
     {
@@ -43,7 +44,7 @@ public class AbstractScriptContainer implements ScriptContainer
     }
     
     @Override
-    public ScriptContainer addScript(Script script)
+    public ScriptContainer addScript(Renderer script)
     {
         content.add(script);
         return this;
@@ -60,7 +61,7 @@ public class AbstractScriptContainer implements ScriptContainer
     public void append(Appendable out) throws IOException
     {
         Contents.append(out, prefix);
-        for (Script script : content)
+        for (Renderer script : content)
         {
             script.append(out);
         }

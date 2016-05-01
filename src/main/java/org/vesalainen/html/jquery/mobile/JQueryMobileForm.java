@@ -19,14 +19,13 @@ package org.vesalainen.html.jquery.mobile;
 import java.util.Collection;
 import java.util.EnumSet;
 import org.vesalainen.html.Attribute;
-import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
-import org.vesalainen.html.Page;
 import org.vesalainen.html.Renderer;
 import org.vesalainen.html.SimpleAttribute;
 import org.vesalainen.web.MultipleSelector;
 import org.vesalainen.web.SingleSelector;
 import org.vesalainen.web.servlet.bean.BeanForm;
+import org.vesalainen.web.servlet.bean.Context;
 
 /**
  *
@@ -39,11 +38,11 @@ public class JQueryMobileForm<M> extends BeanForm<M>
     
     private final Element page;
     
-    JQueryMobileForm(Element page, JQueryMobileDocument document, String method, Object action)
+    public JQueryMobileForm(Element page, ThreadLocal<Context<M>> threadLocalData, String method, Object action)
     {
-        super(page, document.getThreadLocalData(), method, action);
+        super(page, threadLocalData, method, action);
         this.page = page;
-        this.setAttr("data-ajax", document.isAjax());
+        this.setDataAttr("ajax", false);
     }
 
     @Override

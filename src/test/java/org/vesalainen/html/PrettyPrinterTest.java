@@ -32,9 +32,15 @@ public class PrettyPrinterTest
     }
 
     @Test
-    public void testSomeMethod() throws IOException
+    public void test1() throws IOException
     {
         PrettyPrinter pp = new PrettyPrinter(System.err);
         pp.append("<!DOCTYPE><head><meta lang=\"fi\"></head><body><title>Hello Word</title></body>");
+    }
+    @Test
+    public void test2() throws IOException
+    {
+        PrettyPrinter pp = new PrettyPrinter(System.err);
+        pp.append("'<html />'");
     }
 }

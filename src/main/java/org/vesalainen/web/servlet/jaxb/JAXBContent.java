@@ -38,11 +38,10 @@ import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.InputTag;
-import org.vesalainen.html.PrettyPrinter;
+import org.vesalainen.html.jquery.mobile.JQueryMobileForm;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.servlet.bean.BeanDocument;
-import org.vesalainen.web.servlet.bean.BeanForm;
 import org.vesalainen.web.servlet.bean.Context;
 import org.vesalainen.web.servlet.bean.ThreadLocalContent;
 
@@ -54,10 +53,12 @@ import org.vesalainen.web.servlet.bean.ThreadLocalContent;
 public class JAXBContent<M> extends ThreadLocalContent<M>
 {
     private String action;
+    private BeanDocument document;
     
     public JAXBContent(ThreadLocal<Context<M>> model, BeanDocument document, String action)
     {
         super(model);
+        this.document = document;
         this.action = action;
     }
 
@@ -66,7 +67,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
     {
         Context<M> ctx = threadLocalModel.get();
         M model = ctx.getModel();
-        BeanForm form = new BeanForm(null, threadLocalModel, action);
+        JQueryMobileForm form = new JQueryMobileForm(null, threadLocalModel, "post", action);
         LevelHandler levelHandler = new LevelHandler(form);
         BeanHelper.stream(model)
                 //.filter((String s)->{return filter(model, s, XmlType.class, XmlValue.class, XmlAttribute.class, XmlElement.class, XmlElements.class);})
@@ -166,7 +167,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                 }
             }
         });
-        form.append(new PrettyPrinter(out));
+        form.append(out);
     }
     
     public String describe(Object ob)

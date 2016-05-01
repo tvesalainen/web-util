@@ -44,11 +44,14 @@ public class Context<M>
             number++;
             map.put(name, id);
         }
+        System.err.println(name+" -> "+id);
         return id;
     }
     public String modelName(String inputName)
     {
-        return map.getFirst(inputName);
+        String first = map.getFirst(inputName);
+        System.err.println(inputName+" -> "+first);
+        return first;
     }
     public M getModel()
     {

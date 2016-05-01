@@ -39,6 +39,13 @@ public class BeanDocument<M> extends Document
     }
 
     @Override
+    public void init()
+    {
+        super.init();
+        getScriptContainer().addScript(new FormControl());
+    }
+
+    @Override
     public BeanForm addForm(Object action)
     {
         BeanForm form = new BeanForm(body, threadLocalData, "POST", action);

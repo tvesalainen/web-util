@@ -29,6 +29,8 @@ public class PrettyPrinter implements Appendable
     private boolean start = false;
     private boolean slash = false;
     private boolean ender = false;
+    private char quote;
+    private int count;
 
     public PrettyPrinter(Appendable out)
     {
@@ -37,10 +39,15 @@ public class PrettyPrinter implements Appendable
     
     private void prefix(Appendable out, int length) throws IOException
     {
-        out.append('\n');
-        for (int ii=0;ii<length;ii++)
+        if (count > 0)
         {
-            out.append(' ');
+            out.append('\n');
+            count++;
+            for (int ii=0;ii<length;ii++)
+            {
+                out.append(' ');
+                count++;
+            }
         }
     }
 
@@ -63,6 +70,29 @@ public class PrettyPrinter implements Appendable
     @Override
     public Appendable append(char cc) throws IOException
     {
+        if (cc == '\'' || cc == '"')
+        {
+            if (quote == 0)
+            {
+                quote = cc;
+                out.append((char)cc);
+                count++;
+                return this;
+            }            
+        }
+        if (quote != 0)
+        {
+            if (quote == cc)
+            {
+                quote = 0;
+            }
+            else
+            {
+                out.append((char)cc);
+                count++;
+                return this;
+            }
+        }
         switch (cc)
         {
             case '<':
@@ -74,11 +104,14 @@ public class PrettyPrinter implements Appendable
                     prefix--;
                     prefix(out, prefix);
                     out.append("</");
+                    count+=2;
                     start = false;
                     ender = true;
                 }
                 else
                 {
+                    out.append('/');
+                    count++;
                     slash = true;
                 }
                 break;
@@ -86,6 +119,7 @@ public class PrettyPrinter implements Appendable
                 if (slash)
                 {
                     out.append("/>");
+                    count+=2;
                     slash = false;
                 }
                 else
@@ -96,6 +130,7 @@ public class PrettyPrinter implements Appendable
                     }
                     ender = false;
                     out.append('>');
+                    count++;
                 }
                 break;
             case '\r':
@@ -107,10 +142,12 @@ public class PrettyPrinter implements Appendable
                 {
                     prefix(out, prefix);
                     out.append('<');
+                    count++;
                     start = false;
                 }
                 slash = false;
                 out.append((char)cc);
+                count++;
                 break;
         }
         return this;

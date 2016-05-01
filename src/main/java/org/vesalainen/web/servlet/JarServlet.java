@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.util.MimeTypes;
+import org.vesalainen.util.ThreadSafeTemporary;
 
 /**
  *
@@ -31,8 +32,10 @@ import org.vesalainen.util.MimeTypes;
  */
 public class JarServlet extends HttpServlet
 {
+    private static final int BufferSize = 4096;
     private static final String eTag = "\""+String.valueOf(System.currentTimeMillis())+"\"";
-    private static final String Path = "/org/vesalainen/web/jar";
+    public static final String Path = "/org/vesalainen/web/jar";
+    private static ThreadSafeTemporary<byte[]> bufferStore = new ThreadSafeTemporary<>(()->{return new byte[BufferSize];});
     
     @Override
     protected void doGet(HttpServletRequest request,
@@ -56,7 +59,7 @@ public class JarServlet extends HttpServlet
             response.setContentType(mimeType);
             response.setStatus(HttpServletResponse.SC_OK);
             ServletOutputStream os = response.getOutputStream();
-            byte[] buf = new byte[4096];    // TODO
+            byte[] buf = bufferStore.get();
             int rc = is.read(buf);
             while (rc != -1)
             {

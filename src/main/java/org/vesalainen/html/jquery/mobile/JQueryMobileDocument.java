@@ -19,6 +19,7 @@ package org.vesalainen.html.jquery.mobile;
 import java.util.HashMap;
 import java.util.Map;
 import org.vesalainen.html.Element;
+import org.vesalainen.html.Form;
 import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.JQueryDocument;
 import org.vesalainen.js.ScriptContainer;
@@ -33,7 +34,7 @@ import org.vesalainen.web.servlet.bean.Context;
 public class JQueryMobileDocument<M> extends JQueryDocument<M>
 {
     private final Map<String,JQueryMobilePage> map = new HashMap<>();
-    private boolean ajax = true;
+    private boolean ajax = false;
     protected JQueryMobilePage defaultPage;
     
     public JQueryMobileDocument(ThreadLocal<Context<M>> threadLocalData)
@@ -79,9 +80,15 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
     public BeanForm addForm(String method, Object action)
     {
         JQueryMobilePage defPage = getDefaultPage();
-        JQueryMobileForm form = new JQueryMobileForm(defPage, this, method, action);
+        JQueryMobileForm form = new JQueryMobileForm(defPage, threadLocalData, method, action);
         defPage.addElement(form);
         return form;
+    }
+
+    @Override
+    public Form createForm(Element parent, String method, Object action)
+    {
+        return new JQueryMobileForm(parent, threadLocalData, method, action);
     }
 
     public JQueryMobilePage getDefaultPage()

@@ -17,6 +17,7 @@
 package org.vesalainen.html.jquery;
 
 import java.io.IOException;
+import org.vesalainen.html.Renderer;
 import org.vesalainen.js.Function;
 import org.vesalainen.js.Script;
 import org.vesalainen.js.ScriptContainer;
@@ -42,7 +43,7 @@ public class SelectorFunction extends AbstractSelector implements ScriptContaine
     }
 
     @Override
-    public ScriptContainer addScript(Script script)
+    public ScriptContainer addScript(Renderer script)
     {
         function.addScript(script);
         return function;

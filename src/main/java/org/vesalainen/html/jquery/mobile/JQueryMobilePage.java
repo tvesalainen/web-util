@@ -38,6 +38,7 @@ public class JQueryMobilePage<M> extends Element implements Page
     protected Element footer;
     protected ScriptContainer script;
     private final JQueryMobileDocument<M> document;
+    protected boolean domCache = false;
 
     public JQueryMobilePage(Content parent, Object id, final JQueryMobileDocument<M> document)
     {
@@ -46,8 +47,9 @@ public class JQueryMobilePage<M> extends Element implements Page
         this.id = id;
         setAttr("data-role", "page");
         setAttr("id", id);
-        main = new Element(this, "div").setAttr("data-role", "main").addClasses("ui-content");
-        addContent(main);
+        setDataAttr("dom-cache", domCache);
+        main = new Element(this, "div").setDataAttr("role", "main").addClasses("ui-content");
+        super.addContent(main);
     }
 
     public Object getId()
@@ -121,9 +123,9 @@ public class JQueryMobilePage<M> extends Element implements Page
     {
         if (script == null)
         {
-            ScriptContainer sc = document.getScriptContainer();
+            Element se = document.getHead().addElement("script");
             script = new AbstractScriptContainer("$(document).on(\"pagecreate\",\"#"+id+"\",function(){", "});");
-            sc.addScript(script);
+            se.addRenderer(script);
         }
         return script;
     }
@@ -143,7 +145,7 @@ public class JQueryMobilePage<M> extends Element implements Page
     @Override
     public JQueryMobileForm addForm(String method, Object action)
     {
-        JQueryMobileForm form = new JQueryMobileForm(this, document, method, action);
+        JQueryMobileForm form = new JQueryMobileForm(this, document.getThreadLocalData(), method, action);
         main.addElement(form);
         return form;
     }

@@ -19,12 +19,15 @@ package org.vesalainen.html;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 import org.vesalainen.js.AbstractScriptContainer;
 import org.vesalainen.js.ScriptContainer;
+import org.vesalainen.test.DebugHelper;
 
 /**
  *
@@ -38,6 +41,7 @@ public class Document implements Page
     protected ScriptContainer script;
     protected Set<Framework> frameworks;
     private final SimpleAttribute<Charset> charset;
+    protected Supplier<Form> formfactory;
 
     public Document()
     {
@@ -58,6 +62,10 @@ public class Document implements Page
         body = html.addElement("body");
     }
 
+    public void init()
+    {
+        
+    }
     @Override
     public Form addForm(Object action)
     {
@@ -67,9 +75,14 @@ public class Document implements Page
     @Override
     public Form addForm(String method, Object action)
     {
-        Form form = new Form(body, method, action);
+        Form form = createForm(body, method, action);
         body.addElement(form);
         return form;
+    }
+
+    public Form createForm(Element parent, String method, Object action)
+    {
+        return new Form(parent, method, action);
     }
     
     public void use(Framework framework)
@@ -141,9 +154,14 @@ public class Document implements Page
         Charset cs = getCharset();
         if (StandardCharsets.UTF_8.contains(cs))
         {
-            OutputStreamWriter writer = new OutputStreamWriter(os, cs);
-            writer.append("<!DOCTYPE HTML>\n");
-            html.append(writer);
+            Writer writer = new OutputStreamWriter(os, cs);
+            Appendable out = writer;
+            if (DebugHelper.guessDebugging())
+            {
+                out = new PrettyPrinter(out); 
+            }
+            out.append("<!DOCTYPE HTML>\n");
+            html.append(out);
             writer.flush();
         }
         else
