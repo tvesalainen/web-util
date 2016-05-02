@@ -16,39 +16,12 @@
  */
 package org.vesalainen.web.servlet.bean;
 
-import org.vesalainen.bean.ThreadLocalBeanField;
-
 /**
- *
+ * Marks class for BeanRenderer. Classes that implement BeanContent have 
+ * properties that will be replaced during rendering. 
  * @author tkv
- * @param <T>
  */
-public class BooleanInput<T> extends ThreadLocalBeanField<T,Boolean>
+public interface BeanContent
 {
-
-    public BooleanInput(ThreadLocal<T> local, Class<? extends T> cls, String fieldname)
-    {
-        super(local, cls, fieldname);
-    }
-
-    @Override
-    public void set(Object value)
-    {
-        super.set(true);
-    }
-    
-    @Override
-    public String toString()
-    {
-        Object value = get();
-        if (value != null)
-        {
-            return value.toString();
-        }
-        else
-        {
-            return "";
-        }
-    }
     
 }
