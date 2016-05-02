@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.vesalainen.html.Content;
 import org.vesalainen.html.Renderer;
 
 /**
@@ -31,15 +30,21 @@ import org.vesalainen.html.Renderer;
  */
 public class I18n
 {
-    private static I18nSupport i18n = new StupidI18n();
+    public static final I18nSupport stupidI18n = new StupidI18n();
+    public static final I18nSupport camelCaseI18n = new CamelCaseI18n();
     private static final ThreadLocal<Locale> locale = new ThreadLocal<>();
+    private static final ThreadLocal<I18nSupport> support = new ThreadLocal<>();
     private static final Set<Object> missing = new HashSet<>();
     private static final Map<Object,LabelWrap> labelMap = new HashMap<>();
     private static final Map<Object,LabelWrap> placeholderMap = new HashMap<>();
-
-    public static final void setLocale(Locale locale)
+    static
+    {
+        support.set(stupidI18n);
+    }
+    public static final void set(I18nSupport support, Locale locale)
     {
         I18n.locale.set(locale);
+        I18n.support.set(support);
     }
     
     public static final Locale getLocale()
@@ -49,12 +54,7 @@ public class I18n
     
     public static final I18nSupport getI18n()
     {
-        return i18n;
-    }
-
-    public static final void setI18n(I18nSupport i18n)
-    {
-        I18n.i18n = i18n;
+        return support.get();
     }
 
     public static final Renderer getLabel(Object key)
@@ -81,7 +81,7 @@ public class I18n
 
     public static final String getPlaceholder(Locale locale, Object key)
     {
-        return i18n.getPlaceholder(locale, key);
+        return support.get().getPlaceholder(locale, key);
     }
 
     private static void printMissing(Object key)
@@ -116,11 +116,11 @@ public class I18n
             String string;
             if (placeholder)
             {
-                string = i18n.getPlaceholder(locale.get(), key);
+                string = support.get().getPlaceholder(locale.get(), key);
             }
             else
             {
-                string = i18n.getLabel(locale.get(), key);
+                string = support.get().getLabel(locale.get(), key);
             }
             if (string != null)
             {

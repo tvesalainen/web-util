@@ -29,7 +29,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import org.vesalainen.bean.BeanHelper;
-import org.vesalainen.http.Query;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
 import org.vesalainen.web.servlet.bean.BeanDocument;
 import org.vesalainen.web.servlet.bean.Context;

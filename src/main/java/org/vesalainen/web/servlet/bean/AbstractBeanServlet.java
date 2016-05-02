@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.vesalainen.bean.BeanHelper;
-import org.vesalainen.http.Query;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.SingleSelector;
@@ -48,10 +47,17 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
     }
 
     @Override
+    public void init() throws ServletException
+    {
+        super.init();
+        i18nSupport = I18n.camelCaseI18n;
+    }
+
+    @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         System.err.println(req);
-        I18n.setLocale(req.getLocale());
+        I18n.set(i18nSupport, req.getLocale());
         HttpSession session = req.getSession(true);
         M model;
         Context<M> context = (Context<M>) session.getAttribute(Model);

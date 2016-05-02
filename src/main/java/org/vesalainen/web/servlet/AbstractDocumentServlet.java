@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.html.Document;
 import org.vesalainen.web.I18n;
+import org.vesalainen.web.I18nSupport;
 
 /**
  *
@@ -34,6 +35,7 @@ public abstract class AbstractDocumentServlet<D extends Document> extends HttpSe
 {
     protected D document;
     protected String title;
+    protected I18nSupport i18nSupport = I18n.getI18n();
     
     public AbstractDocumentServlet()
     {
@@ -51,7 +53,7 @@ public abstract class AbstractDocumentServlet<D extends Document> extends HttpSe
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        I18n.setLocale(req.getLocale());
+        I18n.set(i18nSupport, req.getLocale());
         response(resp, document);
     }
 
