@@ -8,7 +8,12 @@ $(".delete").click(function(){
 $(".add").click(function(){
     var id = $(this).attr("data-pattern");
     var target = $("form");
-    target.append("<input name='"+id+"+' type='text' hidden>");
+    target.append("<input name='"+id+"' type='text' hidden>");
+    var f = $('form');
+    f.submit();
+});
+
+$(".submit").click(function(){
     $('form').submit();
 });
 

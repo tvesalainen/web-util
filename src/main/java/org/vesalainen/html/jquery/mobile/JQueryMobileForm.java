@@ -19,6 +19,8 @@ package org.vesalainen.html.jquery.mobile;
 import java.util.Collection;
 import java.util.EnumSet;
 import org.vesalainen.html.Attribute;
+import org.vesalainen.html.Content;
+import org.vesalainen.html.DataAttributeName;
 import org.vesalainen.html.Element;
 import org.vesalainen.html.Renderer;
 import org.vesalainen.html.SimpleAttribute;
@@ -34,14 +36,12 @@ import org.vesalainen.web.servlet.bean.Context;
  */
 public class JQueryMobileForm<M> extends BeanForm<M>
 {
-    private static final SimpleAttribute<String> ControlGroup = new SimpleAttribute<>("data-role", "controlgroup");
+    private static final Attribute<String> ControlGroup = new SimpleAttribute<>(DataAttributeName.name("role"), "controlgroup");
+    private static final Attribute<String> Horizontal = new SimpleAttribute<>(DataAttributeName.name("type"), "horizontal");
     
-    private final Element page;
-    
-    public JQueryMobileForm(Element page, ThreadLocal<Context<M>> threadLocalData, String method, Object action)
+    public JQueryMobileForm(Content parent, ThreadLocal<Context<M>> threadLocalData, String id, String method, Object action)
     {
-        super(page, threadLocalData, method, action);
-        this.page = page;
+        super(parent, threadLocalData, id, method, action);
         this.setDataAttr("ajax", false);
     }
 
@@ -56,14 +56,14 @@ public class JQueryMobileForm<M> extends BeanForm<M>
     public Element radioContainer(String field, Enum value, String inputType, Class<Enum> type, Renderer labelText, Renderer placeholder, Collection<Attribute> attrs)
     {
         return super.radioContainer(field, value, inputType, type, labelText, placeholder, attrs)
-                .setAttr(ControlGroup);
+                .setAttr(ControlGroup).setAttr(Horizontal);
     }
 
     @Override
     public Element singleSelectorContainer(String field, SingleSelector selector, String inputType, Object value, Renderer labelText, Renderer placeholder, Collection<Attribute> attrs)
     {
         return super.singleSelectorContainer(field, selector, inputType, value, labelText, placeholder, attrs)
-                .setAttr(ControlGroup);
+                .setAttr(ControlGroup).setAttr(Horizontal);
     }
 
     @Override

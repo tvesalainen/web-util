@@ -71,48 +71,55 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String key = e.getKey();
-            if (key.endsWith("#") || key.endsWith("+"))
+            String field = context.modelName(key);
+            if (field == null)
             {
-                action = context.modelName(key.substring(0, key.length()-1))+key.charAt(key.length()-1);
+                submitField = key;
             }
             else
             {
-                String field = context.modelName(key);
-                String[] arr = e.getValue();
-                try
+                if (field.endsWith("#"))
                 {
-                    if (BeanHelper.hasProperty(model, field))
+                    action = field;
+                }
+                else
+                {
+                    if (BeanHelper.isAdd(field) || BeanHelper.isAssign(field))
                     {
-                        Object value = BeanHelper.getValue(model, field);
-                        if (value instanceof SingleSelector)
-                        {
-                            SingleSelector ss = (SingleSelector) value;
-                            Class[] pt = BeanHelper.getParameterTypes(model, field);
-                            ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
-                        }
-                        else
-                        {
-                            if (arr.length == 1 && arr[0].isEmpty())
-                            {
-                                BeanHelper.setValue(model, field, null);
-                            }
-                            else
-                            {
-                                BeanHelper.setValue(model, field, arr);
-                            }
-                        }
+                        BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);});
                     }
                     else
                     {
-                        if (!BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);}))
+                        String[] arr = e.getValue();
+                        try
                         {
-                            submitField = field;
+                            if (BeanHelper.hasProperty(model, field))
+                            {
+                                Object value = BeanHelper.getValue(model, field);
+                                if (value instanceof SingleSelector)
+                                {
+                                    SingleSelector ss = (SingleSelector) value;
+                                    Class[] pt = BeanHelper.getParameterTypes(model, field);
+                                    ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
+                                }
+                                else
+                                {
+                                    if (arr.length == 1 && arr[0].isEmpty())
+                                    {
+                                        BeanHelper.setValue(model, field, null);
+                                    }
+                                    else
+                                    {
+                                        BeanHelper.setValue(model, field, arr);
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ServletException("problem with "+field, ex);
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new ServletException("problem with "+field, ex);
                 }
             }
         }
@@ -120,16 +127,10 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         {
             BeanHelper.applyList(model, action);
         }
-        Query query = null;
-        String queryString = req.getQueryString();
-        if (queryString != null)
-        {
-            query = new Query(queryString);
-        }
-        onSubmit(model, submitField, query);
+        onSubmit(model, submitField);
         response(resp, document);
     }
-    protected abstract void onSubmit(M data, String field, Query query);
+    protected abstract void onSubmit(M data, String field);
 
     protected abstract M createData();
     

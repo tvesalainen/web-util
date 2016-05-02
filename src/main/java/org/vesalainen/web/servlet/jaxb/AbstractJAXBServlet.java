@@ -17,11 +17,14 @@
 package org.vesalainen.web.servlet.jaxb;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
@@ -50,6 +53,7 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
         try
         {
             this.storage = storage;
+            this.title = storage.getName();
             this.action = action;
             this.documentFactory = documentFactory;
             jaxbCtx = JAXBContext.newInstance(packageName);
@@ -63,9 +67,8 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     }
     
     @Override
-    protected void onSubmit(C data, String field, Query query)
+    protected void onSubmit(C data, String field)
     {
-        /*
         try
         {
             try (FileOutputStream out = new FileOutputStream(storage))
@@ -80,7 +83,6 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
         {
             throw new IllegalArgumentException(ex);
         }
-        */
     }
 
     @Override

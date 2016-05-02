@@ -24,12 +24,16 @@ public class Form extends Element
 {
     public Form(Content parent, Object action)
     {
-        this(parent, "post", action);
+        this(parent, null, "post", action);
     }
-    public Form(Content parent, String method, Object action)
+    public Form(Content parent, String id, String method, Object action)
     {
         super(parent, "form");
         setAttr("method", method);
+        if (id != null)
+        {
+            setAttr("id", id);
+        }
         if (action != null)
         {
             setAttr("action", action);

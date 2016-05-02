@@ -55,19 +55,6 @@ public class Element extends ContainerContent implements AttributedContent
     }
 
     @Override
-    public Element addElement(Element element)
-    {
-        super.addElement(element);
-        return this;
-    }
-
-    @Override
-    public Element addTag(Tag tag)
-    {
-        return (Element) super.addTag(tag);
-    }
-
-    @Override
     public Tag addTag(String tagName)
     {
         return super.addTag(tagName);
@@ -77,12 +64,6 @@ public class Element extends ContainerContent implements AttributedContent
     public <T> Element addText(T text)
     {
         return (Element) super.addText(text);
-    }
-    
-    @Override
-    public Element addText(Renderer renderer)
-    {
-        return (Element) super.addText(renderer);
     }
     
     /**

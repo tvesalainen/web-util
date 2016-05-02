@@ -42,6 +42,7 @@ public class Document implements Page
     protected Set<Framework> frameworks;
     private final SimpleAttribute<Charset> charset;
     protected Supplier<Form> formfactory;
+    protected String title;
 
     public Document()
     {
@@ -49,40 +50,58 @@ public class Document implements Page
     }
     public Document(String title)
     {
+        this.title = title;
         html = new Element(null, "html");
         head = html.addElement("head");
         charset = new SimpleAttribute<>("charset", StandardCharsets.UTF_8);
         head.addTag("meta")
                 .setAttr(charset);
-        if (title != null)
-        {
-            head.addElement("title")
-                    .addText(title);
-        }
         body = html.addElement("body");
     }
 
     public void init()
     {
-        
+        if (title != null)
+        {
+            addTitle(title);
+        }
     }
-    @Override
-    public Form addForm(Object action)
+    protected void addTitle(String title)
     {
-        return addForm("post", action);
+        head.addElement("title")
+                .addText(title);
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    @Override
+    public void addToHeader(Renderer content)
+    {
+        html.insert(content);
+    }
+
+    @Override
+    public void addToFooter(Renderer content)
+    {
+        html.add(content);
     }
     
     @Override
-    public Form addForm(String method, Object action)
+    public Form addForm(String id, String method, Object action)
     {
-        Form form = createForm(body, method, action);
-        body.addElement(form);
+        Form form = createForm(body, id, method, action);
+        body.addContent(form);
         return form;
     }
 
-    public Form createForm(Element parent, String method, Object action)
+    @Override
+    public Form createForm(Content parent, String id, String method, Object action)
     {
-        return new Form(parent, method, action);
+        Form form = new Form(parent, id, method, action);
+        return form;
     }
     
     public void use(Framework framework)
@@ -160,14 +179,20 @@ public class Document implements Page
             {
                 out = new PrettyPrinter(out); 
             }
-            out.append("<!DOCTYPE HTML>\n");
-            html.append(out);
+            append(out);
             writer.flush();
         }
         else
         {
             EntityReferences.write(os, toString(), cs);
         }
+    }
+
+    @Override
+    public void append(Appendable out) throws IOException
+    {
+        out.append("<!DOCTYPE HTML>\n");
+        html.append(out);
     }
     
     @Override
@@ -176,8 +201,7 @@ public class Document implements Page
         try
         {
             StringBuilder sb = new StringBuilder();
-            sb.append("<!DOCTYPE HTML>\n");
-            html.append(sb);
+            append(sb);
             return sb.toString();
         }
         catch (IOException ex)

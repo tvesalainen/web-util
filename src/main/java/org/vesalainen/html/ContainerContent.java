@@ -49,12 +49,6 @@ public class ContainerContent extends AbstractContent implements Container
         addContent(new Text(this, text));
         return this;
     }
-    @Override
-    public ContainerContent addText(Renderer renderer)
-    {
-        addRenderer(renderer);
-        return this;
-    }
     /**
      * Add new Tag
      * @param tagName
@@ -64,20 +58,8 @@ public class ContainerContent extends AbstractContent implements Container
     public Tag addTag(String tagName)
     {
         Tag tag = new Tag(this, tagName);
-        addTag(tag);
-        return tag;
-    }
-    /**
-     * Add Tag
-     * @param tag
-     * @return this
-     */
-    @Override
-    public ContainerContent addTag(Tag tag)
-    {
-        tag.setParent(this);
         addContent(tag);
-        return this;
+        return tag;
     }
     /**
      * Add Element
@@ -88,21 +70,9 @@ public class ContainerContent extends AbstractContent implements Container
     public Element addElement(String element)
     {
         Element el = new Element(this, element);
-        addElement(el);
+        addContent(el);
         return el;
     }
-    /**
-     * Add Element
-     * @param element
-     * @return this
-     */
-    @Override
-    public ContainerContent addElement(Element element)
-    {
-        addContent(element);
-        return this;
-    }
-
     @Override
     public ContainerContent addContent(Content c)
     {
@@ -110,6 +80,7 @@ public class ContainerContent extends AbstractContent implements Container
         return addRenderer(c);
     }
 
+    @Override
     public ContainerContent addRenderer(Renderer renderer)
     {
         if (content == null)
@@ -121,6 +92,12 @@ public class ContainerContent extends AbstractContent implements Container
     }
     @Override
     public ContainerContent insertContent(Content c)
+    {
+        c.setParent(this);
+        return insertRenderer(c);
+    }
+    @Override
+    public ContainerContent insertRenderer(Renderer c)
     {
         if (content == null)
         {

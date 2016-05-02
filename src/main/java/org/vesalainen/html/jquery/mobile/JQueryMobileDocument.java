@@ -18,11 +18,12 @@ package org.vesalainen.html.jquery.mobile;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
-import org.vesalainen.html.Form;
 import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.JQueryDocument;
 import org.vesalainen.js.ScriptContainer;
+import org.vesalainen.web.I18n;
 import org.vesalainen.web.servlet.bean.BeanForm;
 import org.vesalainen.web.servlet.bean.Context;
 
@@ -48,6 +49,16 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
         use(Frameworks.JQueryMobile);
     }
 
+    @Override
+    public void init()
+    {
+        super.init();
+        JQueryMobilePage defPage = getDefaultPage();
+        Element header = defPage.getHeader();
+        header.setDataAttr("position", "fixed");
+        header.addElement("h1").addText(title);
+    }
+
     public boolean isAjax()
     {
         return ajax;
@@ -64,7 +75,7 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
         if (page == null)
         {
             page = new JQueryMobilePage(body, id, this);
-            body.addElement(page);
+            body.addContent(page);
             map.put(id, page);
         }
         return page;
@@ -77,18 +88,18 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
     }
 
     @Override
-    public BeanForm addForm(String method, Object action)
+    public BeanForm addForm(String id, String method, Object action)
     {
         JQueryMobilePage defPage = getDefaultPage();
-        JQueryMobileForm form = new JQueryMobileForm(defPage, threadLocalData, method, action);
-        defPage.addElement(form);
+        JQueryMobileForm form = new JQueryMobileForm(defPage, threadLocalData, id, method, action);
+        defPage.addContent(form);
         return form;
     }
 
     @Override
-    public Form createForm(Element parent, String method, Object action)
+    public JQueryMobileForm createForm(Content parent, String id, String method, Object action)
     {
-        return new JQueryMobileForm(parent, threadLocalData, method, action);
+        return new JQueryMobileForm(parent, threadLocalData, id, method, action);
     }
 
     public JQueryMobilePage getDefaultPage()
@@ -104,6 +115,5 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
     {
         return getDefaultPage();
     }
-    
-    
+
 }

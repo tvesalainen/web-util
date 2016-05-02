@@ -44,6 +44,7 @@ public abstract class AbstractDocumentServlet<D extends Document> extends HttpSe
     {
         super.init();
         document = createDocument();
+        document.setTitle(title);
         document.init();
     }
     

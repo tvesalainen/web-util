@@ -25,7 +25,7 @@ import org.vesalainen.web.servlet.bean.Context;
  * @author tkv
  * @param <M>
  */
-public class JQueryDocument<M> extends BeanDocument<M>
+public abstract class JQueryDocument<M> extends BeanDocument<M>
 {
     private DocumentReadyEvent readyEvent;
     

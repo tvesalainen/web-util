@@ -16,6 +16,7 @@
  */
 package org.vesalainen.web.servlet.bean;
 
+import org.vesalainen.html.Content;
 import org.vesalainen.html.Document;
 
 /**
@@ -23,7 +24,7 @@ import org.vesalainen.html.Document;
  * @author tkv
  * @param <M>
  */
-public class BeanDocument<M> extends Document
+public abstract class BeanDocument<M> extends Document
 {
     protected ThreadLocal<Context<M>> threadLocalData;
 
@@ -46,19 +47,9 @@ public class BeanDocument<M> extends Document
     }
 
     @Override
-    public BeanForm addForm(Object action)
+    public BeanForm createForm(Content parent, String id, String method, Object action)
     {
-        BeanForm form = new BeanForm(body, threadLocalData, "POST", action);
-        body.addElement(form);
-        return form;
-    }
-
-    @Override
-    public BeanForm addForm(String method, Object action)
-    {
-        BeanForm form = new BeanForm(body, threadLocalData, method, action);
-        body.addElement(form);
-        return form;
+        return new BeanForm(body, threadLocalData, id, method, action);
     }
 
     public ThreadLocal<Context<M>> getThreadLocalData()

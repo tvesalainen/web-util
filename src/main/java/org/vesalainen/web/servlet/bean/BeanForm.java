@@ -52,14 +52,9 @@ public class BeanForm<M> extends Form
 {
     protected ThreadLocal<Context<M>> threadLocalContext;
 
-    public BeanForm(Content parent, ThreadLocal<Context<M>> threadLocalData, Object action)
+    public BeanForm(Content parent, ThreadLocal<Context<M>> threadLocalData, String id, String method, Object action)
     {
-        this(parent, threadLocalData, "post", action);
-    }
-
-    public BeanForm(Content parent, ThreadLocal<Context<M>> threadLocalData, String method, Object action)
-    {
-        super(parent, method, action);
+        super(parent, id, method, action);
         this.threadLocalContext = threadLocalData;
     }
 
@@ -197,10 +192,10 @@ public class BeanForm<M> extends Form
         String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", inputName).addText(label);
-        container.addElement(textLabel);
+        container.addContent(textLabel);
         InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
-        container.addTag(input);
+        container.addContent(input);
         input.setAttr("value", value);
         return container;
     }
@@ -210,11 +205,11 @@ public class BeanForm<M> extends Form
         String inputName = inputName(field);
         ContainerContent textAreaContainer = new ContainerContent();
         Element textAreaLabel = new Element("label").setAttr("for", inputName).addText(label);
-        textAreaContainer.addElement(textAreaLabel);
+        textAreaContainer.addContent(textAreaLabel);
         Element input = new Element(inputType).setAttr("id", inputName).setAttr("name", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
         input.addText(value);
-        textAreaContainer.addElement(input);
+        textAreaContainer.addContent(input);
         return textAreaContainer;
     }
 
@@ -240,7 +235,7 @@ public class BeanForm<M> extends Form
             InputTag input = new InputTag(inputType, inputName).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
             input.setAttr(new BooleanAttribute("checked", e.equals(value)));
-            fieldSet.addTag(input);
+            fieldSet.addContent(input);
         }
         return fieldSet;
     }
@@ -250,10 +245,10 @@ public class BeanForm<M> extends Form
         String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", inputName).addText(label);
-        container.addElement(textLabel);
+        container.addContent(textLabel);
         InputTag input = new InputTag(inputType, field).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
-        container.addTag(input);
+        container.addContent(input);
         input.setAttr(new BooleanAttribute("checked", value));
         return container;
     }
@@ -281,7 +276,7 @@ public class BeanForm<M> extends Form
             InputTag input = new InputTag(inputType, inputName).setAttr("id", id).setAttr("value", n);
             input.setAttr(attrs);
             input.setAttr(new BooleanAttribute("checked", enumSet.contains(e)));
-            fieldSet.addTag(input);
+            fieldSet.addContent(input);
         }
         return fieldSet;
     }
@@ -345,10 +340,10 @@ public class BeanForm<M> extends Form
         String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", inputName).addText(labelText);
-        container.addElement(label);
+        container.addContent(label);
         InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
-        container.addTag(input);
+        container.addContent(input);
         input.setAttr("value", value);
         return container;
     }
@@ -358,10 +353,10 @@ public class BeanForm<M> extends Form
         String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
         Element label = new Element("label").setAttr("for", inputName).addText(labelText);
-        container.addElement(label);
+        container.addContent(label);
         InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
-        container.addTag(input);
+        container.addContent(input);
         input.setAttr("value", value);
         return container;
     }
@@ -371,10 +366,10 @@ public class BeanForm<M> extends Form
         String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", inputName).addText(labelText);
-        container.addElement(textLabel);
+        container.addContent(textLabel);
         InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
-        container.addTag(input);
+        container.addContent(input);
         input.setAttr("value", value);
         return container;
     }
@@ -384,10 +379,10 @@ public class BeanForm<M> extends Form
         String inputName = inputName(field);
         ContainerContent container = new ContainerContent();
         Element textLabel = new Element("label").setAttr("for", inputName).addText(labelText);
-        container.addElement(textLabel);
+        container.addContent(textLabel);
         InputTag input = new InputTag(inputType, inputName).setAttr("id", inputName).setAttr("placeholder", placeholder);
         input.setAttr(attrs);
-        container.addTag(input);
+        container.addContent(input);
         input.setAttr("value", value);
         return container;
     }
@@ -449,7 +444,7 @@ public class BeanForm<M> extends Form
         }
         if (type.isEnum())
         {
-            return "radio";
+            return "select";
         }
         if (boolean.class.equals(type) || Boolean.class.equals(type) || EnumSet.class.equals(type))
         {

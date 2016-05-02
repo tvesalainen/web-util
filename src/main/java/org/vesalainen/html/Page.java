@@ -23,16 +23,26 @@ import org.vesalainen.js.ScriptContainer;
  *
  * @author tkv
  */
-public interface Page
+public interface Page extends Renderer
 {
     Element getContent();
-
-    Form addForm(Object action);
-
-    Form addForm(String method, Object action);
-    
+    void addToHeader(Renderer content);
+    void addToFooter(Renderer content);
+    default Form addForm(Object action)
+    {
+        return addForm("post", null, action);
+    }
+    default Form addForm(String method, Object action)
+    {
+        return addForm(method, null, action);
+    }
+    Form addForm(String method, String id, Object action);
+    Form createForm(Content parent, String method, String id, Object action);
     Charset getCharset();
-
+    /**
+     * Return a single script container for page level scripts
+     * @return 
+     */
     ScriptContainer getScriptContainer();
     
 }

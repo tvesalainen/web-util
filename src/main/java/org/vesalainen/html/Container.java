@@ -22,55 +22,28 @@ package org.vesalainen.html;
  */
 public interface Container extends Content
 {
-    /**
-     * Add Content at the end
-     * @param c
-     * @return 
-     */
+    default ContainerContent add(Renderer renderer)
+    {
+        if (renderer instanceof Content)
+        {
+            return addContent((Content)renderer);
+        }
+        return addRenderer(renderer);
+    }
+    default ContainerContent insert(Renderer renderer)
+    {
+        if (renderer instanceof Content)
+        {
+            return insertContent((Content)renderer);
+        }
+        return insertRenderer(renderer);
+    }
     ContainerContent addContent(Content c);
-    /**
-     * Add Content at the start
-     * @param c
-     * @return 
-     */
+    ContainerContent addRenderer(Renderer c);
     ContainerContent insertContent(Content c);
-
-    /**
-     * Add Element
-     * @param element
-     * @return new Element
-     */
+    ContainerContent insertRenderer(Renderer c);
     Element addElement(String element);
-
-    /**
-     * Add Element
-     * @param element
-     * @return this
-     */
-    ContainerContent addElement(Element element);
-
-    /**
-     * Add new Tag
-     * @param tagName
-     * @return this
-     */
     Tag addTag(String tagName);
-
-    /**
-     * Add Tag
-     * @param tag
-     * @return this
-     */
-    ContainerContent addTag(Tag tag);
-
-    /**
-     * Add text
-     * @param <T>
-     * @param text
-     * @return this
-     */
     <T> ContainerContent addText(T text);
-    
-    ContainerContent addText(Renderer renderer);
     
 }

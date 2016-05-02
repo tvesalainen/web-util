@@ -19,6 +19,7 @@ package org.vesalainen.html.jquery.mobile;
 import java.nio.charset.Charset;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
+import org.vesalainen.html.Form;
 import org.vesalainen.html.Page;
 import org.vesalainen.html.Renderer;
 import org.vesalainen.html.Tag;
@@ -73,12 +74,6 @@ public class JQueryMobilePage<M> extends Element implements Page
     }
 
     @Override
-    public Element addText(Renderer renderer)
-    {
-        return main.addText(renderer);
-    }
-
-    @Override
     public <T> Element addText(T text)
     {
         return main.addText(text);
@@ -88,18 +83,6 @@ public class JQueryMobilePage<M> extends Element implements Page
     public Tag addTag(String tagName)
     {
         return main.addTag(tagName);
-    }
-
-    @Override
-    public Element addTag(Tag tag)
-    {
-        return main.addTag(tag);
-    }
-
-    @Override
-    public Element addElement(Element element)
-    {
-        return main.addElement(element);
     }
 
     @Override
@@ -137,23 +120,35 @@ public class JQueryMobilePage<M> extends Element implements Page
     }
 
     @Override
-    public JQueryMobileForm addForm(Object action)
+    public JQueryMobileForm addForm(String method, String id, Object action)
     {
-        return addForm("post", action);
+        JQueryMobileForm form = createForm(parent, method, id, action);
+        main.addContent(form);
+        return form;
     }
 
     @Override
-    public JQueryMobileForm addForm(String method, Object action)
+    public JQueryMobileForm createForm(Content parent, String method, String id, Object action)
     {
-        JQueryMobileForm form = new JQueryMobileForm(this, document.getThreadLocalData(), method, action);
-        main.addElement(form);
-        return form;
+        return new JQueryMobileForm(this, document.getThreadLocalData(), id, method, action);
     }
 
     @Override
     public Charset getCharset()
     {
         return document.getCharset();
+    }
+
+    @Override
+    public void addToHeader(Renderer content)
+    {
+        getHeader().add(content);
+    }
+
+    @Override
+    public void addToFooter(Renderer content)
+    {
+        getFooter().add(content);
     }
 
 }

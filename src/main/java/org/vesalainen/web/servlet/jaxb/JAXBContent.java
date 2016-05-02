@@ -42,6 +42,7 @@ import org.vesalainen.html.jquery.mobile.JQueryMobileForm;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.servlet.bean.BeanDocument;
+import org.vesalainen.web.servlet.bean.BeanForm;
 import org.vesalainen.web.servlet.bean.Context;
 import org.vesalainen.web.servlet.bean.ThreadLocalContent;
 
@@ -67,7 +68,8 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
     {
         Context<M> ctx = threadLocalModel.get();
         M model = ctx.getModel();
-        JQueryMobileForm form = new JQueryMobileForm(null, threadLocalModel, "post", action);
+        BeanForm form = document.createForm(null, "form", "post", action);
+        form.addElement("input").setAttr("type", "submit").setAttr("name", "submit").setAttr("value", I18n.getLabel("submit"));
         LevelHandler levelHandler = new LevelHandler(form);
         BeanHelper.stream(model)
                 //.filter((String s)->{return filter(model, s, XmlType.class, XmlValue.class, XmlAttribute.class, XmlElement.class, XmlElements.class);})
@@ -95,36 +97,41 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
                 Element navbar = collapsible.addElement("div").setDataAttr("role", "navbar");
                 Element ul = navbar.addElement("ul");
                 Element li = ul.addElement("li");
-                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", inputName).setDataAttr("icon", "delete").addClasses("delete");
+                li.addElement("input").setAttr("type", "submit").setDataAttr("icon", "delete").setAttr("name", ctx.inputName(pattern+'#'));
+                //li.addElement("a").setAttr("href", "#").setDataAttr("pattern", inputName).setDataAttr("icon", "delete").addClasses("delete");
                 levelHandler.push(pattern, collapsible);
             }
             else
             {
                 if (List.class.isAssignableFrom(type))
                 {
-                    Element collapsible = new Element("div").setDataAttr("role", "collapsible");
-                    collapsible.addElement("h1").addText(I18n.getLabel("add"));
-                    Element navbar = collapsible.addElement("div").setDataAttr("role", "navbar");
+                    Element navbar = new Element("div").setDataAttr("role", "navbar").setDataAttr("iconpos", "right");
                     Element ul = navbar.addElement("ul");
                     Element li = ul.addElement("li");
                     XmlElements xmlElements = annotatedElement.getAnnotation(XmlElements.class);
                     if (xmlElements != null)
                     {
+                        Element collapsible = new Element("div").setDataAttr("role", "collapsible");
+                        collapsible.addElement("h1").addText(I18n.getLabel("add"));
                         for (XmlElement xmlElement : xmlElements.value())
                         {
                             Class t = xmlElement.type();
                             String name = xmlElement.name();
                             if (t != null && name != null)
                             {
-                                li.addElement("a").setAttr("href", "#").setDataAttr("pattern", ctx.inputName(name)).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+name)).addClasses("add");
+                                li.addElement("input").setAttr("type", "submit").setDataAttr("icon", "plus").setAttr("name", ctx.inputName(pattern+'+'+name)).setAttr("value", I18n.getLabel("add-"+name));
+                                //li.addElement("a").setAttr("href", "#").setDataAttr("pattern", ctx.inputName(pattern+'+'+name)).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+name)).addClasses("add");
                             }
                         }
+                        collapsible.addContent(navbar);
+                        levelHandler.add(collapsible);
                     }
                     else
                     {
-                        li.addElement("a").setAttr("href", "#").setDataAttr("pattern", inputName).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+suffix)).addClasses("add");
+                        li.addElement("input").setAttr("type", "submit").setDataAttr("icon", "plus").setAttr("name", ctx.inputName(pattern+'+')).setAttr("value", I18n.getLabel("add-"+suffix));
+                        //li.addElement("a").setAttr("href", "#").setDataAttr("pattern", ctx.inputName(pattern+'+')).setDataAttr("icon", "plus").addText(I18n.getLabel("add-"+suffix)).addClasses("add");
+                        levelHandler.add(navbar);
                     }
-                    levelHandler.add(collapsible);
                     Element ul2 = new Element("ul").setDataAttr("role", "listview");
                     levelHandler.push(pattern, ul2);
                 }
@@ -295,7 +302,7 @@ public class JAXBContent<M> extends ThreadLocalContent<M>
             }
             else
             {
-                current.addElement(element);
+                current.addContent(element);
             }
             current = element;
             stack.push(pattern);

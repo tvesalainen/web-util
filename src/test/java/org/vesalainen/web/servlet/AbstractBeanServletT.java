@@ -80,7 +80,7 @@ public class AbstractBeanServletT
         {
             JQueryMobileDocument<Data> doc = new JQueryMobileDocument(threadLocalData, "BeanServletTest");
             JQueryMobilePage page = doc.getPage("page1");
-            JQueryMobileForm form = page.addForm(null, null);
+            JQueryMobileForm form = (JQueryMobileForm) page.addForm(null, null);
             form.addInputs(
                 "submit",
                 "submit2",
@@ -105,9 +105,9 @@ public class AbstractBeanServletT
         }
 
         @Override
-        protected void onSubmit(Data data, String field, Query query)
+        protected void onSubmit(Data data, String field)
         {
-            System.err.println("submit("+field+")="+query);
+            System.err.println("submit("+field+")");
         }
 
     }
