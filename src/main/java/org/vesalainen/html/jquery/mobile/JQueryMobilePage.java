@@ -16,7 +16,6 @@
  */
 package org.vesalainen.html.jquery.mobile;
 
-import java.nio.charset.Charset;
 import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
@@ -25,6 +24,7 @@ import org.vesalainen.html.Renderer;
 import org.vesalainen.html.Tag;
 import org.vesalainen.js.AbstractScriptContainer;
 import org.vesalainen.js.ScriptContainer;
+import org.vesalainen.web.servlet.bean.Context;
 
 /**
  *
@@ -39,13 +39,17 @@ public class JQueryMobilePage<M> extends ContainerContent implements Page
     protected Element header;
     protected Element main;
     protected Element footer;
-    private final JQueryMobileDocument<M> document;
     protected boolean domCache = false;
+    protected ThreadLocal<Context<M>> threadLocalData;
 
     public JQueryMobilePage(Content parent, Object id, final JQueryMobileDocument<M> document)
     {
+        this(parent, id, document.getThreadLocalData());
+    }
+    public JQueryMobilePage(Content parent, Object id, ThreadLocal<Context<M>> threadLocalData)
+    {
         super(parent);
-        this.document = document;
+        this.threadLocalData = threadLocalData;
         this.id = id;
         
         Element se = new Element(this, "script");
@@ -124,13 +128,7 @@ public class JQueryMobilePage<M> extends ContainerContent implements Page
     @Override
     public JQueryMobileForm createForm(Content parent, String method, String id, Object action)
     {
-        return new JQueryMobileForm(this, document.getThreadLocalData(), id, method, action);
-    }
-
-    @Override
-    public Charset getCharset()
-    {
-        return document.getCharset();
+        return new JQueryMobileForm(this, threadLocalData, id, method, action);
     }
 
     @Override

@@ -141,7 +141,6 @@ public class Document implements Page
         this.charset.setValue(charset);
     }
     
-    @Override
     public Charset getCharset()
     {
         return this.charset.getValue();

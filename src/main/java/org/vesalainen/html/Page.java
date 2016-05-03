@@ -38,7 +38,6 @@ public interface Page extends Renderer
     }
     Form addForm(String method, String id, Object action);
     Form createForm(Content parent, String method, String id, Object action);
-    Charset getCharset();
     /**
      * Return a single script container for page level scripts
      * @return 

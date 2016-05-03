@@ -115,4 +115,8 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
         return getDefaultPage().getMain();
     }
 
+    public Element getRawBody()
+    {
+        return body;
+    }
 }
