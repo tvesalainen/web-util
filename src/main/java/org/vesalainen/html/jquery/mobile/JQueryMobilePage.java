@@ -17,9 +17,9 @@
 package org.vesalainen.html.jquery.mobile;
 
 import java.nio.charset.Charset;
+import org.vesalainen.html.ContainerContent;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
-import org.vesalainen.html.Form;
 import org.vesalainen.html.Page;
 import org.vesalainen.html.Renderer;
 import org.vesalainen.html.Tag;
@@ -31,26 +31,36 @@ import org.vesalainen.js.ScriptContainer;
  * @author tkv
  * @param <M>
  */
-public class JQueryMobilePage<M> extends Element implements Page
+public class JQueryMobilePage<M> extends ContainerContent implements Page
 {
     protected Object id;
+    protected ScriptContainer script;
+    protected Element divPage;
     protected Element header;
     protected Element main;
     protected Element footer;
-    protected ScriptContainer script;
     private final JQueryMobileDocument<M> document;
     protected boolean domCache = false;
 
     public JQueryMobilePage(Content parent, Object id, final JQueryMobileDocument<M> document)
     {
-        super(parent, "div");
+        super(parent);
         this.document = document;
         this.id = id;
-        setAttr("data-role", "page");
-        setAttr("id", id);
-        setDataAttr("dom-cache", domCache);
-        main = new Element(this, "div").setDataAttr("role", "main").addClasses("ui-content");
-        super.addContent(main);
+        
+        Element se = new Element(this, "script");
+        script = new AbstractScriptContainer("$(document).on(\"pagecreate\",\"#"+id+"\",function(){", "});");
+        se.addRenderer(script);
+        content.add(se);
+        
+        divPage = new Element(this, "div").setAttr("data-role", "page").setAttr("id", id).setDataAttr("dom-cache", domCache);
+        content.add(divPage);
+        
+        header = divPage.addElement("div").setAttr("data-role", "header");
+        
+        main = divPage.addElement("div").setDataAttr("role", "main").addClasses("ui-content");
+        
+        footer = divPage.addElement("div").setAttr("data-role", "footer");
     }
 
     public Object getId()
@@ -60,11 +70,6 @@ public class JQueryMobilePage<M> extends Element implements Page
 
     public Element getHeader()
     {
-        if (header == null)
-        {
-            header = new Element(this, "div").setAttr("data-role", "header");
-            insertContent(header);
-        }
         return header;
     }
 
@@ -93,23 +98,12 @@ public class JQueryMobilePage<M> extends Element implements Page
 
     public Element getFooter()
     {
-        if (footer == null)
-        {
-            footer = new Element(this, "div").setAttr("data-role", "footer");
-            addContent(footer);
-        }
         return footer;
     }
 
     @Override
     public ScriptContainer getScriptContainer()
     {
-        if (script == null)
-        {
-            Element se = document.getHead().addElement("script");
-            script = new AbstractScriptContainer("$(document).on(\"pagecreate\",\"#"+id+"\",function(){", "});");
-            se.addRenderer(script);
-        }
         return script;
     }
 

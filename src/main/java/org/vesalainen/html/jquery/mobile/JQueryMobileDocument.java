@@ -23,7 +23,6 @@ import org.vesalainen.html.Element;
 import org.vesalainen.html.Frameworks;
 import org.vesalainen.html.jquery.JQueryDocument;
 import org.vesalainen.js.ScriptContainer;
-import org.vesalainen.web.I18n;
 import org.vesalainen.web.servlet.bean.BeanForm;
 import org.vesalainen.web.servlet.bean.Context;
 
@@ -113,7 +112,7 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
     @Override
     public Element getBody()
     {
-        return getDefaultPage();
+        return getDefaultPage().getMain();
     }
 
 }

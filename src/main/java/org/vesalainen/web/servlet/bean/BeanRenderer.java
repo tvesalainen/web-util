@@ -17,6 +17,8 @@
 package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.WeakHashMap;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.bean.ExpressionParser;
 import org.vesalainen.html.Renderer;
@@ -25,55 +27,30 @@ import org.vesalainen.html.Renderer;
  *
  * @author tkv
  */
-public class BeanRenderer
+public abstract class BeanRenderer implements Renderer
 {
-    public static final void render(Object bean, Appendable out)
-    {
-        Prefix prefix = new Prefix();
-        StringBuilder sb = new StringBuilder();
-        BeanHelper.stream(bean).forEach((String pattern)->
-        {
-            if (!prefix.skip(pattern))
-            {
-                try
-                {
-                    Object ob = BeanHelper.getValue(bean, pattern);
-                    if (ob instanceof Renderer)
-                    {
-                        Renderer renderer = (Renderer) ob;
-                        if (ob instanceof BeanContent)
-                        {
-                            prefix.setPrefix(pattern);
-                            sb.setLength(0);
-                            renderer.append(sb);
-                            ExpressionParser parser = new ExpressionParser(ob);
-                            parser.replace(sb, out);
-                        }
-                        else
-                        {
-                            renderer.append(out);
-                        }
-                    }
-                }
-                catch (IOException ex)
-                {
-                    throw new IllegalArgumentException(ex);
-                }
-            }
-        });
-    }
-    private static class Prefix
-    {
-        String prefix;
+    private static final Map<Class<? extends BeanRenderer>,CharSequence> cache = new WeakHashMap<>();
+    private ExpressionParser parser;
 
-        public void setPrefix(String prefix)
-        {
-            this.prefix = prefix;
-        }
-        
-        boolean skip(String pattern)
-        {
-            return prefix != null ? pattern.startsWith(prefix) : false;
-        }
+    public BeanRenderer()
+    {
+        this.parser = new ExpressionParser(this);
     }
+    
+    protected abstract Renderer create();
+
+    @Override
+    public void append(Appendable out) throws IOException
+    {
+        CharSequence code = cache.get(this.getClass());
+        if (code == null)
+        {
+            StringBuilder sb = new StringBuilder();
+            create().append(sb);
+            cache.put(this.getClass(), sb);
+            code = sb;
+        }
+        parser.replace(code, out);
+    }
+    
 }

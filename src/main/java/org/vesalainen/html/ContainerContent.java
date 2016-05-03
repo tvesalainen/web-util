@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ContainerContent extends AbstractContent implements Container
 {
-    protected List<Renderer> content;
+    protected final List<Renderer> content = new ArrayList<>();
 
     public ContainerContent()
     {
@@ -83,10 +83,6 @@ public class ContainerContent extends AbstractContent implements Container
     @Override
     public ContainerContent addRenderer(Renderer renderer)
     {
-        if (content == null)
-        {
-            content = new ArrayList<>();
-        }
         content.add(renderer);
         return this;
     }
@@ -99,10 +95,6 @@ public class ContainerContent extends AbstractContent implements Container
     @Override
     public ContainerContent insertRenderer(Renderer c)
     {
-        if (content == null)
-        {
-            content = new ArrayList<>();
-        }
         content.add(0, c);
         return this;
     }
@@ -124,12 +116,9 @@ public class ContainerContent extends AbstractContent implements Container
     @Override
     public void append(Appendable out) throws IOException
     {
-        if (content != null)
+        for (Renderer c : content)
         {
-            for (Renderer c : content)
-            {
-                c.append(out);
-            }
+            c.append(out);
         }
     }
     

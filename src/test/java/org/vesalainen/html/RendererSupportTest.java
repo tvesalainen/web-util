@@ -14,21 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web.servlet.bean;
+package org.vesalainen.html;
 
 import javax.xml.bind.annotation.XmlType;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.vesalainen.html.Element;
+import org.vesalainen.web.servlet.bean.BeanRenderer;
 
 /**
  *
  * @author tkv
  */
-public class BeanRendererTest
+public class RendererSupportTest
 {
     
-    public BeanRendererTest()
+    public RendererSupportTest()
     {
     }
 
@@ -36,18 +36,18 @@ public class BeanRendererTest
     public void test()
     {
         StringBuilder sb = new StringBuilder();
-        BeanRenderer.render(new C2(), sb);
+        RendererSupport.render(new C2(), sb);
         assertEquals("<div></div><span title=\"test\"></span>", sb.toString());
     }
 
-    public class C1 extends Element implements BeanContent
+    public class C1 extends BeanRenderer
     {
         public String title = "test";
         
-        public C1()
+        @Override
+        protected Renderer create()
         {
-            super("span");
-            setAttr("title", "${title}");
+            return new Element("span").setAttr("title", "${title}");
         }
         
     }
