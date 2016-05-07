@@ -146,17 +146,22 @@ public class Document implements Page
         return this.charset.getValue();
     }
     
-    public Element getHtml()
+    public final Element getHtml()
     {
         return html;
     }
 
-    public Element getHead()
+    public final Element getHead()
     {
         return head;
     }
 
     public Element getBody()
+    {
+        return body;
+    }
+
+    public final Element getRawBody()
     {
         return body;
     }

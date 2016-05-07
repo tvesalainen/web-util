@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.vesalainen.bean.BeanHelper;
+import org.vesalainen.html.Renderer;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.SingleSelector;
@@ -38,12 +39,12 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
 public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends AbstractDocumentServlet<V>
 {
     private static final String Model = "__mOdEl__";
-    protected final ThreadLocal<Context<M>> threadLocalData;
+    protected final ThreadLocal<Context<M>> threadLocalModel;
     protected BiFunction<Class<?>,String,Object> objectFactory = BeanHelper::defaultFactory;
 
     public AbstractBeanServlet()
     {
-        threadLocalData = new ThreadLocal<>();
+        threadLocalModel = new ThreadLocal<>();
     }
 
     @Override
@@ -71,12 +72,22 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         {
             model = context.getModel();
         }
-        threadLocalData.set(context);
+        threadLocalModel.set(context);
+        onService(req, resp, context, model);
+    }
+    protected void onService(HttpServletRequest req, HttpServletResponse resp, Context<M> context, M model) throws ServletException, IOException
+    {
         String submitField = null;
-        String action = null;
+        String removeAction = null;
+        Object newObject = null;
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String key = e.getKey();
+            String[] arr = e.getValue();
+            if ("pattern".equals(key))
+            {
+                key = arr[0];
+            }
             String field = context.modelName(key);
             if (field == null)
             {
@@ -86,17 +97,16 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
             {
                 if (field.endsWith("#"))
                 {
-                    action = field;
+                    removeAction = field;
                 }
                 else
                 {
                     if (BeanHelper.isAdd(field) || BeanHelper.isAssign(field))
                     {
-                        BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);});
+                        newObject = BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);});
                     }
                     else
                     {
-                        String[] arr = e.getValue();
                         try
                         {
                             if (BeanHelper.hasProperty(model, field))
@@ -129,12 +139,19 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
                 }
             }
         }
-        if (action != null)
+        if (removeAction != null)
         {
-            BeanHelper.applyList(model, action);
+            BeanHelper.applyList(model, removeAction);
         }
         onSubmit(model, submitField);
-        response(resp, document);
+        if (newObject != null && req.getParameter("sendFragment") != null && (newObject instanceof Renderer))
+        {
+            response(resp, (Renderer)newObject);
+        }
+        else
+        {
+            response(resp, document);
+        }
     }
     protected abstract void onSubmit(M data, String field);
 
@@ -144,4 +161,5 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
     {
         return BeanHelper.defaultFactory(cls, hint);
     }
+
 }

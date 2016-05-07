@@ -43,7 +43,7 @@ public abstract class BeanDocument<M> extends Document
     public void init()
     {
         super.init();
-        getScriptContainer().addScript(new FormControl());
+        getHead().addElement("script").add(new FormControl());
     }
 
     @Override

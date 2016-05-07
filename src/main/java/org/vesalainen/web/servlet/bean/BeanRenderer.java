@@ -25,10 +25,10 @@ import org.vesalainen.html.Renderer;
 /**
  *
  * @author tkv
+ * @param <R>
  */
-public abstract class BeanRenderer implements Renderer
+public abstract class BeanRenderer<R extends Renderer> implements Renderer
 {
-    private static final Map<Class<? extends BeanRenderer>,CharSequence> cache = new WeakHashMap<>();
     private ExpressionParser parser;
 
     public BeanRenderer()
@@ -36,20 +36,14 @@ public abstract class BeanRenderer implements Renderer
         this.parser = new ExpressionParser(this);
     }
     
-    protected abstract Renderer create();
+    protected abstract R create();
 
     @Override
     public void append(Appendable out) throws IOException
     {
-        CharSequence code = cache.get(this.getClass());
-        if (code == null)
-        {
-            StringBuilder sb = new StringBuilder();
-            create().append(sb);
-            cache.put(this.getClass(), sb);
-            code = sb;
-        }
-        parser.replace(code, out);
+        StringBuilder sb = new StringBuilder();
+        create().append(sb);
+        parser.replace(sb, out);
     }
     
 }

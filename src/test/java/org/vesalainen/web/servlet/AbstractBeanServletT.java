@@ -78,7 +78,7 @@ public class AbstractBeanServletT
         @Override
         protected JQueryMobileDocument createDocument()
         {
-            JQueryMobileDocument<Data> doc = new JQueryMobileDocument(threadLocalData, "BeanServletTest");
+            JQueryMobileDocument<Data> doc = new JQueryMobileDocument(threadLocalModel, "BeanServletTest");
             JQueryMobilePage page = doc.getPage("page1");
             JQueryMobileForm form = (JQueryMobileForm) page.addForm(null, null);
             form.addInputs(

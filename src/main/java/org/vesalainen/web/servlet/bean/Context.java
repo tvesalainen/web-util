@@ -50,7 +50,10 @@ public class Context<M>
     public String modelName(String inputName)
     {
         String first = map.getFirst(inputName);
-        System.err.println(inputName+" -> "+first);
+        if (first == null)
+        {
+            first = inputName.replace('-', '.');
+        }
         return first;
     }
     public M getModel()

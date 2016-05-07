@@ -29,8 +29,10 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import org.vesalainen.bean.BeanHelper;
+import org.vesalainen.html.Element;
+import org.vesalainen.html.jquery.mobile.JQueryMobileDocument;
+import org.vesalainen.html.jquery.mobile.JQueryMobilePage;
 import org.vesalainen.web.servlet.bean.AbstractBeanServlet;
-import org.vesalainen.web.servlet.bean.BeanDocument;
 import org.vesalainen.web.servlet.bean.Context;
 
 /**
@@ -39,7 +41,7 @@ import org.vesalainen.web.servlet.bean.Context;
  * @param <D>
  * @param <C>
  */
-public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanServlet<D,C>
+public class AbstractJAXBServlet<D extends JQueryMobileDocument,C> extends AbstractBeanServlet<D,C>
 {
     private File storage;
     private final JAXBContext jaxbCtx;
@@ -101,9 +103,13 @@ public class AbstractJAXBServlet<D extends BeanDocument,C> extends AbstractBeanS
     @Override
     protected D createDocument()
     {
-        D doc = documentFactory.apply(threadLocalData, title);
+        D doc = documentFactory.apply(threadLocalModel, title);
+        JQueryMobilePage defPage = doc.getDefaultPage();
+        Element header = defPage.getHeader();
+        header.setDataAttr("position", "fixed");
+        header.addElement("h1").addText(title);
 
-        doc.getBody().addContent(new JAXBContent(threadLocalData, doc, action));
+        doc.getBody().addContent(new JAXBContent(threadLocalModel, doc, action));
         return doc;
     }
 

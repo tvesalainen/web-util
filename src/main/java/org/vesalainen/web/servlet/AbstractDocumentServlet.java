@@ -17,12 +17,17 @@
 package org.vesalainen.web.servlet;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.vesalainen.html.Document;
+import org.vesalainen.html.PrettyPrinter;
+import org.vesalainen.html.Renderer;
+import org.vesalainen.test.DebugHelper;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.I18nSupport;
 
@@ -57,14 +62,20 @@ public abstract class AbstractDocumentServlet<D extends Document> extends HttpSe
         response(resp, document);
     }
 
-    protected void response(HttpServletResponse resp, Document document) throws IOException
+    protected void response(HttpServletResponse resp, Renderer renderer) throws IOException
     {
         resp.setContentType("text/html");
         resp.setCharacterEncoding("UTF-8");
+        resp.setHeader("Cache-Control", "no-store");
         resp.setStatus(HttpServletResponse.SC_OK);
-        ServletOutputStream os = resp.getOutputStream();
-        document.write(os);
-        os.flush();
+        Writer writer = resp.getWriter();
+        Appendable out = writer;
+        if (DebugHelper.guessDebugging())
+        {
+            out = new PrettyPrinter(out); 
+        }
+        renderer.append(out);
+        writer.flush();
     }
 
     protected abstract D createDocument();

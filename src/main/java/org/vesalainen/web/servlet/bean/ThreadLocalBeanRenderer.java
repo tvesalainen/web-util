@@ -17,13 +17,15 @@
 package org.vesalainen.web.servlet.bean;
 
 import org.vesalainen.bean.BeanHelper;
+import org.vesalainen.html.Renderer;
 
 /**
  *
  * @author tkv
  * @param <M>
+ * @param <R>
  */
-public abstract class ThreadLocalBeanRenderer<M> extends BeanRenderer
+public abstract class ThreadLocalBeanRenderer<M,R extends Renderer> extends BeanRenderer<R>
 {
     protected final ThreadLocal<Context<M>> threadLocalModel;
 
@@ -40,7 +42,12 @@ public abstract class ThreadLocalBeanRenderer<M> extends BeanRenderer
     {
         Context<M> ctx = threadLocalModel.get();
         M model = ctx.getModel();
-        return BeanHelper.getPattern(model, this);
+        String pattern = BeanHelper.getPattern(model, this);
+        if (pattern != null)
+        {
+            return pattern;
+        }
+        throw new IllegalArgumentException("no pattern for "+model+" -> "+this);
     }
     /**
      * Return bean pattern normalized to web

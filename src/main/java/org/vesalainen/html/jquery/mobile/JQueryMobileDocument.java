@@ -52,10 +52,6 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
     public void init()
     {
         super.init();
-        JQueryMobilePage defPage = getDefaultPage();
-        Element header = defPage.getHeader();
-        header.setDataAttr("position", "fixed");
-        header.addElement("h1").addText(title);
     }
 
     public boolean isAjax()
@@ -115,8 +111,4 @@ public class JQueryMobileDocument<M> extends JQueryDocument<M>
         return getDefaultPage().getMain();
     }
 
-    public Element getRawBody()
-    {
-        return body;
-    }
 }
