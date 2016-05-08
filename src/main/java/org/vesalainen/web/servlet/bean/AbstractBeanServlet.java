@@ -17,13 +17,18 @@
 package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.vesalainen.bean.BeanHelper;
+import org.vesalainen.bean.PatternComparator;
 import org.vesalainen.html.Renderer;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.web.I18n;
@@ -73,13 +78,7 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
             model = context.getModel();
         }
         threadLocalModel.set(context);
-        onService(req, resp, context, model);
-    }
-    protected void onService(HttpServletRequest req, HttpServletResponse resp, Context<M> context, M model) throws ServletException, IOException
-    {
-        String submitField = null;
-        String removeAction = null;
-        Object newObject = null;
+        Parameters parameters = new Parameters();
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {
             String key = e.getKey();
@@ -88,63 +87,64 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
             {
                 key = arr[0];
             }
-            String field = context.modelName(key);
+            parameters.put(context.modelName(key), arr);
+        }
+        onService(req, resp, parameters, context, model);
+    }
+    protected void onService(HttpServletRequest req, HttpServletResponse resp, Parameters parameters, Context<M> context, M model) throws ServletException, IOException
+    {
+        String submitField = null;
+        Object newObject = null;
+        for (Entry<String,String[]> e : parameters.entrySet())
+        {
+            String field = e.getKey();
+            String[] arr = e.getValue();
             if (field == null)
             {
-                submitField = key;
+                submitField = field;
             }
             else
             {
-                if (field.endsWith("#"))
+                if (BeanHelper.isApplyPattern(field))
                 {
-                    removeAction = field;
+                    String pattern = field;
+                    newObject = BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, pattern, c, h);});
                 }
                 else
                 {
-                    if (BeanHelper.isAdd(field) || BeanHelper.isAssign(field))
+                    try
                     {
-                        newObject = BeanHelper.applyList(model, field, (Class<Object> c, String h)->{return createObject(model, field, c, h);});
-                    }
-                    else
-                    {
-                        try
+                        if (BeanHelper.hasProperty(model, field))
                         {
-                            if (BeanHelper.hasProperty(model, field))
+                            Object value = BeanHelper.getValue(model, field);
+                            if (value instanceof SingleSelector)
                             {
-                                Object value = BeanHelper.getValue(model, field);
-                                if (value instanceof SingleSelector)
+                                SingleSelector ss = (SingleSelector) value;
+                                Class[] pt = BeanHelper.getParameterTypes(model, field);
+                                ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
+                            }
+                            else
+                            {
+                                if (arr.length == 1 && arr[0].isEmpty())
                                 {
-                                    SingleSelector ss = (SingleSelector) value;
-                                    Class[] pt = BeanHelper.getParameterTypes(model, field);
-                                    ss.setValue(ConvertUtility.convert(pt[0], arr[0]));
+                                    BeanHelper.setValue(model, field, null);
                                 }
                                 else
                                 {
-                                    if (arr.length == 1 && arr[0].isEmpty())
-                                    {
-                                        BeanHelper.setValue(model, field, null);
-                                    }
-                                    else
-                                    {
-                                        BeanHelper.setValue(model, field, arr);
-                                    }
+                                    BeanHelper.setValue(model, field, arr);
                                 }
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            throw new ServletException("problem with "+field, ex);
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ServletException("problem with "+field, ex);
                     }
                 }
             }
         }
-        if (removeAction != null)
-        {
-            BeanHelper.applyList(model, removeAction);
-        }
         onSubmit(model, submitField);
-        if (newObject != null && req.getParameter("sendFragment") != null && (newObject instanceof Renderer))
+        if (newObject != null && parameters.getParameter("sendFragment") != null && (newObject instanceof Renderer))
         {
             response(resp, (Renderer)newObject);
         }
@@ -162,4 +162,34 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         return BeanHelper.defaultFactory(cls, hint);
     }
 
+    public static class Parameters extends TreeMap<String,String[]>
+    {
+
+        public Parameters()
+        {
+            super(PatternComparator.Comparator);
+        }
+        
+        public String getParameter(String name)
+        {
+            String[] arr = get(name);
+            if (arr != null && arr.length > 0)
+            {
+                if (arr.length > 1)
+                {
+                    throw new IllegalArgumentException(name+" has more than 1 value");
+                }
+                return arr[0];
+            }
+            return null;
+        }
+
+        @Override
+        public String[] put(String key, String... value)
+        {
+            return super.put(key, value);
+        }
+        
+        
+    }
 }
