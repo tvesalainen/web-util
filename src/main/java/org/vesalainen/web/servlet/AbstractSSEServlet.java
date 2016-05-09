@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.vesalainen.web.servlet.AbstractSSESource.SSEObserver;
 
 /**
@@ -30,22 +31,38 @@ import org.vesalainen.web.servlet.AbstractSSESource.SSEObserver;
 public abstract class AbstractSSEServlet extends HttpServlet
 {
     protected AbstractSSESource source;
-    
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        String events = req.getParameter("events");
-        if (events != null)
+        HttpSession session = req.getSession(true);
+        SSEObserver sseo = (SSEObserver) session.getAttribute("sseo");
+        if (sseo == null)
         {
-            System.err.println(events);
+            sseo = source.register();
+            session.setAttribute("sseo", sseo);
             resp.setContentType("text/event-stream");
             resp.setCharacterEncoding("UTF-8");
-            SSEObserver sseo = source.register(events);
             sseo.observe(resp.getWriter());
         }
         else
         {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "events parameter missing");
+            String[] events = req.getParameterValues("add");
+            if (events != null)
+            {
+                for (String ev : events)
+                {
+                    sseo.addEvent(ev);
+                }
+            }
+            events = req.getParameterValues("remove");
+            if (events != null)
+            {
+                for (String ev : events)
+                {
+                    sseo.removeEvent(ev);
+                }
+            }
         }
     }
     

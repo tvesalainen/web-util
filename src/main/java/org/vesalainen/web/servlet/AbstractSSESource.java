@@ -51,23 +51,26 @@ public abstract class AbstractSSESource implements Runnable
     protected ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
     protected ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
     protected ArrayBlockingQueue<SSEObserver> trash = new ArrayBlockingQueue<>(100);
+    private Thread thread;
 
     protected AbstractSSESource(String urlPattern)
     {
         this.urlPattern = urlPattern;
-        Thread thread = new Thread(this, AbstractSSESource.class.getSimpleName());
-        thread.start();
     }
 
-    public SSEObserver register(String events)
+    public void start()
     {
-        String[] evs = events.split(",");
-        SSEObserver sseo = new SSEObserver();
-        for (String event : evs)
-        {
-            sseo.addEvent(event);
-        }
-        return sseo;
+        thread = new Thread(this, AbstractSSESource.class.getSimpleName());
+        thread.start();
+    }
+    public void stop()
+    {
+        thread.interrupt();
+        thread = null;
+    }
+    public SSEObserver register()
+    {
+        return new SSEObserver();
     }
 
     protected abstract void addEvent(String event);
@@ -107,20 +110,16 @@ public abstract class AbstractSSESource implements Runnable
             readLock.unlock();
         }
     }
-    private void addObserver(SSEObserver sseo)
+    protected void add(SSEObserver sseo, String event)
     {
         writeLock.lock();
         try
         {
-            for (String ev : sseo.events)
+            if (!eventMap.containsKey(event))
             {
-                List<SSEObserver> list = eventMap.get(ev);
-                eventMap.add(ev, sseo);
-                if (list.isEmpty())
-                {
-                    addEvent(ev);
-                }
+                addEvent(event);    // first observer for event
             }
+            eventMap.add(event, sseo);
         }
         finally
         {
@@ -128,20 +127,17 @@ public abstract class AbstractSSESource implements Runnable
         }
     }
     
-    private void removeObserver(SSEObserver sseo)
+    protected void remove(SSEObserver sseo, String event)
     {
         writeLock.lock();
         try
         {
-            for (String ev : sseo.events)
+            if (eventMap.removeItem(event, sseo))
             {
-                if (eventMap.removeItem(ev, sseo))
+                List<SSEObserver> list = eventMap.get(event);
+                if (list.isEmpty())
                 {
-                    List<SSEObserver> list = eventMap.get(ev);
-                    if (list.isEmpty())
-                    {
-                        removeEvent(ev);
-                    }
+                    removeEvent(event); // last observer for event quit
                 }
             }
         }
@@ -159,7 +155,10 @@ public abstract class AbstractSSESource implements Runnable
             while (true)
             {
                 SSEObserver sseo = trash.take();
-                removeObserver(sseo);
+                for (String ev : sseo.events)
+                {
+                    remove(sseo, ev);
+                }
             }
         }
         catch (InterruptedException ex)
@@ -179,13 +178,19 @@ public abstract class AbstractSSESource implements Runnable
         public void addEvent(String event)
         {
             events.add(event);
+            add(this, event);
+        }
+
+        public void removeEvent(String event)
+        {
+            events.remove(event);
+            remove(this, event);
         }
 
         public void observe(Writer writer) throws IOException
         {
             try
             {
-                addObserver(this);
                 this.writer = writer;
                 semaphore.acquire();
             }
@@ -195,7 +200,7 @@ public abstract class AbstractSSESource implements Runnable
             }
         }
 
-        public boolean fireEvent(String event, CharSequence seq)
+        private boolean fireEvent(String event, CharSequence seq)
         {
             lock.lock();
             try

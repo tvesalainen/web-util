@@ -15,11 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 "use strict";
-/* global p */
+/* global p, eventSource */
+var eventSource;
 
 $(document).ready(function () {
+    
+    var url = '/sse';
+    eventSource = new EventSource(url);
+    
+    register($("body"));
+    
+    var fadeId = setInterval(fade, 5000);
+    var removeId = setInterval(remove, 1000);
+});
+
+function register(e)
+{
     var events = [];
-    var targets = $("[data-sse-sink]");
+    var targets = e.find("[data-sse-sink]");
     targets.each(function () {
         var ev = $(this).attr('data-sse-sink');
         if (events.indexOf(ev) === -1) {
@@ -27,79 +40,89 @@ $(document).ready(function () {
         }
     });
     if (events.length > 0) {
-        var url = '/sse' + '?events=' + events;
-        localStorage.events = events;
-        var eventSource = new EventSource(url);
         targets.each(function () {
             eventSource.addEventListener($(this).attr('data-sse-sink'), function (event) {
                 var json = JSON.parse(event.data);
-                $("[data-sse-sink=" + event.type + "]").each(function () {
-                    for (var p in json) {
-                        switch (p){
-                            default:
-                                $(this).attr(p, json[p]);
-                                $(this).attr('data-ttv', '5');
-                                break;
-                            case 'html':
-                                $(this).html(json[p]);
-                                $(this).attr('data-ttv', '5');
-                                break;
-                            case 'text':
-                                $(this).text(json[p]);
-                                $(this).attr('data-ttv', '5');
-                                break;
-                            case 'append':
-                                $(this).append(json[p]);
-                                break;
-                            case 'prepend':
-                                $(this).prepend(json[p]);
-                                break;
-                            case 'after':
-                                $(this).after(json[p]);
-                                break;
-                            case 'before':
-                                $(this).before(json[p]);
-                                break;
+                var targets = $("[data-sse-sink=" + event.type + "]");
+                if (targets.length > 0)
+                {
+                    targets.each(function () {
+                        for (var p in json) {
+                            switch (p){
+                                default:
+                                    $(this).attr(p, json[p]);
+                                    $(this).attr('data-ttv', '5');
+                                    break;
+                                case 'html':
+                                    $(this).html(json[p]);
+                                    $(this).attr('data-ttv', '5');
+                                    break;
+                                case 'text':
+                                    $(this).text(json[p]);
+                                    $(this).attr('data-ttv', '5');
+                                    break;
+                                case 'append':
+                                    $(this).append(json[p]);
+                                    break;
+                                case 'prepend':
+                                    $(this).prepend(json[p]);
+                                    break;
+                                case 'after':
+                                    $(this).after(json[p]);
+                                    break;
+                                case 'before':
+                                    $(this).before(json[p]);
+                                    break;
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else
+                {
+                    eventSource.removeEventListener(event.type);
+                    $.post("/sse", {remove: event.type});
+                }
             }, false);
             //$(this).attr('data-ttv', '5');
         });
+        var a = [];
+        for (e in events)
+        {
+            a.push({name: "add", value: events[e]});
+        }
+        $.post("/sse", a);
     }
-    
-    var fadeId = setInterval(fade, 5000);
-    function fade()
-    {
-        $("[data-ttv]").each(function(){
-            var val = Number($(this).attr("data-ttv"));
-            val--;
-            if (val === 0)
-            {
-                $(this).fadeOut("slow");
-                $(this).attr("data-ttv", null);
-            }
-            else
-            {
-                $(this).attr("data-ttv", val);
-                $(this).show();
-            }
-        });
-    }
-    var removeId = setInterval(remove, 1000);
-    function remove()
-    {
-        $("[data-ttl]").each(function(){
-            var val = Number($(this).attr("data-ttl"));
-            val--;
-            if (val === 0)
-            {
-                $(this).remove();
-            }
-            else
-            {
-                $(this).attr("data-ttl", val);
-            }
-        });
-    }
-});
+}
+function fade()
+{
+    $("[data-ttv]").each(function(){
+        var val = Number($(this).attr("data-ttv"));
+        val--;
+        if (val === 0)
+        {
+            $(this).fadeOut("slow");
+            $(this).attr("data-ttv", null);
+        }
+        else
+        {
+            $(this).attr("data-ttv", val);
+            $(this).show();
+        }
+    });
+}
+
+function remove()
+{
+    $("[data-ttl]").each(function(){
+        var val = Number($(this).attr("data-ttl"));
+        val--;
+        if (val === 0)
+        {
+            $(this).remove();
+        }
+        else
+        {
+            $(this).attr("data-ttl", val);
+        }
+    });
+}
