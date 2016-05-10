@@ -41,20 +41,17 @@ public abstract class AbstractSSEServlet extends HttpServlet
         {
             sseo = source.register();
             session.setAttribute("sseo", sseo);
-            resp.setContentType("text/event-stream");
-            resp.setCharacterEncoding("UTF-8");
-            sseo.observe(resp.getWriter());
+        }
+        String[] events = req.getParameterValues("add");
+        if (events != null)
+        {
+            for (String ev : events)
+            {
+                sseo.addEvent(ev);
+            }
         }
         else
         {
-            String[] events = req.getParameterValues("add");
-            if (events != null)
-            {
-                for (String ev : events)
-                {
-                    sseo.addEvent(ev);
-                }
-            }
             events = req.getParameterValues("remove");
             if (events != null)
             {
@@ -62,6 +59,12 @@ public abstract class AbstractSSEServlet extends HttpServlet
                 {
                     sseo.removeEvent(ev);
                 }
+            }
+            else
+            {
+                resp.setContentType("text/event-stream");
+                resp.setCharacterEncoding("UTF-8");
+                sseo.observe(resp.getWriter());
             }
         }
     }

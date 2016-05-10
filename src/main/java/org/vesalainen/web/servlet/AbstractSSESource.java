@@ -192,10 +192,13 @@ public abstract class AbstractSSESource implements Runnable
             try
             {
                 this.writer = writer;
+                System.err.println(Thread.currentThread()+" waiting");
                 semaphore.acquire();
+                System.err.println(Thread.currentThread()+" released");
             }
             catch (InterruptedException ex)
             {
+                System.err.println(Thread.currentThread()+" interrupted");
                 throw new IOException(ex);
             }
         }

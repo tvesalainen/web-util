@@ -41,49 +41,7 @@ function register(e)
     });
     if (events.length > 0) {
         targets.each(function () {
-            eventSource.addEventListener($(this).attr('data-sse-sink'), function (event) {
-                var json = JSON.parse(event.data);
-                var targets = $("[data-sse-sink=" + event.type + "]");
-                if (targets.length > 0)
-                {
-                    targets.each(function () {
-                        for (var p in json) {
-                            switch (p){
-                                default:
-                                    $(this).attr(p, json[p]);
-                                    $(this).attr('data-ttv', '5');
-                                    break;
-                                case 'html':
-                                    $(this).html(json[p]);
-                                    $(this).attr('data-ttv', '5');
-                                    break;
-                                case 'text':
-                                    $(this).text(json[p]);
-                                    $(this).attr('data-ttv', '5');
-                                    break;
-                                case 'append':
-                                    $(this).append(json[p]);
-                                    break;
-                                case 'prepend':
-                                    $(this).prepend(json[p]);
-                                    break;
-                                case 'after':
-                                    $(this).after(json[p]);
-                                    break;
-                                case 'before':
-                                    $(this).before(json[p]);
-                                    break;
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    eventSource.removeEventListener(event.type);
-                    $.post("/sse", {remove: event.type});
-                }
-            }, false);
-            //$(this).attr('data-ttv', '5');
+            eventSource.addEventListener($(this).attr('data-sse-sink'), fired, false);
         });
         var a = [];
         for (e in events)
@@ -93,6 +51,53 @@ function register(e)
         $.post("/sse", a);
     }
 }
+function fired(event)
+{
+    var json = JSON.parse(event.data);
+    var targets = $("[data-sse-sink=" + event.type + "]");
+    if (targets.length > 0)
+    {
+        targets.each(function () {
+            for (var p in json) {
+                switch (p){
+                    default:
+                        $(this).attr(p, json[p]);
+                        $(this).attr('data-ttv', '5');
+                        break;
+                    case 'html':
+                        $(this).html(json[p]);
+                        $(this).attr('data-ttv', '5');
+                        break;
+                    case 'text':
+                        $(this).text(json[p]);
+                        $(this).attr('data-ttv', '5');
+                        break;
+                    case 'append':
+                        $(this).append(json[p]);
+                        break;
+                    case 'prepend':
+                        $(this).prepend(json[p]);
+                        break;
+                    case 'after':
+                        $(this).after(json[p]);
+                        break;
+                    case 'before':
+                        $(this).before(json[p]);
+                        break;
+                    case 'refresh':
+                        $(this).attr('data-ttv', '5');
+                        break;
+                }
+            }
+        });
+    }
+    else
+    {
+        eventSource.removeEventListener(event.type, fired);
+        $.post("/sse", {remove: event.type});
+    }
+};
+
 function fade()
 {
     $("[data-ttv]").each(function(){
