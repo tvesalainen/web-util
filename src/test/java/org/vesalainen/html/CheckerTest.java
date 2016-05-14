@@ -23,30 +23,42 @@ import static org.junit.Assert.*;
  *
  * @author tkv
  */
-public class AbstractFrameworkTest
+public class CheckerTest
 {
     
-    public AbstractFrameworkTest()
+    public CheckerTest()
     {
     }
 
     @Test
     public void test1()
     {
-        Document page = new Document("Test");
-        page.init();
-        page.use(Frameworks.Bootstrap);
-        String exp = "<!DOCTYPE HTML>\n" +
-            "<html><head>"+
-                "<meta charset=\"UTF-8\">"+
-                "<title>Test</title>"+
-                "<script src=\"/jquery-1.12.0.min.js\"></script>"+
-                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"+
-                "<link rel=\"stylesheet\" href=\"/bootstrap-3.3.6-dist/css/bootstrap.min.css\">"+
-                "<script src=\"/bootstrap-3.3.6-dist/js/bootstrap.min.js\"></script>"+
-                "</head><body></body></html>";
-        String got = page.toString();
-        assertEquals(exp, got);
+        Element el = new Element("div").setAttr("id", 1);
+        el.addElement("span").setAttr("id", 1);
+        try
+        {
+            Checker.checkIds(el);
+            fail("should have thrown");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            
+        }
+    }
+    
+    @Test
+    public void test2()
+    {
+        Element el = new Element("div").setAttr("id", 1);
+        el.addElement("span").setAttr("id", 2);
+        try
+        {
+            Checker.checkIds(el);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            fail("should not have thrown");
+        }
     }
     
 }

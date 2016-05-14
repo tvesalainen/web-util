@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.vesalainen.js.AbstractScriptContainer;
 import org.vesalainen.js.ScriptContainer;
@@ -212,6 +213,12 @@ public class Document implements Page
         {
             throw new IllegalArgumentException(ex);
         }
+    }
+
+    @Override
+    public void visit(Consumer<? super Renderer> consumer)
+    {
+        html.visit(consumer);
     }
     
 }

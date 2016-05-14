@@ -19,6 +19,7 @@ package org.vesalainen.html;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
@@ -121,5 +122,16 @@ public class ContainerContent extends AbstractContent implements Container
             c.append(out);
         }
     }
+
+    @Override
+    public void visit(Consumer<? super Renderer> consumer)
+    {
+        consumer.accept(this);
+        for (Renderer c : content)
+        {
+            c.visit(consumer);
+        }
+    }
+    
     
 }

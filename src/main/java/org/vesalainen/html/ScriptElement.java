@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 import org.vesalainen.js.Script;
 
 /**
@@ -48,6 +49,12 @@ public class ScriptElement extends AbstractContent
     public void append(Appendable out) throws IOException
     {
         element.append(out);
+    }
+
+    @Override
+    public void visit(Consumer<? super Renderer> consumer)
+    {
+        element.visit(consumer);
     }
     
 }

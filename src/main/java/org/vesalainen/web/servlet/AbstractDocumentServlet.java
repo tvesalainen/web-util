@@ -24,6 +24,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.vesalainen.html.Checker;
 import org.vesalainen.html.Document;
 import org.vesalainen.html.PrettyPrinter;
 import org.vesalainen.html.Renderer;
@@ -72,6 +73,7 @@ public abstract class AbstractDocumentServlet<D extends Document> extends HttpSe
         Appendable out = writer;
         if (DebugHelper.guessDebugging())
         {
+            Checker.checkIds(renderer);
             out = new PrettyPrinter(out); 
         }
         renderer.append(out);

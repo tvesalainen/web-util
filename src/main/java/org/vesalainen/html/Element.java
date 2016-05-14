@@ -164,13 +164,21 @@ public class Element extends ContainerContent implements AttributedContent
     @Override
     public boolean hasAttr(String name)
     {
-        return attributes.containsKey(name);
+        if (attributes != null)
+        {
+            return attributes.containsKey(name);
+        }
+        return false;
     }
 
     @Override
     public Attribute<?> getAttr(String name)
     {
-        return attributes.get(name);
+        if (attributes != null)
+        {
+            return attributes.get(name);
+        }
+        return null;
     }
 
 }

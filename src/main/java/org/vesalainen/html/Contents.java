@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  *
@@ -47,6 +48,17 @@ public class Contents
             else
             {
                 out.append(value.toString());
+            }
+        }
+    }
+    public static void visit(Object value, Consumer<? super Renderer> action)
+    {
+        if (value != null)
+        {
+            if (value instanceof Content)
+            {
+                Content content = (Content) value;
+                content.visit(action);
             }
         }
     }

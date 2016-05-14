@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  *
@@ -58,6 +59,12 @@ public class Placeholder<T> extends AbstractContent
     public void append(Appendable out) throws IOException
     {
         Contents.append(out, value);
+    }
+
+    @Override
+    public void visit(Consumer<? super Renderer> consumer)
+    {
+        Contents.visit(value, consumer);
     }
     
 }

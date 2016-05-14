@@ -17,6 +17,12 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.Spliterator;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import org.vesalainen.util.concurrent.TryAdvanceSpliterator;
 
 /**
  *
@@ -25,4 +31,56 @@ import java.io.IOException;
 public interface Renderer
 {
     void append(Appendable out) throws IOException;
+    default void visit(Consumer<? super Renderer> consumer)
+    {
+        consumer.accept(this);
+    }
+    default Stream<Renderer> stream()
+    {
+        return StreamSupport.stream(spliterator(), false);
+    }
+    default Spliterator<Renderer> spliterator()
+    {
+        return new TryAdvanceSpliterator<>(new SpliteratorImpl(this), 5, TimeUnit.SECONDS);
+    }
+    public static class SpliteratorImpl implements Spliterator<Renderer>
+    {
+        private Renderer renderer;
+
+        public SpliteratorImpl(Renderer renderer)
+        {
+            this.renderer = renderer;
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super Renderer> action)
+        {
+            renderer.visit(action);
+        }
+        
+        @Override
+        public boolean tryAdvance(Consumer<? super Renderer> action)
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Spliterator<Renderer> trySplit()
+        {
+            return null;
+        }
+
+        @Override
+        public long estimateSize()
+        {
+            return Long.MAX_VALUE;
+        }
+
+        @Override
+        public int characteristics()
+        {
+            return 0;
+        }
+        
+    }
 }

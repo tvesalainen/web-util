@@ -64,6 +64,8 @@ public abstract class AbstractSSEServlet extends HttpServlet
             {
                 resp.setContentType("text/event-stream");
                 resp.setCharacterEncoding("UTF-8");
+                resp.addHeader("Connection", "close");
+                resp.flushBuffer();
                 sseo.observe(resp.getWriter());
             }
         }
