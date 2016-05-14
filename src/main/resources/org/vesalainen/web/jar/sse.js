@@ -61,7 +61,15 @@ function fired(event)
             for (var p in json) {
                 switch (p){
                     default:
-                        $(this).attr(p, json[p]);
+                        var o = this[p];
+                        if (!o)
+                        {
+                            $(this).attr(p, json[p]);
+                        }
+                        else
+                        {
+                            $(this)[p] = json[p];
+                        }
                         $(this).attr('data-ttv', '5');
                         break;
                     case 'html':
