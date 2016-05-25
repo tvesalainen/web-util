@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 "use strict";
-/* global p, eventSource */
+/* global p, eventSource, x, object */
 var eventSource;
 
 $(document).ready(function () {
@@ -59,16 +59,16 @@ function fired(event)
     {
         targets.each(function () {
             for (var p in json) {
+                var v = json[p];
                 switch (p){
                     default:
-                        var o = this[p];
-                        if (!o)
+                        if (typeof v === "object")
                         {
-                            $(this).attr(p, json[p]);
+                            merge(this[p], v);
                         }
                         else
                         {
-                            $(this)[p] = json[p];
+                            $(this).attr(p, v);
                         }
                         $(this).attr('data-ttv', '5');
                         break;
@@ -106,6 +106,21 @@ function fired(event)
     }
 };
 
+function merge(o, a)
+{
+    var x;
+    for (x in a)
+    {
+        if (typeof a[x] === "object")
+        {
+            merge(o[x], a[x]);
+        }
+        else
+        {
+            o[x] = a[x];
+        }
+    }
+}
 function fade()
 {
     $("[data-ttv]").each(function(){
