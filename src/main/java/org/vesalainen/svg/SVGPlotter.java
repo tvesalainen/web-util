@@ -128,7 +128,7 @@ public class SVGPlotter extends Plotter
             polyline.setAttr("points", sb.toString());
             if (color != null)
             {
-                polyline.setAttr("style", String.format("stroke:rgb(%d,%d,%d)", color.getRed(), color.getGreen(), color.getBlue()));
+                polyline.setAttr("style", String.format("fill:none;stroke:rgb(%d,%d,%d)", color.getRed(), color.getGreen(), color.getBlue()));
             }
         }
         
