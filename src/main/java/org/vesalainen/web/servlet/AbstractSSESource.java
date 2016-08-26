@@ -18,10 +18,8 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -31,15 +29,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.vesalainen.html.DataAttributeName;
-import org.vesalainen.json.JsonHelper;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
+import org.vesalainen.util.logging.JavaLogging;
 
 /**
  *
  * @author tkv
  */
-public abstract class AbstractSSESource implements Runnable
+public abstract class AbstractSSESource extends JavaLogging implements Runnable
 {
     public static final String EventSink = DataAttributeName.name("sse-sink");
     public static final String EventCSS = "["+EventSink+"]";
@@ -55,6 +53,7 @@ public abstract class AbstractSSESource implements Runnable
 
     protected AbstractSSESource(String urlPattern)
     {
+        super(AbstractSSESource.class);
         this.urlPattern = urlPattern;
     }
 
@@ -62,11 +61,13 @@ public abstract class AbstractSSESource implements Runnable
     {
         thread = new Thread(this, AbstractSSESource.class.getSimpleName());
         thread.start();
+        config("started sse-source for %s", urlPattern);
     }
     public void stop()
     {
         thread.interrupt();
         thread = null;
+        config("stopped sse-source for %s", urlPattern);
     }
     public SSEObserver register()
     {
@@ -90,6 +91,7 @@ public abstract class AbstractSSESource implements Runnable
     
     public void fireEvent(String event, CharSequence seq)
     {
+        finer("fire(%s, %s)", event, seq);
         readLock.lock();
         try
         {
@@ -112,6 +114,7 @@ public abstract class AbstractSSESource implements Runnable
     }
     protected void add(SSEObserver sseo, String event)
     {
+        config("add event %s for sse-source %s", event, urlPattern);
         writeLock.lock();
         try
         {
@@ -129,6 +132,7 @@ public abstract class AbstractSSESource implements Runnable
     
     protected void remove(SSEObserver sseo, String event)
     {
+        config("remove event %s for sse-source %s", event, urlPattern);
         writeLock.lock();
         try
         {
@@ -192,13 +196,13 @@ public abstract class AbstractSSESource implements Runnable
             try
             {
                 this.writer = writer;
-                System.err.println(Thread.currentThread()+" waiting");
+                warning("%s waiting", Thread.currentThread());
                 semaphore.acquire();
-                System.err.println(Thread.currentThread()+" released");
+                warning("%s released", Thread.currentThread());
             }
             catch (InterruptedException ex)
             {
-                System.err.println(Thread.currentThread()+" interrupted");
+                warning("%s interrupted", Thread.currentThread());
                 throw new IOException(ex);
             }
         }

@@ -35,6 +35,8 @@ public abstract class AbstractSSEServlet extends HttpServlet
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
+        resp.setContentType("text/event-stream");
+        resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession(true);
         SSEObserver sseo = (SSEObserver) session.getAttribute("sseo");
         if (sseo == null)
@@ -62,8 +64,6 @@ public abstract class AbstractSSEServlet extends HttpServlet
             }
             else
             {
-                resp.setContentType("text/event-stream");
-                resp.setCharacterEncoding("UTF-8");
                 resp.addHeader("Connection", "close");
                 resp.flushBuffer();
                 sseo.observe(resp.getWriter());

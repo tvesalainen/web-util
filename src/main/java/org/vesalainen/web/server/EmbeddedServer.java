@@ -24,6 +24,8 @@ import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.log.JavaUtilLog;
+import org.eclipse.jetty.util.log.Log;
 
 /**
  *
@@ -48,6 +50,8 @@ public class EmbeddedServer
 
     private void init()
     {
+        JavaUtilLog javaUtilLog = new JavaUtilLog("org.vesalainen.web.server");
+        Log.setLog(javaUtilLog);
         server = new Server(port);
         handler = new ServletHandler();
         //server.setHandler(handler);
