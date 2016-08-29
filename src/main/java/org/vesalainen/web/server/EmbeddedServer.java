@@ -16,6 +16,8 @@
  */
 package org.vesalainen.web.server;
 
+import java.io.File;
+import java.io.IOException;
 import org.vesalainen.web.servlet.JarServlet;
 import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.Server;
@@ -26,24 +28,28 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.JavaUtilLog;
 import org.eclipse.jetty.util.log.Log;
+import org.vesalainen.util.logging.JavaLogging;
 
 /**
  *
  * @author tkv
  */
-public class EmbeddedServer
+public class EmbeddedServer extends JavaLogging
 {
     private int port = 8080;
     private Server server;
     private ServletHandler handler;
+    private HashSessionManager sessionManager;
 
     public EmbeddedServer()
     {
+        super(EmbeddedServer.class);
         init();
     }
 
     public EmbeddedServer(int port)
     {
+        super(EmbeddedServer.class);
         this.port = port;
         init();
     }
@@ -53,14 +59,23 @@ public class EmbeddedServer
         JavaUtilLog javaUtilLog = new JavaUtilLog("org.vesalainen.web.server");
         Log.setLog(javaUtilLog);
         server = new Server(port);
+        server.setStopAtShutdown(true);
         handler = new ServletHandler();
         //server.setHandler(handler);
         SessionHandler sessionHandler = new SessionHandler();
-        sessionHandler.setSessionManager(new HashSessionManager());
+        sessionManager = new HashSessionManager();
+        sessionManager.setIdleSavePeriod(60);
+        sessionHandler.setSessionManager(sessionManager);
         sessionHandler.setHandler(handler);
         server.setHandler(sessionHandler);
         HashSessionIdManager sessionIdManager = new HashSessionIdManager();
         server.setSessionIdManager(sessionIdManager);
+    }
+    
+    public void setSessionStoreDirectory(File dir) throws IOException
+    {
+        sessionManager.setStoreDirectory(dir);
+        config("setSessionStoreDirectory(%s)", dir);
     }
     
     public void addServlet(HttpServlet servlet, String mapping)

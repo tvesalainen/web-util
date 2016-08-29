@@ -16,11 +16,13 @@
  */
 package org.vesalainen.json;
 
+import java.io.Serializable;
+
 /**
  * Interface JSONBean marks Object to be persistent using JSON
+ *
  * @author tkv
  */
-public interface JSONBean
+public interface JSONBean extends Serializable
 {
-    
 }

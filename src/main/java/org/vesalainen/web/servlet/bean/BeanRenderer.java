@@ -17,8 +17,6 @@
 package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.WeakHashMap;
 import org.vesalainen.bean.ExpressionParser;
 import org.vesalainen.html.Renderer;
 

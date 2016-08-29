@@ -16,14 +16,15 @@
  */
 package org.vesalainen.html;
 
-import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author tkv
  */
-public abstract class AbstractContent implements Content
+public abstract class AbstractContent implements Content, Serializable
 {
+    private static final long serialVersionUID = 1L;
     protected Content parent;
 
     public AbstractContent()

@@ -59,7 +59,7 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        System.err.println(req);
+        log(req.toString());
         I18n.set(i18nSupport, req.getLocale());
         HttpSession session = req.getSession(true);
         M model;
@@ -69,10 +69,12 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
             model = createData();
             context = new Context(model);
             session.setAttribute(Model, context);
+            log("created new model");
         }
         else
         {
             model = context.getModel();
+            log("loaded model from session");
         }
         threadLocalModel.set(context);
         Parameters parameters = new Parameters();

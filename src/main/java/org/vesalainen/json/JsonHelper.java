@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.util.ConvertUtility;
 import org.vesalainen.util.MapCollection;
-import org.vesalainen.web.InputType;
 
 /**
  *
@@ -182,7 +181,7 @@ public class JsonHelper
         return ConvertUtility.convert(expected, value);
     }
     
-    private static Object toJSONObject(Object value)
+    public static Object toJSONObject(Object value)
     {
         if (value == null)
         {

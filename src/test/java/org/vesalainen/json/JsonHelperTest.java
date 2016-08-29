@@ -26,7 +26,6 @@ import static org.junit.Assert.*;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.Lists;
 import org.vesalainen.util.MapList;
-import org.vesalainen.web.InputType;
 
 /**
  *

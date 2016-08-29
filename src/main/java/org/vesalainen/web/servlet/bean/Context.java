@@ -16,6 +16,7 @@
  */
 package org.vesalainen.web.servlet.bean;
 
+import java.io.Serializable;
 import org.vesalainen.util.Bijection;
 import org.vesalainen.util.HashBijection;
 
@@ -24,8 +25,9 @@ import org.vesalainen.util.HashBijection;
  * @author tkv
  * @param <M>
  */
-public class Context<M>
+public class Context<M> implements Serializable
 {
+    private static final long serialVersionUID = 1L;
     private M model;
     private Bijection<String,String> map = new HashBijection<>();
     private int number;
