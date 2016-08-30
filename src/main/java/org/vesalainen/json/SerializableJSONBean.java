@@ -25,6 +25,7 @@ import org.vesalainen.bean.BeanHelper;
 
 /**
  * A class that implements it's subclasses serialization by json
+ * <p>Exprerimental
  * @author tkv
  */
 public class SerializableJSONBean implements JSONBean, Serializable

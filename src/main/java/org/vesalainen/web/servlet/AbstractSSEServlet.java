@@ -17,11 +17,17 @@
 package org.vesalainen.web.servlet;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 import org.vesalainen.web.servlet.AbstractSSESource.SSEObserver;
 
 /**
@@ -30,20 +36,32 @@ import org.vesalainen.web.servlet.AbstractSSESource.SSEObserver;
  */
 public abstract class AbstractSSEServlet extends HttpServlet
 {
+    private static final String SSEOMapName = "org.vesalainen.web.servlet.sseoMap";
     protected AbstractSSESource source;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException
+    {
+        super.init(config);
+        ServletContext servletContext = config.getServletContext();
+        SSEOMap sseoMap = new SSEOMap();
+        servletContext.setAttribute(SSEOMapName, sseoMap);
+        servletContext.addListener(sseoMap);
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         log(req.toString());
-        resp.setContentType("text/event-stream");
-        resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession(true);
-        SSEObserver sseo = (SSEObserver) session.getAttribute("sseo");
+        ServletContext servletContext = getServletContext();
+        SSEOMap sseoMap = (SSEOMap) servletContext.getAttribute(SSEOMapName);
+        SSEObserver sseo = sseoMap.get(session);
         if (sseo == null)
         {
             sseo = source.register();
-            session.setAttribute("sseo", sseo);
+            sseoMap.put(session, sseo);
+            log("registered sseo");
         }
         String[] events = req.getParameterValues("add");
         if (events != null)
@@ -67,13 +85,29 @@ public abstract class AbstractSSEServlet extends HttpServlet
             }
             else
             {
+                resp.setContentType("text/event-stream");
+                resp.setCharacterEncoding("UTF-8");
                 resp.addHeader("Connection", "close");
                 resp.flushBuffer();
-                log("observe");
-                sseo.observe(resp.getWriter());
+                log("async started");
+                sseo.start(req.startAsync());
             }
         }
-        log(resp.toString());
     }
     
+    private class SSEOMap extends HashMap<HttpSession,SSEObserver> implements HttpSessionListener
+    {
+
+        @Override
+        public void sessionCreated(HttpSessionEvent se)
+        {
+        }
+
+        @Override
+        public void sessionDestroyed(HttpSessionEvent se)
+        {
+            remove(se.getSession());
+        }
+        
+    }
 }

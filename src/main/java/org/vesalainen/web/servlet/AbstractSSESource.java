@@ -17,6 +17,7 @@
 package org.vesalainen.web.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.AsyncContext;
 import org.json.JSONObject;
 import org.vesalainen.html.DataAttributeName;
 import org.vesalainen.util.HashMapList;
@@ -174,8 +176,7 @@ public abstract class AbstractSSESource extends JavaLogging implements Runnable
     public class SSEObserver
     {
         private final Set<String> events = new HashSet<>();
-        private Writer writer;
-        private final Semaphore semaphore = new Semaphore(0);
+        private AsyncContext asyncContext;
         private boolean done;
         private ReentrantLock lock = new ReentrantLock();
         
@@ -191,20 +192,9 @@ public abstract class AbstractSSESource extends JavaLogging implements Runnable
             remove(this, event);
         }
 
-        public void observe(Writer writer) throws IOException
+        public void start(AsyncContext asyncContext) throws IOException
         {
-            try
-            {
-                this.writer = writer;
-                warning("%s waiting", Thread.currentThread());
-                semaphore.acquire();
-                warning("%s released", Thread.currentThread());
-            }
-            catch (InterruptedException ex)
-            {
-                warning("%s interrupted", Thread.currentThread());
-                throw new IOException(ex);
-            }
+            this.asyncContext = asyncContext;
         }
 
         private boolean fireEvent(String event, CharSequence seq)
@@ -214,6 +204,7 @@ public abstract class AbstractSSESource extends JavaLogging implements Runnable
             {
                 if (!done)
                 {
+                    PrintWriter writer = asyncContext.getResponse().getWriter();
                     writer.write("event:");
                     writer.write(event);
                     writer.write("\n");
@@ -226,7 +217,7 @@ public abstract class AbstractSSESource extends JavaLogging implements Runnable
             }
             catch (Exception ex)
             {
-                semaphore.release();
+                asyncContext.complete();
                 done = true;
                 return false;
             }
@@ -235,6 +226,5 @@ public abstract class AbstractSSESource extends JavaLogging implements Runnable
                 lock.unlock();
             }
         }
-
     }
 }
