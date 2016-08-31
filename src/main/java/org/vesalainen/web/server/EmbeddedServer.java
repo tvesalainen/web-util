@@ -74,8 +74,11 @@ public class EmbeddedServer extends JavaLogging
     
     public void setSessionStoreDirectory(File dir) throws IOException
     {
-        sessionManager.setStoreDirectory(dir);
-        config("setSessionStoreDirectory(%s)", dir);
+        if (dir != null)
+        {
+            sessionManager.setStoreDirectory(dir);
+            config("setSessionStoreDirectory(%s)", dir);
+        }
     }
     
     public void addServlet(HttpServlet servlet, String mapping)

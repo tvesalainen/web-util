@@ -18,7 +18,7 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -38,6 +38,7 @@ public abstract class AbstractSSEServlet extends HttpServlet
 {
     private static final String SSEOMapName = "org.vesalainen.web.servlet.sseoMap";
     protected AbstractSSESource source;
+    private long asyncTimeout = -1;
 
     @Override
     public void init(ServletConfig config) throws ServletException
@@ -90,9 +91,16 @@ public abstract class AbstractSSEServlet extends HttpServlet
                 resp.addHeader("Connection", "close");
                 resp.flushBuffer();
                 log("async started");
-                sseo.start(req.startAsync());
+                AsyncContext startAsync = req.startAsync();
+                startAsync.setTimeout(asyncTimeout);
+                sseo.start(startAsync);
             }
         }
+    }
+
+    public void setAsyncTimeout(long asyncTimeout)
+    {
+        this.asyncTimeout = asyncTimeout;
     }
     
     private class SSEOMap extends HashMap<HttpSession,SSEObserver> implements HttpSessionListener

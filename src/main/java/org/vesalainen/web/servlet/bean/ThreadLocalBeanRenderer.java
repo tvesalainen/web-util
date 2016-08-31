@@ -16,27 +16,45 @@
  */
 package org.vesalainen.web.servlet.bean;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.WeakHashMap;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Renderer;
 
 /**
- *
+ * ThreadLocalBeanRenderer is a building part of document. Each part has
+ * reference to model by ThreadLocal. It is assumed that when building the 
+ * document tree, each part uses same ThreadLocal instance. When de-serializing
+ * all parts have same ThreadLocal instance.
  * @author tkv
  * @param <M>
  * @param <R>
  */
-public abstract class ThreadLocalBeanRenderer<M,R extends Renderer> extends BeanRenderer<R>
+public abstract class ThreadLocalBeanRenderer<M, R extends Renderer> extends BeanRenderer<R> implements Serializable
 {
-    protected final ThreadLocal<Context<M>> threadLocalModel;
+    private static final long serialVersionUID = 1L;
+    private static final Map<ObjectInputStream,ThreadLocal> ThreadLocalMap = new WeakHashMap<>();
+    protected transient ThreadLocal<Context<M>> threadLocalModel;
 
     public ThreadLocalBeanRenderer(ThreadLocal<Context<M>> threadLocalModel)
     {
         super();
         this.threadLocalModel = threadLocalModel;
     }
+
+    public ThreadLocal<Context<M>> getThreadLocalModel()
+    {
+        return threadLocalModel;
+    }
+
     /**
      * Return Bean pattern
-     * @return 
+     *
+     * @return
      */
     public String getPattern()
     {
@@ -47,14 +65,33 @@ public abstract class ThreadLocalBeanRenderer<M,R extends Renderer> extends Bean
         {
             return pattern;
         }
-        throw new IllegalArgumentException("no pattern for "+model+" -> "+this);
+        throw new IllegalArgumentException("no pattern for " + model + " -> " + this);
     }
+
     /**
      * Return bean pattern normalized to web
-     * @return 
+     *
+     * @return
      */
     public String getWebPattern()
     {
         return getPattern().replace('.', '-');
     }
+
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        threadLocalModel = ThreadLocalMap.get(in);
+        if (threadLocalModel == null)
+        {
+            threadLocalModel = new ThreadLocal();
+            ThreadLocalMap.put(in, threadLocalModel);
+        }
+    }
+
 }

@@ -67,7 +67,7 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         if (context == null)
         {
             model = createData();
-            context = new Context(model);
+            context = new Context(threadLocalModel, model);
             session.setAttribute(Model, context);
             log("created new model");
         }

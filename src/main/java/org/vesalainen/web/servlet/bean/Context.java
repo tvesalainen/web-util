@@ -16,24 +16,30 @@
  */
 package org.vesalainen.web.servlet.bean;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import org.vesalainen.html.Renderer;
 import org.vesalainen.util.Bijection;
 import org.vesalainen.util.HashBijection;
 
 /**
- *
+ * Model might contain ThreadLocalBeanRenderer parts. These parts must have
+ * same ThreadLocal as this class. After re-serialization this is also true.
  * @author tkv
  * @param <M>
  */
-public class Context<M> implements Serializable
+public class Context<M> extends ThreadLocalBeanRenderer implements Serializable
 {
     private static final long serialVersionUID = 1L;
     private M model;
     private Bijection<String,String> map = new HashBijection<>();
     private int number;
 
-    public Context(M model)
+    public Context(ThreadLocal<Context<M>> threadLocalModel, M model)
     {
+        super(threadLocalModel);
         this.model = model;
     }
 
@@ -62,5 +68,22 @@ public class Context<M> implements Serializable
     {
         return model;
     }
+
+    @Override
+    protected Renderer create()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        threadLocalModel.set(this);
+    }
+
 }
