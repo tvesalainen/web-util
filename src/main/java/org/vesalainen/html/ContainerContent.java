@@ -27,6 +27,7 @@ import java.util.function.Consumer;
  */
 public class ContainerContent extends AbstractContent implements Container
 {
+    private static final long serialVersionUID = 1L;
     protected final List<Renderer> content = new ArrayList<>();
 
     public ContainerContent()

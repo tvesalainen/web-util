@@ -27,6 +27,7 @@ import java.util.Map;
  */
 public class Tag extends AbstractContent implements AttributedContent
 {
+    private static final long serialVersionUID = 1L;
     protected String name;
     protected Map<String,Attribute<?>> attributes;
     protected ClassAttribute classes;

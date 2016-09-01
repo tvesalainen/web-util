@@ -21,6 +21,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.WeakHashMap;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Renderer;
@@ -43,6 +44,7 @@ public abstract class ThreadLocalBeanRenderer<M, R extends Renderer> extends Bea
     public ThreadLocalBeanRenderer(ThreadLocal<Context<M>> threadLocalModel)
     {
         super();
+        Objects.requireNonNull(threadLocalModel);
         this.threadLocalModel = threadLocalModel;
     }
 

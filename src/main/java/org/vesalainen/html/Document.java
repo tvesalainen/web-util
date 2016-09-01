@@ -19,6 +19,7 @@ package org.vesalainen.html;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -34,8 +35,9 @@ import org.vesalainen.test.DebugHelper;
  *
  * @author tkv
  */
-public class Document implements Page
+public class Document implements Page, Serializable
 {
+    private static final long serialVersionUID = 1L;
     protected Element html;
     protected Element head;
     protected Element body;

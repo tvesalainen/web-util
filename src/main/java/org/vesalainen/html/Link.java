@@ -17,13 +17,15 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  *
  * @author tkv
  */
-public class Link implements Attribute<String>
+public class Link implements Attribute<String>, Serializable
 {
+    private static final long serialVersionUID = 1L;
     private final String name;
     private final String path;
     private final Content query;

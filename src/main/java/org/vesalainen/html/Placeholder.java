@@ -26,6 +26,7 @@ import java.util.function.Consumer;
  */
 public class Placeholder<T> extends AbstractContent
 {
+    private static final long serialVersionUID = 1L;
     protected T value;
 
     public Placeholder(Content parent)

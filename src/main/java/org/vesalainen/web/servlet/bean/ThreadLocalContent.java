@@ -17,6 +17,7 @@
 package org.vesalainen.web.servlet.bean;
 
 import java.io.IOException;
+import java.util.Objects;
 import org.vesalainen.html.Content;
 
 /**
@@ -31,6 +32,7 @@ public abstract class ThreadLocalContent<M> implements Content
 
     public ThreadLocalContent(ThreadLocal<Context<M>> local)
     {
+        Objects.requireNonNull(local);
         this.threadLocalModel = local;
     }
 

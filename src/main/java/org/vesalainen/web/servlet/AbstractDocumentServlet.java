@@ -31,7 +31,7 @@ import org.vesalainen.web.I18n;
 import org.vesalainen.web.I18nSupport;
 
 /**
- *
+ * AbstractDocumentServlet supports rendering static document
  * @author tkv
  * @param <D> Document type
  */

@@ -17,6 +17,7 @@
 package org.vesalainen.web;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -57,7 +58,7 @@ public class I18n
         return support.get();
     }
 
-    public static final Renderer getLabel(Object key)
+    public static final Renderer getLabel(Serializable key)
     {
         LabelWrap wrap = labelMap.get(key);
         if (wrap == null)
@@ -68,7 +69,7 @@ public class I18n
         return wrap;
     }
 
-    public static final Renderer getPlaceholder(Object key)
+    public static final Renderer getPlaceholder(Serializable key)
     {
         LabelWrap wrap = placeholderMap.get(key);
         if (wrap == null)
@@ -92,12 +93,13 @@ public class I18n
             System.err.println(key+" = ");
         }
     }
-    public static class LabelWrap implements Renderer
+    public static class LabelWrap implements Renderer, Serializable
     {
-        private final Object key;
+        private static final long serialVersionUID = 1L;
+        private final Serializable key;
         private final boolean placeholder;
 
-        public LabelWrap(Object key, boolean placeholder)
+        public LabelWrap(Serializable key, boolean placeholder)
         {
             this.key = key;
             this.placeholder = placeholder;

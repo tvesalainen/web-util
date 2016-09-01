@@ -22,6 +22,7 @@ package org.vesalainen.html;
  */
 public class Form extends Element
 {
+    private static final long serialVersionUID = 1L;
     public Form(Content parent, Object action)
     {
         this(parent, null, "post", action);

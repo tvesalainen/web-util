@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.io.Serializable;
 import static org.vesalainen.html.Encoder.encode;
 
 /**
@@ -24,8 +25,9 @@ import static org.vesalainen.html.Encoder.encode;
  * @author tkv
  * @param <T>
  */
-public class SimpleAttribute<T> implements Attribute<T>
+public class SimpleAttribute<T> implements Attribute<T>, Serializable
 {
+    private static final long serialVersionUID = 1L;
     protected final String name;
     protected T value;
 

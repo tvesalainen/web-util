@@ -41,7 +41,7 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
 public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends AbstractDocumentServlet<V>
 {
     private static final String Model = "__mOdEl__";
-    protected final ThreadLocal<Context<M>> threadLocalModel;
+    protected ThreadLocal<Context<M>> threadLocalModel;
     protected BiFunction<Class<?>,String,Object> objectFactory = BeanHelper::defaultFactory;
 
     public AbstractBeanServlet()
@@ -73,10 +73,11 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         }
         else
         {
+            threadLocalModel.set(context);
             model = context.getModel();
             log("loaded model from session");
+            log(BeanHelper.dump(model));
         }
-        threadLocalModel.set(context);
         Parameters parameters = new Parameters();
         for (Entry<String,String[]> e : req.getParameterMap().entrySet())
         {

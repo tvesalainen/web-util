@@ -48,7 +48,7 @@ function register(e)
         {
             a.push({name: "add", value: events[e]});
         }
-        $.post("/sse", a);
+        $.post("/ctrl-sse", a);
     }
 }
 function fired(event)
@@ -102,7 +102,7 @@ function fired(event)
     else
     {
         eventSource.removeEventListener(event.type, fired);
-        $.post("/sse", {remove: event.type});
+        $.post("/ctrl-sse", {remove: event.type});
     }
 };
 

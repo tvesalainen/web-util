@@ -27,6 +27,7 @@ import java.util.TreeMap;
  */
 public class Element extends ContainerContent implements AttributedContent
 {
+    private static final long serialVersionUID = 1L;
     protected String name;
     protected Map<String,Attribute<?>> attributes;
     protected ClassAttribute classes;

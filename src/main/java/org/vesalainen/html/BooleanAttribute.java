@@ -26,6 +26,7 @@ import java.io.IOException;
  */
 public class BooleanAttribute<T> extends SimpleAttribute<T>
 {
+    private static final long serialVersionUID = 1L;
     public BooleanAttribute(String name, T value)
     {
         super(name, value);

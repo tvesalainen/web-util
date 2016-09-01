@@ -26,6 +26,7 @@ import org.vesalainen.js.Script;
  */
 public class ScriptElement extends AbstractContent
 {
+    private static final long serialVersionUID = 1L;
     private Element element;
 
     public ScriptElement(Content parent)

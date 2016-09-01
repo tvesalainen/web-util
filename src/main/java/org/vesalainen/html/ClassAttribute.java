@@ -28,6 +28,7 @@ import org.vesalainen.util.Lists;
  */
 public class ClassAttribute extends SimpleAttribute<Set<String>>
 {
+    private static final long serialVersionUID = 1L;
 
     public ClassAttribute(String... classes)
     {

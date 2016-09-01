@@ -41,6 +41,7 @@ public class Context<M> extends ThreadLocalBeanRenderer implements Serializable
     {
         super(threadLocalModel);
         this.model = model;
+        threadLocalModel.set(this);
     }
 
     public String inputName(String name)

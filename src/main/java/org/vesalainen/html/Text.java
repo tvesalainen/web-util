@@ -26,6 +26,7 @@ import static org.vesalainen.html.Encoder.encode;
  */
 public class Text<T> extends AbstractContent
 {
+    private static final long serialVersionUID = 1L;
     private final T text;
 
     public Text(Content parent, T text)
