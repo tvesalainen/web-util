@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web.servlet;
+package org.vesalainen.web.servlet.sse;
 
 import java.io.IOException;
 import javax.servlet.ServletContext;
@@ -22,7 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.vesalainen.web.servlet.AbstractSSESource.SSEObserver;
+import org.vesalainen.web.servlet.sse.AbstractSSESource.SSEObserver;
 
 /**
  *
@@ -44,31 +44,34 @@ public class CtrlSSEServlet extends AbstractBaseSSEServlet
         HttpSession session = req.getSession(true);
         ServletContext servletContext = getServletContext();
         SSEOMap sseoMap = (SSEOMap) servletContext.getAttribute(SSEOMapName);
-        SSEObserver sseo = sseoMap.get(session);
-        if (sseo == null)
+        synchronized(sseoMap)
         {
-            sseo = source.register();
-            sseoMap.put(session, sseo);
-            log("registered sseo");
-        }
-        String[] events = req.getParameterValues("add");
-        if (events != null)
-        {
-            for (String ev : events)
+            SSEObserver sseo = sseoMap.get(session);
+            if (sseo == null)
             {
-                log("add "+ev);
-                sseo.addEvent(ev);
+                sseo = source.register();
+                sseoMap.put(session, sseo);
+                log("registered sseo");
             }
-        }
-        else
-        {
-            events = req.getParameterValues("remove");
+            String[] events = req.getParameterValues("add");
             if (events != null)
             {
                 for (String ev : events)
                 {
-                    log("remove "+ev);
-                    sseo.removeEvent(ev);
+                    log("add "+ev);
+                    sseo.addEvent(ev);
+                }
+            }
+            else
+            {
+                events = req.getParameterValues("remove");
+                if (events != null)
+                {
+                    for (String ev : events)
+                    {
+                        log("remove "+ev);
+                        sseo.removeEvent(ev);
+                    }
                 }
             }
         }

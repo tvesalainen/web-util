@@ -21,9 +21,11 @@ import java.io.IOException;
 import org.vesalainen.web.servlet.JarServlet;
 import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.session.HashSessionIdManager;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.JavaUtilLog;
@@ -70,6 +72,9 @@ public class EmbeddedServer extends JavaLogging
         server.setHandler(sessionHandler);
         HashSessionIdManager sessionIdManager = new HashSessionIdManager();
         server.setSessionIdManager(sessionIdManager);
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        server.setHandler(contexts);
+        ServletContextHandler servletContextHandler = new ServletContextHandler(contexts, sessionHandler, null, handler, null);
     }
     
     public void setSessionStoreDirectory(File dir) throws IOException

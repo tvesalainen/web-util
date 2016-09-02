@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.vesalainen.web.servlet;
+package org.vesalainen.web.servlet.sse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
+import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
 import javax.servlet.AsyncContext;
 import org.json.JSONObject;
 import org.vesalainen.html.DataAttributeName;
+import org.vesalainen.net.ExceptionParser;
 import org.vesalainen.util.HashMapList;
 import org.vesalainen.util.MapList;
 import org.vesalainen.util.logging.JavaLogging;
@@ -217,6 +217,7 @@ public abstract class AbstractSSESource extends JavaLogging implements Runnable
             }
             catch (Exception ex)
             {
+                log(ExceptionParser.brokenConnection(INFO, ex), ex, "SSE quit %s", ex.getMessage());
                 asyncContext.complete();
                 done = true;
                 return false;
