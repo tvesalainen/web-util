@@ -58,7 +58,7 @@ public class EmbeddedServer extends JavaLogging
 
     private void init()
     {
-        JavaUtilLog javaUtilLog = new JavaUtilLog("org.vesalainen.web.server");
+        JavaUtilLog javaUtilLog = new JavaUtilLog();
         Log.setLog(javaUtilLog);
         server = new Server(port);
         server.setStopAtShutdown(true);
@@ -75,6 +75,7 @@ public class EmbeddedServer extends JavaLogging
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         server.setHandler(contexts);
         ServletContextHandler servletContextHandler = new ServletContextHandler(contexts, sessionHandler, null, handler, null);
+        servletContextHandler.setLogger(javaUtilLog);
     }
     
     public void setSessionStoreDirectory(File dir) throws IOException
