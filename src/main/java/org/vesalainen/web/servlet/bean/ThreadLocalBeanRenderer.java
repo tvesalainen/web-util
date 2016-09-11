@@ -61,6 +61,7 @@ public abstract class ThreadLocalBeanRenderer<M, R extends Renderer> extends Bea
     public String getPattern()
     {
         Context<M> ctx = threadLocalModel.get();
+        Objects.requireNonNull(ctx, ()->{return String.format("this=%s ctx=%s", this, ctx);});
         M model = ctx.getModel();
         String pattern = BeanHelper.getPattern(model, this);
         if (pattern != null)
@@ -94,6 +95,12 @@ public abstract class ThreadLocalBeanRenderer<M, R extends Renderer> extends Bea
             threadLocalModel = new ThreadLocal();
             ThreadLocalMap.put(in, threadLocalModel);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return super.toString()+"! tl="+threadLocalModel+" ctx="+threadLocalModel.get();
     }
 
 }

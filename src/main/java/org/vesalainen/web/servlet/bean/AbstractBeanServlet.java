@@ -62,6 +62,7 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         log(req.toString());
         I18n.set(i18nSupport, req.getLocale());
         HttpSession session = req.getSession(true);
+        log(session.toString());
         M model;
         Context<M> context = (Context<M>) session.getAttribute(Model);
         if (context == null)
@@ -74,8 +75,9 @@ public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends Abst
         else
         {
             threadLocalModel.set(context);
+            context.selfAssign();
             model = context.getModel();
-            log("loaded model from session");
+            log(String.format("loaded model from session model=%s ctx=%s", model, context));
             log(BeanHelper.dump(model));
         }
         Parameters parameters = new Parameters();

@@ -43,7 +43,6 @@ public class JarServlet extends HttpServlet
             IOException
     {
         log(request.toString());
-        log(request.getRemoteAddr());
         String ifNoneMatch = request.getHeader("If-None-Match");
         if (eTag.equals(ifNoneMatch))
         {

@@ -58,23 +58,24 @@ public class SSEServlet extends AbstractBaseSSEServlet
         HttpSession session = req.getSession(true);
         ServletContext servletContext = getServletContext();
         SSEOMap sseoMap = (SSEOMap) servletContext.getAttribute(SSEOMapName);
+        SSEObserver sseo = null;
         synchronized(sseoMap)
         {
-            SSEObserver sseo = sseoMap.get(session);
+            sseo = sseoMap.get(session);
             if (sseo == null)
             {
                 sseo = source.register();
                 sseoMap.put(session, sseo);
                 log("registered sseo");
             }
-            resp.setContentType("text/event-stream");
-            resp.setCharacterEncoding("UTF-8");
-            resp.flushBuffer();
-            log("async started");
-            AsyncContext startAsync = req.startAsync();
-            startAsync.setTimeout(asyncTimeout);
-            sseo.start(startAsync);
         }
+        resp.setContentType("text/event-stream");
+        resp.setCharacterEncoding("UTF-8");
+        resp.flushBuffer();
+        log("async started");
+        AsyncContext startAsync = req.startAsync();
+        startAsync.setTimeout(asyncTimeout);
+        sseo.start(startAsync);
     }
 
     public void setAsyncTimeout(long asyncTimeout)

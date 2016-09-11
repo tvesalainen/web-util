@@ -41,9 +41,13 @@ public class Context<M> extends ThreadLocalBeanRenderer implements Serializable
     {
         super(threadLocalModel);
         this.model = model;
-        threadLocalModel.set(this);
+        selfAssign();
     }
 
+    public void selfAssign()
+    {
+        threadLocalModel.set(this);
+    }
     public String inputName(String name)
     {
         String id = map.getSecond(name);
@@ -84,7 +88,13 @@ public class Context<M> extends ThreadLocalBeanRenderer implements Serializable
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
     {
         in.defaultReadObject();
-        threadLocalModel.set(this);
+        selfAssign();
+    }
+
+    @Override
+    public String toString()
+    {
+        return getClass().getName()+"@"+hashCode()+"!tl="+threadLocalModel+" ctx="+equals(threadLocalModel.get());
     }
 
 }
