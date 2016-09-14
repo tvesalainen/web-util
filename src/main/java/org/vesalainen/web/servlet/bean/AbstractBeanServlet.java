@@ -40,7 +40,7 @@ import org.vesalainen.web.servlet.AbstractDocumentServlet;
  */
 public abstract class AbstractBeanServlet<V extends BeanDocument,M> extends AbstractDocumentServlet<V>
 {
-    private static final String Model = "__mOdEl__";
+    private static final String Model = "__mOdE l__";
     protected ThreadLocal<Context<M>> threadLocalModel;
     protected BiFunction<Class<?>,String,Object> objectFactory = BeanHelper::defaultFactory;
 
