@@ -219,7 +219,7 @@ public class SVGPath extends Element
         {
             sb.append(' ');
         }
-        sb.append(v);
+        sb.append(String.format("%f", v));
         int length = sb.length();
         while (true)
         {
