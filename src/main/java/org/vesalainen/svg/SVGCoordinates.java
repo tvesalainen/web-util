@@ -87,7 +87,7 @@ public class SVGCoordinates extends Element
         horGrid1.setAttr("stroke", "gray");
         horGrid1.setAttr("stroke-width", strokeWidth);
         
-        horScaler.stream(1).forEach((v)->
+        horScaler.stream(1).skip(1).forEach((v)->
         {
             horGrid1.moveTo(v, minY);
             horGrid1.verticalLineToRel(height);
@@ -101,14 +101,14 @@ public class SVGCoordinates extends Element
         horScale.setAttr("text-anchor", "middle");
         horScale.setAttr("font-size", fontSize);
         
-        horScaler.stream(horLevel).forEach((v)->
+        horScaler.stream(horLevel).skip(1).forEach((v)->
         {
             horGrid0.moveTo(v, minY);
             horGrid0.verticalLineToRel(height);
         });
         String horFormat = horScaler.getFormat(horLevel);
         long horCount = (long) horScaler.count(horLevel);
-        horScaler.stream(verLevel).skip(1).limit(horCount-2).forEach((v)->
+        horScaler.stream(horLevel).skip(1).limit(horCount-2).forEach((v)->
         {
             Element tspan = horScale.addElement("tspan");
             tspan.addText(String.format(horFormat, v));
