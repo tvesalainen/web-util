@@ -219,7 +219,7 @@ public class SVGPath extends Element
         {
             sb.append(' ');
         }
-        sb.append(String.format("%f", v));
+        sb.append(String.format(Locale.US, "%f", v));
         int length = sb.length();
         while (true)
         {

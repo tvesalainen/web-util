@@ -40,8 +40,8 @@ public class SVGCoordinatesTest
     {
         SVGDocument doc = new SVGDocument();
         Element svg = doc.addElement("svg")
-                .setAttr("viewBox", "-100, -100, 200, 200");
-        SVGCoordinates coord = new SVGCoordinates(doc, -100, -100, 200, 200);
+                .setAttr("viewBox", "-1, -1, 20, 2");
+        SVGCoordinates coord = new SVGCoordinates(doc, -1, -1, 20, 2);
         svg.addContent(coord);
         File file = File.createTempFile("coordinates-test", ".svg");
         try (FileWriter fos = new FileWriter(file))
