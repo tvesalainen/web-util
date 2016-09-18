@@ -17,11 +17,9 @@
 package org.vesalainen.svg;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.vesalainen.html.Element;
 
 /**
@@ -41,7 +39,7 @@ public class SVGCoordinatesTest
         SVGDocument doc = new SVGDocument();
         Element svg = doc.addElement("svg")
                 .setAttr("viewBox", "-1, -1, 20, 2");
-        SVGCoordinates coord = new SVGCoordinates(doc, -1, -1, 20, 2);
+        SVGCoordinates coord = new SVGCoordinates(-1, -1, 20, 2);
         svg.addContent(coord);
         File file = File.createTempFile("coordinates-test", ".svg");
         try (FileWriter fos = new FileWriter(file))

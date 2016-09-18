@@ -31,9 +31,9 @@ public class SVGCoordinates extends Element
     private double width;
     private double height;
 
-    public SVGCoordinates(Content parent, double minX, double minY, double width, double height)
+    public SVGCoordinates(double minX, double minY, double width, double height)
     {
-        super(parent, "g");
+        super("g");
         this.minX = minX;
         this.minY = minY;
         this.width = width;

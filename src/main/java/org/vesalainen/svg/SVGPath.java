@@ -47,6 +47,14 @@ public class SVGPath extends Element
         zeroDigit = dfs.getZeroDigit();
         setAttr("d", sb);
     }
+    /**
+     * Returns true if path is empty
+     * @return 
+     */
+    public final boolean isEmpty()
+    {
+        return sb.length() == 0;
+    }
     
     public final void moveTo(double... coord)
     {

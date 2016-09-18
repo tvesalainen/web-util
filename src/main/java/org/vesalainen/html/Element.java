@@ -43,6 +43,7 @@ public class Element extends ContainerContent implements AttributedContent
         this.name = name;
     }
 
+    @Override
     public String getName()
     {
         return name;
