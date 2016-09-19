@@ -17,6 +17,11 @@
 "use strict";
 /* global p, eventSource, x, object */
 var eventSource;
+var sse = {};
+sse.addHandler = function (name, func)
+{
+    this[name] = func;
+};
 
 $(document).ready(function () {
     
@@ -71,6 +76,11 @@ function fired(event)
                             $(this).attr(p, v);
                         }
                         $(this).attr('data-ttv', '5');
+                        break;
+                    case 'function':
+                        var fn = v["name"];
+                        var d = v["data"];
+                        sse[fn]($(this), d);
                         break;
                     case 'html':
                         $(this).html(json[p]);
