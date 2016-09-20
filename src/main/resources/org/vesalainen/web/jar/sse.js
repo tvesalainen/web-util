@@ -22,19 +22,7 @@ sse.addHandler = function (name, func)
 {
     this[name] = func;
 };
-
-$(document).ready(function () {
-    
-    var url = '/sse';
-    eventSource = new EventSource(url);
-    
-    register($("body"));
-    
-    var fadeId = setInterval(fade, 5000);
-    var removeId = setInterval(remove, 1000);
-});
-
-function register(e)
+sse.register = function (e)
 {
     var events = [];
     var targets = e.find("[data-sse-sink]");
@@ -56,6 +44,18 @@ function register(e)
         $.post("/ctrl-sse", a);
     }
 }
+
+$(document).ready(function () {
+    
+    var url = '/sse';
+    eventSource = new EventSource(url);
+    
+    sse.register($("body"));
+    
+    var fadeId = setInterval(fade, 5000);
+    var removeId = setInterval(remove, 1000);
+});
+
 function fired(event)
 {
     var json = JSON.parse(event.data);

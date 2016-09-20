@@ -48,7 +48,6 @@ public class SSEServlet extends AbstractBaseSSEServlet
         SSEOMap sseoMap = new SSEOMap();
         servletContext.setAttribute(SSEOMapName, sseoMap);
         //servletContext.addListener(sseoMap);
-        log("test");
     }
 
     @Override

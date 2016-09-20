@@ -199,6 +199,11 @@ public abstract class AbstractSSESource extends JavaLogging implements Runnable
 
         private boolean fireEvent(String event, CharSequence seq)
         {
+            if (asyncContext == null)
+            {
+                fine("asyncContext not ready");
+                return true;
+            }
             lock.lock();
             try
             {
