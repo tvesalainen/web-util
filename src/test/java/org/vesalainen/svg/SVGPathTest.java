@@ -35,7 +35,7 @@ public class SVGPathTest
     public void testM()
     {
         String exp = "<path d=\"M100 100 200 200\"></path>";
-        SVGPath p = new SVGPath(Locale.US);
+        SVGPath p = new SVGPath();
         p.moveTo(100, 100);
         p.lineTo(200, 200);
         assertEquals(exp, p.toString());
@@ -45,7 +45,7 @@ public class SVGPathTest
     public void testMRel()
     {
         String exp = "<path d=\"m100 100 200 200\"></path>";
-        SVGPath p = new SVGPath(Locale.US);
+        SVGPath p = new SVGPath();
         p.moveToRel(100, 100);
         p.lineToRel(200, 200);
         assertEquals(exp, p.toString());

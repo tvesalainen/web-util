@@ -40,6 +40,7 @@ public class JQueryMobilePage<M> extends ContainerContent implements Page
     protected Element main;
     protected Element footer;
     protected boolean domCache = false;
+    protected char theme = 'a';
     protected ThreadLocal<Context<M>> threadLocalData;
 
     public JQueryMobilePage(Content parent, Object id, final JQueryMobileDocument<M> document)
@@ -57,7 +58,12 @@ public class JQueryMobilePage<M> extends ContainerContent implements Page
         se.addRenderer(script);
         content.add(se);
         
-        divPage = new Element(this, "div").setAttr("data-role", "page").setAttr("id", id).setDataAttr("dom-cache", domCache);
+        divPage = new Element(this, "div")
+                .setAttr("data-role", "page")
+                .setAttr("id", id)
+                .setDataAttr("dom-cache", this::isDomCache)
+                .setDataAttr("theme", this::getTheme)
+                ;
         content.add(divPage);
         
         header = divPage.addElement("div").setAttr("data-role", "header");
@@ -70,6 +76,11 @@ public class JQueryMobilePage<M> extends ContainerContent implements Page
     public Object getId()
     {
         return id;
+    }
+
+    public Element getDivPage()
+    {
+        return divPage;
     }
 
     public Element getHeader()
@@ -141,6 +152,26 @@ public class JQueryMobilePage<M> extends ContainerContent implements Page
     public void addToFooter(Renderer content)
     {
         getFooter().add(content);
+    }
+
+    public boolean isDomCache()
+    {
+        return domCache;
+    }
+
+    public void setDomCache(boolean domCache)
+    {
+        this.domCache = domCache;
+    }
+
+    public char getTheme()
+    {
+        return theme;
+    }
+
+    public void setTheme(char theme)
+    {
+        this.theme = theme;
     }
 
 }

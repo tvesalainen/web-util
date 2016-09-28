@@ -16,9 +16,8 @@
  */
 package org.vesalainen.svg;
 
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 import org.vesalainen.html.Element;
+import org.vesalainen.text.FormatUtil;
 
 /**
  *
@@ -26,25 +25,14 @@ import org.vesalainen.html.Element;
  */
 public class SVGPath extends Element
 {
-    private Locale locale;
+    private static final long serialVersionUID = 1L;
     private StringBuilder sb = new StringBuilder();
     private char last;
     private boolean sep;
-    private char decimalSeparator;
-    private char zeroDigit;
 
     public SVGPath()
     {
-        this(Locale.getDefault());
-    }
-
-    public SVGPath(Locale locale)
-    {
         super("path");
-        this.locale = locale;
-        DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(locale);
-        decimalSeparator = dfs.getDecimalSeparator();
-        zeroDigit = dfs.getZeroDigit();
         setAttr("d", sb);
     }
     /**
@@ -227,23 +215,7 @@ public class SVGPath extends Element
         {
             sb.append(' ');
         }
-        sb.append(String.format(Locale.US, "%f", v));
-        int length = sb.length();
-        while (true)
-        {
-            char cc = sb.charAt(length-1);
-            if (cc == decimalSeparator)
-            {
-                length--;
-                break;
-            }
-            if (cc != zeroDigit)
-            {
-                break;
-            }
-            length--;
-        }
-        sb.setLength(length);
+        FormatUtil.format(sb, v);
         sep = false;
     }
 

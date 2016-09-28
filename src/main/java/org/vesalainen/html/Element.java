@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Supplier;
 
 /**
  *
@@ -99,15 +100,33 @@ public class Element extends ContainerContent implements AttributedContent
     {
         return setAttr(new SimpleAttribute<>(name, value));
     }
+    /**
+     * Set functional attribute.
+     * @param <T>
+     * @param name
+     * @param value
+     * @return 
+     */
+    @Override
+    public <T> Element setAttr(String name, Supplier<T> value)
+    {
+        return setAttr(new FunctionalAttribute<>(name, value));
+    }
 
     @Override
     public <T> Element setDataAttr(String name, T value)
     {
         return setAttr(DataAttributeName.name(name), value);
     }
+
+    @Override
+    public <T> Element setDataAttr(String name, Supplier<T> value)
+    {
+        return setAttr(DataAttributeName.name(name), value);
+    }
     
     /**
-     * Set SimpleAttribute
+     * Set Attribute
      * @param <T>
      * @param attr
      * @return this

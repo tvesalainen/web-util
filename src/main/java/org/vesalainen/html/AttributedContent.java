@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 /**
  *
@@ -33,6 +34,14 @@ public interface AttributedContent extends Content, NamedContent
      */
     <T> AttributedContent setAttr(String name, T value);
     /**
+     * Set Functional Attribute
+     * @param <T>
+     * @param name
+     * @param value
+     * @return 
+     */
+    <T> AttributedContent setAttr(String name, Supplier<T> value);
+    /**
      * Set HTML5 data- attribute
      * @param <T>
      * @param name Name without data- prefix
@@ -40,6 +49,14 @@ public interface AttributedContent extends Content, NamedContent
      * @return 
      */
     <T> AttributedContent setDataAttr(String name, T value);
+    /**
+     * Set functional HTML5 data- attribute
+     * @param <T>
+     * @param name
+     * @param value
+     * @return 
+     */
+    <T> AttributedContent setDataAttr(String name, Supplier<T> value);
     /**
      * Set Attribute
      * @param <T>

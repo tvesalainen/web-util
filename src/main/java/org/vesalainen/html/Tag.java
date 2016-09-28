@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  *
@@ -74,7 +75,19 @@ public class Tag extends AbstractContent implements AttributedContent
     }
 
     @Override
+    public <T> AttributedContent setAttr(String name, Supplier<T> value)
+    {
+        return setAttr(new FunctionalAttribute<>(name, value));
+    }
+
+    @Override
     public <T> Tag setDataAttr(String name, T value)
+    {
+        return setAttr(DataAttributeName.name(name), value);
+    }
+
+    @Override
+    public <T> AttributedContent setDataAttr(String name, Supplier<T> value)
     {
         return setAttr(DataAttributeName.name(name), value);
     }
