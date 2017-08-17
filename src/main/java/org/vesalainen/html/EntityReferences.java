@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * TODO Change to use LPG
- * @author tkv
+ * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  */
 public class EntityReferences
 {

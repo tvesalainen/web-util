@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 tkv
+ * Copyright (C) 2016 Timo Vesalainen <timo.vesalainen@iki.fi>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import org.vesalainen.html.Renderer;
  * reference to model by ThreadLocal. It is assumed that when building the 
  * document tree, each part uses same ThreadLocal instance. When de-serializing
  * all parts have same ThreadLocal instance.
- * @author tkv
+ * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  * @param <M>
  * @param <R>
  */

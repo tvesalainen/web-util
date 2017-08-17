@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 tkv
+ * Copyright (C) 2016 Timo Vesalainen <timo.vesalainen@iki.fi>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import org.vesalainen.util.HashBijection;
 /**
  * Model might contain ThreadLocalBeanRenderer parts. These parts must have
  * same ThreadLocal as this class. After re-serialization this is also true.
- * @author tkv
+ * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  * @param <M>
  */
 public class Context<M> extends ThreadLocalBeanRenderer implements Serializable
