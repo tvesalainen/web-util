@@ -17,7 +17,7 @@
 package org.vesalainen.web;
 
 import java.util.Locale;
-import org.vesalainen.util.CamelCase;
+import org.vesalainen.text.CamelCase;
 
 /**
  *

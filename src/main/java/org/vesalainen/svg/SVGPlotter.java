@@ -17,6 +17,7 @@
 package org.vesalainen.svg;
 
 import java.awt.Color;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.util.Locale;
 import org.vesalainen.html.Element;
 import org.vesalainen.ui.Drawer;
 import org.vesalainen.ui.Plotter;
+import org.vesalainen.ui.TextAlignment;
 
 /**
  *
@@ -130,6 +132,24 @@ public class SVGPlotter extends Plotter
             {
                 polyline.setAttr("style", String.format("fill:none;stroke:rgb(%d,%d,%d)", color.getRed(), color.getGreen(), color.getBlue()));
             }
+        }
+
+        @Override
+        public Rectangle2D bounds(String text)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void font(String name, int style, int size)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void text(double x, double y, TextAlignment alignment, String text)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         
     }
