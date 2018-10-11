@@ -17,7 +17,7 @@
 package org.vesalainen.js;
 
 import java.io.IOException;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  *
@@ -48,7 +48,7 @@ public class Function extends AbstractScriptContainer
         }
         try
         {
-            Lists.print(sb, "(", ",", null, null, "){", args);
+            CollectionHelp.print(sb, "(", ",", null, null, "){", args);
         }
         catch (IOException ex)
         {

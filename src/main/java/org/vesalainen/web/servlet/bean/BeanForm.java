@@ -36,7 +36,7 @@ import org.vesalainen.html.Renderer;
 import org.vesalainen.html.SimpleAttribute;
 import org.vesalainen.html.Tag;
 import org.vesalainen.util.ConvertUtility;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 import org.vesalainen.web.Attr;
 import org.vesalainen.web.I18n;
 import org.vesalainen.web.InputType;
@@ -73,7 +73,7 @@ public class BeanForm<M> extends Form
     
     public Content createInput(String field, Attribute... attributes)
     {
-        return createInput(field, Lists.create(attributes));
+        return createInput(field, CollectionHelp.create(attributes));
     }
     public Content createInput(String field, List<Attribute> attrList)
     {

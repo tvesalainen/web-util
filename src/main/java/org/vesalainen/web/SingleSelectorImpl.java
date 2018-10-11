@@ -18,7 +18,7 @@ package org.vesalainen.web;
 
 import java.util.List;
 import org.vesalainen.html.Contents;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  *
@@ -32,7 +32,7 @@ public class SingleSelectorImpl<T> implements SingleSelector<T>
 
     public SingleSelectorImpl(T... options)
     {
-        this(null, Lists.create(options));
+        this(null, CollectionHelp.create(options));
     }
 
     public SingleSelectorImpl(List<T> options)

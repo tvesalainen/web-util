@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  *
@@ -43,14 +43,14 @@ public class ClassAttribute extends SimpleAttribute<Set<String>>
     
     public void removeClasses(String... cls)
     {
-        Lists.remove(value, cls);
+        CollectionHelp.remove(value, cls);
     }
     
     @Override
     public void append(Appendable out) throws IOException
     {
         out.append("class=");
-        Lists.print(out, "\"", " ", null, null, "\"", value);
+        CollectionHelp.print(out, "\"", " ", null, null, "\"", value);
     }
     
 }

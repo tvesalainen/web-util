@@ -17,7 +17,7 @@
 package org.vesalainen.html.jquery;
 
 import java.io.IOException;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  *
@@ -36,6 +36,6 @@ public class SelectorAction extends AbstractSelector
     @Override
     protected void appendArgs(Appendable out) throws IOException
     {
-        Lists.print(out, null, ",", "\"", "\"", null, args);
+        CollectionHelp.print(out, null, ",", "\"", "\"", null, args);
     }
 }

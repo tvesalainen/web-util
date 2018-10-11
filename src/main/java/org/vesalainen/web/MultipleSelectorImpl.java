@@ -19,7 +19,7 @@ package org.vesalainen.web;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  *
@@ -32,7 +32,7 @@ public class MultipleSelectorImpl<T> extends HashSet<T> implements MultipleSelec
 
     public MultipleSelectorImpl(T... options)
     {
-        this(new HashSet<T>(), Lists.create(options));
+        this(new HashSet<T>(), CollectionHelp.create(options));
     }
 
     public MultipleSelectorImpl(List<T> options)

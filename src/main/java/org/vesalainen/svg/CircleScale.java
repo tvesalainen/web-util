@@ -17,7 +17,7 @@
 package org.vesalainen.svg;
 
 import org.vesalainen.html.Element;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  *
@@ -30,17 +30,17 @@ public class CircleScale extends Element
     {
         super("g");
         
-        String a1 = Lists.print(" ", 0);
-        String a2 = Lists.print(" ", 357, 3);
-        String a3 = Lists.print(" ", 355, 0, 5);
+        String a1 = CollectionHelp.print(" ", 0);
+        String a2 = CollectionHelp.print(" ", 357, 3);
+        String a3 = CollectionHelp.print(" ", 355, 0, 5);
         
-        String x1 = Lists.print(" ", Math.sin(Math.toRadians(0)));
-        String x2 = Lists.print(" ", Math.sin(Math.toRadians(357)), Math.sin(Math.toRadians(3)));
-        String x3 = Lists.print(" ", Math.sin(Math.toRadians(355)), Math.sin(Math.toRadians(0)), Math.sin(Math.toRadians(5)));
+        String x1 = CollectionHelp.print(" ", Math.sin(Math.toRadians(0)));
+        String x2 = CollectionHelp.print(" ", Math.sin(Math.toRadians(357)), Math.sin(Math.toRadians(3)));
+        String x3 = CollectionHelp.print(" ", Math.sin(Math.toRadians(355)), Math.sin(Math.toRadians(0)), Math.sin(Math.toRadians(5)));
         
-        String y1 = Lists.print(" ", -Math.cos(Math.toRadians(0)));
-        String y2 = Lists.print(" ", -Math.cos(Math.toRadians(357)), -Math.cos(Math.toRadians(3)));
-        String y3 = Lists.print(" ", -Math.cos(Math.toRadians(355)), -Math.cos(Math.toRadians(0)), -Math.cos(Math.toRadians(5)));
+        String y1 = CollectionHelp.print(" ", -Math.cos(Math.toRadians(0)));
+        String y2 = CollectionHelp.print(" ", -Math.cos(Math.toRadians(357)), -Math.cos(Math.toRadians(3)));
+        String y3 = CollectionHelp.print(" ", -Math.cos(Math.toRadians(355)), -Math.cos(Math.toRadians(0)), -Math.cos(Math.toRadians(5)));
         
         for (int a = 0; a < 360; a += 30)
         {

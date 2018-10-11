@@ -24,7 +24,7 @@ import java.util.Collection;
 import org.vesalainen.bean.BeanHelper;
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Renderer;
-import org.vesalainen.util.Lists;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  *
@@ -39,7 +39,7 @@ public class DynamicQuery<T> implements Renderer
     
     public DynamicQuery(ThreadLocal<T> local, Charset charset, String... fields)
     {
-        this(local, charset, Lists.create(fields));
+        this(local, charset, CollectionHelp.create(fields));
     }
 
     public DynamicQuery(ThreadLocal<T> local, Charset charset, Collection<String> fields)
