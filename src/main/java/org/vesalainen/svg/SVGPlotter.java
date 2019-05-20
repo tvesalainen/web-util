@@ -52,7 +52,7 @@ public class SVGPlotter extends Plotter
             SVGDocument svg = new SVGDocument();
             svg.setAttr("viewBox", String.format(Locale.US, "%f %f %f %f", 0.0, 0.0, width, height));
             SVGDrawer drawer = new SVGDrawer(svg);
-            drawables.stream().forEach((d) ->
+            shapes.stream().forEach((d) ->
             {
                 d.draw(drawer);
             });

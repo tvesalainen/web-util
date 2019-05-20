@@ -18,7 +18,7 @@ package org.vesalainen.svg;
 
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
-import org.vesalainen.ui.Scaler;
+import org.vesalainen.ui.LinearScaler;
 
 /**
  * SVGCoordinates draws coordinate system with x and y scales and grids
@@ -38,8 +38,8 @@ public class SVGCoordinates extends Element
         this.minY = minY;
         this.width = width;
         this.height = height;
-        Scaler horScaler = new Scaler(minX, minX+width);
-        Scaler verScaler = new Scaler(minY, minY+height);
+        LinearScaler horScaler = new LinearScaler(minX, minX+width);
+        LinearScaler verScaler = new LinearScaler(minY, minY+height);
         
         double strokeWidth = height/1000;
         // vertical
