@@ -18,7 +18,8 @@ package org.vesalainen.svg;
 
 import org.vesalainen.html.Content;
 import org.vesalainen.html.Element;
-import org.vesalainen.ui.LinearScaler;
+import org.vesalainen.ui.Scaler;
+import org.vesalainen.ui.scale.ScaleLevel;
 
 /**
  * SVGCoordinates draws coordinate system with x and y scales and grids
@@ -38,18 +39,18 @@ public class SVGCoordinates extends Element
         this.minY = minY;
         this.width = width;
         this.height = height;
-        LinearScaler horScaler = new LinearScaler(minX, minX+width);
-        LinearScaler verScaler = new LinearScaler(minY, minY+height);
+        Scaler horScaler = new Scaler(minX, minX+width);
+        Scaler verScaler = new Scaler(minY, minY+height);
         
         double strokeWidth = height/1000;
         // vertical
-        double verLevel = verScaler.level();
+        ScaleLevel verLevel = verScaler.level();
         SVGPath verGrid1 = new SVGPath();
         addContent(verGrid1);
         verGrid1.setAttr("stroke", "gray");
         verGrid1.setAttr("stroke-width", strokeWidth);
         
-        verScaler.stream(1).forEach((v)->
+        verScaler.stream(verLevel).forEach((v)->
         {
             verGrid1.moveTo(minX, v);
             verGrid1.horizontalLineToRel(width);
@@ -62,7 +63,7 @@ public class SVGCoordinates extends Element
         Element verScale = addElement("text");
         verScale.setAttr("text-anchor", "start");
         verScale.setAttr("dominant-baseline", "central");
-        double fontSize = Math.min(height/20, verScaler.step(verLevel));
+        double fontSize = Math.min(height/20, verLevel.step());
         verScale.setAttr("font-size", fontSize);
         
         verScaler.stream(verLevel).forEach((v)->
@@ -70,24 +71,23 @@ public class SVGCoordinates extends Element
             verGrid0.moveTo(minX, v);
             verGrid0.horizontalLineToRel(width);
         });
-        String verFormat = verScaler.getFormat(verLevel);
         long verCount = (long) verScaler.count(verLevel);
         verScaler.stream(verLevel).skip(1).limit(verCount-2).forEach((v)->
         {
             Element tspan = verScale.addElement("tspan");
-            tspan.addText(String.format(verFormat, -v));
+            tspan.addText(verLevel.label(-v));
             tspan.setAttr("y", v);
             tspan.setAttr("x", minX);
         });
         // horizontal
-        double horLevel = horScaler.level();
+        ScaleLevel horLevel = horScaler.level();
         double floor = minY+height;
         SVGPath horGrid1 = new SVGPath();
         addContent(horGrid1);
         horGrid1.setAttr("stroke", "gray");
         horGrid1.setAttr("stroke-width", strokeWidth);
         
-        horScaler.stream(1).skip(1).forEach((v)->
+        horScaler.stream(horLevel).skip(1).forEach((v)->
         {
             horGrid1.moveTo(v, minY);
             horGrid1.verticalLineToRel(height);
@@ -106,12 +106,11 @@ public class SVGCoordinates extends Element
             horGrid0.moveTo(v, minY);
             horGrid0.verticalLineToRel(height);
         });
-        String horFormat = horScaler.getFormat(horLevel);
         long horCount = (long) horScaler.count(horLevel);
         horScaler.stream(horLevel).skip(1).limit(horCount-2).forEach((v)->
         {
             Element tspan = horScale.addElement("tspan");
-            tspan.addText(String.format(horFormat, v));
+            tspan.addText(horLevel.label(v));
             tspan.setAttr("y", floor);
             tspan.setAttr("x", v);
         });

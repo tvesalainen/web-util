@@ -16,13 +16,19 @@
  */
 package org.vesalainen.svg;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.function.IntBinaryOperator;
 import org.vesalainen.html.Element;
+import org.vesalainen.math.DoubleTransform;
 import org.vesalainen.ui.Drawer;
 import org.vesalainen.ui.Plotter;
 import org.vesalainen.ui.TextAlignment;
@@ -44,26 +50,6 @@ public class SVGPlotter extends Plotter
         super(width, height, background);
     }
 
-    @Override
-    public void plot(File file, String ext) throws IOException
-    {
-        if ("svg".equalsIgnoreCase(ext))
-        {
-            SVGDocument svg = new SVGDocument();
-            svg.setAttr("viewBox", String.format(Locale.US, "%f %f %f %f", 0.0, 0.0, width, height));
-            SVGDrawer drawer = new SVGDrawer(svg);
-            shapes.stream().forEach((d) ->
-            {
-                d.draw(drawer);
-            });
-            svg.write(new FileOutputStream(file));
-        }
-        else
-        {
-            super.plot(file, ext);
-        }
-    }
-    
     private static class SVGDrawer implements Drawer
     {
         private SVGDocument svg;
@@ -148,6 +134,114 @@ public class SVGPlotter extends Plotter
 
         @Override
         public void text(double x, double y, TextAlignment alignment, String text)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setFont(Font font)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setColor(Color color)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public Color getColor()
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setPaint(Paint paint)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setPattern(IntBinaryOperator pattern)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setStroke(BasicStroke stroke)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setTransform(DoubleTransform transform, double scale)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void draw(Shape shape)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void drawMark(Shape mark)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void fill(Shape shape)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void beginPath()
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void moveTo(double... cp)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void drawLine(double... cp)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void drawQuad(double... cp)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void drawCubic(double... cp)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void closePath(double... cp)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public <T> boolean supports(T target)
+        {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public <T> void write(T target)
         {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
