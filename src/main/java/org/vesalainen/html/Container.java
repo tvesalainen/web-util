@@ -16,6 +16,8 @@
  */
 package org.vesalainen.html;
 
+import java.util.Collection;
+
 /**
  *
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
@@ -39,6 +41,10 @@ public interface Container extends Content
         return insertRenderer(renderer);
     }
     ContainerContent addContent(Content c);
+    default void addAll(Collection<Renderer> c)
+    {
+        c.forEach((i)->add(i));
+    }
     ContainerContent addRenderer(Renderer c);
     ContainerContent insertContent(Content c);
     ContainerContent insertRenderer(Renderer c);
