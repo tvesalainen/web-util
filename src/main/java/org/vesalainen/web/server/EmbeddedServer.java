@@ -22,10 +22,6 @@ import org.vesalainen.web.servlet.JarServlet;
 import javax.servlet.http.HttpServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.session.HashSessionIdManager;
-import org.eclipse.jetty.server.session.HashSessionManager;
-import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.JavaUtilLog;
@@ -33,7 +29,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.vesalainen.util.logging.JavaLogging;
 
 /**
- *
+ * @deprecated Used only with boatserver which not developed anymore
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  */
 public class EmbeddedServer extends JavaLogging
@@ -41,7 +37,6 @@ public class EmbeddedServer extends JavaLogging
     private int port = 8080;
     private Server server;
     private ServletHandler handler;
-    private HashSessionManager sessionManager;
 
     public EmbeddedServer()
     {
@@ -64,25 +59,14 @@ public class EmbeddedServer extends JavaLogging
         server.setStopAtShutdown(true);
         handler = new ServletHandler();
         //server.setHandler(handler);
-        SessionHandler sessionHandler = new SessionHandler();
-        sessionManager = new HashSessionManager();
-        sessionManager.setIdleSavePeriod(60);
-        sessionHandler.setSessionManager(sessionManager);
-        sessionHandler.setHandler(handler);
-        server.setHandler(sessionHandler);
-        HashSessionIdManager sessionIdManager = new HashSessionIdManager();
-        server.setSessionIdManager(sessionIdManager);
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         server.setHandler(contexts);
-        ServletContextHandler servletContextHandler = new ServletContextHandler(contexts, sessionHandler, null, handler, null);
-        servletContextHandler.setLogger(javaUtilLog);
     }
     
     public void setSessionStoreDirectory(File dir) throws IOException
     {
         if (dir != null)
         {
-            sessionManager.setStoreDirectory(dir);
             config("setSessionStoreDirectory(%s)", dir);
         }
     }
