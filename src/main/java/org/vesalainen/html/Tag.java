@@ -77,7 +77,7 @@ public class Tag extends AbstractContent implements AttributedContent
     @Override
     public <T> AttributedContent setAttr(String name, Supplier<T> value)
     {
-        return setAttr(new FunctionalAttribute<>(name, value));
+        return setAttr(new SupplierAttribute<>(name, value));
     }
 
     @Override

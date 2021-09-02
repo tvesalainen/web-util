@@ -19,6 +19,7 @@ package org.vesalainen.html;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import static org.vesalainen.html.Encoder.encode;
 
@@ -27,13 +28,13 @@ import static org.vesalainen.html.Encoder.encode;
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  * @param <T>
  */
-public class FunctionalAttribute<T> implements Attribute<Supplier<T>>, Serializable
+public class FunctionAttribute<T,U> implements Attribute<Function<T,U>>, Serializable
 {
     private static final long serialVersionUID = 1L;
     protected final String name;
-    protected Supplier<T> value;
+    protected Function<T,U> value;
 
-    public FunctionalAttribute(String name, Supplier<T> value)
+    public FunctionAttribute(String name, Function<T,U> value)
     {
         Objects.requireNonNull(name);
         Objects.requireNonNull(value);
@@ -41,20 +42,18 @@ public class FunctionalAttribute<T> implements Attribute<Supplier<T>>, Serializa
         this.value = value;
     }
 
-    @Override
-    public String toString()
+    public String toString(T t)
     {
-        return name + "=\"" + value.get() + "\"";
+        return name + "=\"" + value.apply(t)+ "\"";
     }
 
-    @Override
-    public void append(Appendable out) throws IOException
+    public void append(Appendable out, T t) throws IOException
     {
         out.append(name);
         out.append("=\"");
         if (value != null)
         {
-            encode(out, value.get().toString());
+            encode(out, value.apply(t).toString());
         }
         out.append("\"");
     }
@@ -66,14 +65,15 @@ public class FunctionalAttribute<T> implements Attribute<Supplier<T>>, Serializa
     }
 
     @Override
-    public Supplier<T> getValue()
+    public Function<T, U> getValue()
     {
-        return value;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void setValue(Supplier<T> value)
+    @Override
+    public void append(Appendable out) throws IOException
     {
-        this.value = value;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

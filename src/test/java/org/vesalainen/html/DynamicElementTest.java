@@ -16,7 +16,7 @@
  */
 package org.vesalainen.html;
 
-import java.util.stream.Stream;
+import java.io.IOException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -24,32 +24,22 @@ import static org.junit.Assert.*;
  *
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  */
-public class BuilderTest
+public class DynamicElementTest
 {
     
-    public BuilderTest()
+    public DynamicElementTest()
     {
     }
 
     @Test
-    public void test()
+    public void test() throws IOException
     {
-        Builder<String,?,Element> b = new Builder<>((s)->
-        {
-            Element e = new Element("div");
-            e.addText(s);
-            return e;
-        });
-        b.mapArray((String s)->s.split(" "), (x)->
-        {
-            Element t = new Element(x);
-            t.addText(x);
-            return t;
-        });
-        Stream<String> s = Stream.of("fo o", "b ar");
-        Element h1 = new Element("h1");
-        b.build(h1, s);
-        System.err.println(h1);
+        DynamicElement<String> de = new DynamicElement("div", "foo", "bar", "goo").addClasses("cl1")
+                .setAttr("at", (t)->t)
+                .setText((t)->t+"ppa")
+                ;
+        de.append(System.err);
+        System.err.println();
     }
     
 }

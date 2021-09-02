@@ -110,7 +110,7 @@ public class Element extends ContainerContent implements AttributedContent
     @Override
     public <T> Element setAttr(String name, Supplier<T> value)
     {
-        return setAttr(new FunctionalAttribute<>(name, value));
+        return setAttr(new SupplierAttribute<>(name, value));
     }
 
     @Override
