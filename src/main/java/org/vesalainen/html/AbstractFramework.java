@@ -17,7 +17,7 @@
 package org.vesalainen.html;
 
 import java.net.URL;
-import static org.vesalainen.web.servlet.JarServlet.Path;
+import static org.vesalainen.web.servlet.JarServlet.PATH;
 
 /**
  *
@@ -51,10 +51,10 @@ public abstract class AbstractFramework implements Framework
     protected final void checkVersion(String version)
     {
         String path = path(version);
-        URL resource = AbstractFramework.class.getResource(Path + path(version));
+        URL resource = AbstractFramework.class.getResource(PATH + path(version));
         if (resource == null)
         {
-            throw new IllegalArgumentException(Path + path+" not found");
+            throw new IllegalArgumentException(PATH + path+" not found");
         }
     }
     

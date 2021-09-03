@@ -30,7 +30,7 @@ public class JQuery extends AbstractFramework
     
     public JQuery()
     {
-        super("1.12.0");
+        super("3.6.0");
     }
 
     public JQuery(String version)

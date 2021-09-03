@@ -40,7 +40,7 @@ public class AbstractFrameworkTest
             "<html><head>"+
                 "<meta charset=\"UTF-8\">"+
                 "<title>Test</title>"+
-                "<script src=\"/jquery-1.12.0.min.js\"></script>"+
+                "<script src=\"/jquery-3.6.0.min.js\"></script>"+
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"+
                 "<link rel=\"stylesheet\" href=\"/bootstrap-3.3.6-dist/css/bootstrap.min.css\">"+
                 "<script src=\"/bootstrap-3.3.6-dist/js/bootstrap.min.js\"></script>"+

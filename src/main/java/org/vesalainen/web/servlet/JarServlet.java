@@ -32,10 +32,10 @@ import org.vesalainen.util.ThreadSafeTemporary;
  */
 public class JarServlet extends HttpServlet
 {
-    private static final int BufferSize = 4096;
-    private static final String eTag = "\""+String.valueOf(System.currentTimeMillis())+"\"";
-    public static final String Path = "/org/vesalainen/web/jar";
-    private static ThreadSafeTemporary<byte[]> bufferStore = new ThreadSafeTemporary<>(()->{return new byte[BufferSize];});
+    private static final int BUFFER_SIZE = 4096;
+    private static final String ETAG = "\""+String.valueOf(System.currentTimeMillis())+"\"";
+    public static final String PATH = "/org/vesalainen/web/jar";
+    private static ThreadSafeTemporary<byte[]> BUFFER_STORE = new ThreadSafeTemporary<>(()->{return new byte[BUFFER_SIZE];});
     
     @Override
     protected void doGet(HttpServletRequest request,
@@ -44,21 +44,22 @@ public class JarServlet extends HttpServlet
     {
         log(request.toString());
         String ifNoneMatch = request.getHeader("If-None-Match");
-        if (eTag.equals(ifNoneMatch))
+        if (ETAG.equals(ifNoneMatch))
         {
             response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
             return;
         }
-        response.setHeader("ETag", eTag);
-        String pathInfo = request.getPathInfo();
-        InputStream is = JarServlet.class.getResourceAsStream(Path+pathInfo);
+        response.setHeader("ETag", ETAG);
+        //String pathInfo = request.getPathInfo();
+        String requestURI = request.getRequestURI();
+        InputStream is = JarServlet.class.getResourceAsStream(PATH+requestURI);
         if (is != null)
         {
-            String mimeType = MimeTypes.getMimeType(pathInfo);
+            String mimeType = MimeTypes.getMimeType(requestURI);
             response.setContentType(mimeType);
             response.setStatus(HttpServletResponse.SC_OK);
             ServletOutputStream os = response.getOutputStream();
-            byte[] buf = bufferStore.get();
+            byte[] buf = BUFFER_STORE.get();
             int rc = is.read(buf);
             while (rc != -1)
             {
@@ -69,7 +70,7 @@ public class JarServlet extends HttpServlet
         }
         else
         {
-            System.err.println(pathInfo+" not found");
+            System.err.println(requestURI+" not found");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }

@@ -42,72 +42,63 @@ public final class DynamicElement<T> implements Renderer
     protected Function<T,String> textSupplier;
     private final List<DynamicElement<T>> content = new ArrayList<>();
 
-    public DynamicElement(Collection<T> c, String name, String... classes)
+    public DynamicElement(String name, Collection<T> c)
     {
-        this(()->c.stream(), name, classes);
+        this(name, ()->c.stream());
     }
     public DynamicElement(String name, T... items)
     {
-        this(()->Stream.of(items), name);
+        this(name, ()->Stream.of(items));
     }
     
     /**
      * Creates root builder with tag and classes
      * @param streamSupplier
-     * @param name
-     * @param classes 
+     * @param name 
      */
-    public DynamicElement(Supplier<Stream<T>> streamSupplier, String name, String... classes)
+    public DynamicElement(String name, Supplier<Stream<T>> streamSupplier)
     {
         this.streamSupplier = streamSupplier;
-        init(name, classes);
+        this.name = name;
     }
 
-    private <U> DynamicElement(Function<U, Stream<T>> mapper, String name, String... classes)
+    private <U> DynamicElement(String name, Function<U, Stream<T>> mapper)
     {
         this.mapper = mapper;
-        init(name, classes);
-    }
-    private void init(String name, String... classes)
-    {
         this.name = name;
-        addClasses(classes);
     }
     /**
      * Maps T to Collection and a factory making Container from U.Mapping is possible from member of T.
      * @param <U>
      * @param mapper
      * @param name
-     * @param classes
      * @return 
      */
-    public <U> DynamicElement<T> mapCollection(Function<U,Collection<T>> mapper, String name, String... classes)
+    public <U> DynamicElement<T> mapCollection(String name, Function<U,Collection<T>> mapper)
     {
-        return mapStream((U u)->mapper.apply(u).stream(), name, classes);
+        return mapStream(name, (U u)->mapper.apply(u).stream());
     }
     /**
      * Maps T to array U and a factory making Container from U.Mapping is possible from member of T.
      * @param <U>
      * @param mapper
      * @param name
-     * @param classes
      * @return 
      */
-    public <U> DynamicElement<T> mapArray(Function<U,T[]> mapper, String name, String... classes)
+    public <U> DynamicElement<T> mapArray(String name, Function<U,T[]> mapper)
     {
-        return mapStream((U u)->Stream.of(mapper.apply(u)), name, classes);
+        return mapStream(name, (U u)->Stream.of(mapper.apply(u)));
     }
     /**
      * Maps T to Stream and a factory making Container from U.Mapping is possible from member of T.
      * @param <U>
      * @param mapper
      * @param name
-     * @param classes
      * @return 
      */
-    public <U> DynamicElement<T> mapStream(Function<U,Stream<T>> mapper, String name, String... classes)
+    public <U> DynamicElement<T> mapStream(String name, Function<U,Stream<T>> mapper)
     {
-        DynamicElement<T> builder = new DynamicElement(mapper, name, classes);
+        DynamicElement<T> builder = new DynamicElement(name, mapper);
         content.add((DynamicElement) builder);
         return builder;
     }
