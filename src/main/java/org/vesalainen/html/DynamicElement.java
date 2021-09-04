@@ -176,7 +176,7 @@ public final class DynamicElement<T> implements Renderer
         }
         return this;
     }
-    public <A> DynamicElement<T> setText(Function<T,String> textSupplier)
+    public DynamicElement<T> setText(Function<T,String> textSupplier)
     {
         this.textSupplier = textSupplier;
         return this;
