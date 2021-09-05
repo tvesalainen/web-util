@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.vesalainen.util.CollectionHelp;
 
 /**
  * DynamicElement builds nested Containers
@@ -38,25 +40,16 @@ public final class DynamicElement<T> implements Renderer
     private Function<?,Stream<T>> mapper;
     protected String name;
     protected Map<String,Attribute<?>> attributes;
-    protected ClassAttribute classes;
+    protected ClassAttr classes;
     protected Function<T,String> textSupplier;
     private final List<DynamicElement<T>> content = new ArrayList<>();
 
-    public DynamicElement(String name, Collection<T> c)
-    {
-        this(name, ()->c.stream());
-    }
-    public DynamicElement(String name, T... items)
-    {
-        this(name, ()->Stream.of(items));
-    }
-    
     /**
-     * Creates root builder with tag and classes
+     * Creates root builder with tag
      * @param streamSupplier
      * @param name 
      */
-    public DynamicElement(String name, Supplier<Stream<T>> streamSupplier)
+    private DynamicElement(String name, Supplier<Stream<T>> streamSupplier)
     {
         this.streamSupplier = streamSupplier;
         this.name = name;
@@ -67,6 +60,23 @@ public final class DynamicElement<T> implements Renderer
         this.mapper = mapper;
         this.name = name;
     }
+    public static <U> DynamicElement<U> getFrom(String name, Supplier<Stream<U>> streamSupplier)
+    {
+        return new DynamicElement<>(name, streamSupplier);
+    }
+    public static <U> DynamicElement<U> getFromCollection(String name, Supplier<Collection<U>> c)
+    {
+        return new DynamicElement<>(name, ()->c.get().stream());
+    }
+    public static <U> DynamicElement getFromArray(String name, U... items)
+    {
+        return getFromArray(name, ()->items);
+    }
+    public static <U> DynamicElement getFromArray(String name, Supplier<U[]> items)
+    {
+        return new DynamicElement<>(name, ()->Stream.of(items.get()));
+    }
+    
     /**
      * Maps T to Collection and a factory making Container from U.Mapping is possible from member of T.
      * @param <U>
@@ -117,9 +127,9 @@ public final class DynamicElement<T> implements Renderer
                     for (Attribute<?> attr : attributes.values())
                     {
                         out.append(' ');
-                        if (attr instanceof FunctionAttribute)
+                        if (attr instanceof BoundAppendable)
                         {
-                            FunctionAttribute<T,?> a = (FunctionAttribute<T,?>) attr;
+                            BoundAppendable<T> a = (BoundAppendable<T>) attr;
                             a.append(out, t);
                         }
                         else
@@ -155,18 +165,26 @@ public final class DynamicElement<T> implements Renderer
         });
     }
     
+    public DynamicElement<T> addClasses(String... cls)
+    {
+        for (String s : cls)
+        {
+            addClasses((t)->s);
+        }
+        return this;
+    }
     /**
      * Add entr(y/ies) to clas attribute
      * @param cls
      * @return this
      */
-    public DynamicElement<T> addClasses(String... cls)
+    public DynamicElement<T> addClasses(Function<T,String> ... cls)
     {
         if (cls.length > 0)
         {
             if (classes == null)
             {
-                classes = new ClassAttribute(cls);
+                classes = new ClassAttr(cls);
                 setAttr(classes);
             }
             else
@@ -228,6 +246,46 @@ public final class DynamicElement<T> implements Renderer
         }
         attributes.put(attr.getName(), attr);
         return this;
+    }
+
+    private class ClassAttr implements Attribute, BoundAppendable<T>
+    {
+        List<Function<T, String>> list = new ArrayList<>();
+        
+        public ClassAttr(Function<T, String>... cls)
+        {
+            addClasses(cls);
+        }
+
+        private void addClasses(Function<T, String>... cls)
+        {
+            CollectionHelp.addAll(list, cls);
+        }
+
+        @Override
+        public void append(Appendable out, T t) throws IOException
+        {
+            out.append("class=");
+            out.append(list.stream().map((f)->f.apply(t)).collect(Collectors.joining(" ", "\"", "\"")));
+        }
+
+        @Override
+        public String getName()
+        {
+            return "class";
+        }
+
+        @Override
+        public Object getValue()
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void append(Appendable out) throws IOException
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 
 }

@@ -28,7 +28,7 @@ import static org.vesalainen.html.Encoder.encode;
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  * @param <T>
  */
-public class FunctionAttribute<T,U> implements Attribute<Function<T,U>>, Serializable
+public class FunctionAttribute<T,U> implements Attribute<Function<T,U>>, Serializable, BoundAppendable<T>
 {
     private static final long serialVersionUID = 1L;
     protected final String name;
@@ -47,6 +47,7 @@ public class FunctionAttribute<T,U> implements Attribute<Function<T,U>>, Seriali
         return name + "=\"" + value.apply(t)+ "\"";
     }
 
+    @Override
     public void append(Appendable out, T t) throws IOException
     {
         out.append(name);

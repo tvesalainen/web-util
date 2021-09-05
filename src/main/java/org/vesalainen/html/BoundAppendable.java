@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2021 Timo Vesalainen <timo.vesalainen@iki.fi>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,27 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.vesalainen.html;
 
-$(document).ready(function () {
-    $('#jstree')
-  // listen for event
-  .on('changed.jstree', function (e, data) {
-    id = data.node.id;
-    if (!id.endsWith('*'))
-    {
-        $('#mbean').load('ajax_nodes.html', { 'id' : data.node.id })
-    }
-  })
-.jstree({
-      'core' : {
-        'data' : {
-          'url' : 'ajax_nodes.html',
-          'data' : function (node) {
-            return { 'id' : node.id };
-          }
-        }
-      }
-    });
-});
+import java.io.IOException;
 
+/**
+ *
+ * @author Timo Vesalainen <timo.vesalainen@iki.fi>
+ */
+public interface BoundAppendable<T>
+{
 
+    void append(Appendable out, T t) throws IOException;
+    
+}
