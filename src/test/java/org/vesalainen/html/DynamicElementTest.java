@@ -34,7 +34,7 @@ public class DynamicElementTest
     @Test
     public void test() throws IOException
     {
-        DynamicElement<String> de = DynamicElement.getFromArray("div", "foo", "bar", "goo")
+        DynamicElement<String,?> de = DynamicElement.getFromArray("div", "foo", "bar", "goo")
                 .addClasses("cl1")
                 .setAttr("at", (t)->t)
                 .setText((t)->t+"ppa")

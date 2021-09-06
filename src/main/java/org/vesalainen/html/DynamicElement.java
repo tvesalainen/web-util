@@ -33,89 +33,100 @@ import org.vesalainen.util.CollectionHelp;
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  * @param <T> Stream item
  */
-public final class DynamicElement<T> implements Renderer
+public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
 {
     private static final long serialVersionUID = 1L;
     private Supplier<Stream<T>> streamSupplier;
-    private Function<?,Stream<T>> mapper;
+    private Function<U,Stream<T>> mapper;
     protected String name;
     protected Map<String,Attribute<?>> attributes;
     protected ClassAttr classes;
     protected Function<T,String> textSupplier;
-    private final List<DynamicElement<T>> content = new ArrayList<>();
+    private final List<DynamicElement<T,U>> content = new ArrayList<>();
 
     /**
      * Creates root builder with tag
      * @param streamSupplier
-     * @param name 
+     * @param tag 
      */
-    private DynamicElement(String name, Supplier<Stream<T>> streamSupplier)
+    private DynamicElement(String tag, Supplier<Stream<T>> streamSupplier)
     {
         this.streamSupplier = streamSupplier;
-        this.name = name;
+        this.name = tag;
     }
 
-    private <U> DynamicElement(String name, Function<U, Stream<T>> mapper)
+    private DynamicElement(String tag, Function<U, Stream<T>> mapper)
     {
         this.mapper = mapper;
-        this.name = name;
+        this.name = tag;
     }
-    public static <U> DynamicElement<U> getFrom(String name, Supplier<Stream<U>> streamSupplier)
+    public static <T,U> DynamicElement<T,U> getFrom(String tag, Supplier<Stream<T>> streamSupplier)
     {
-        return new DynamicElement<>(name, streamSupplier);
+        return new DynamicElement<>(tag, streamSupplier);
     }
-    public static <U> DynamicElement<U> getFromCollection(String name, Supplier<Collection<U>> c)
+    public static <T,U> DynamicElement<T,U> getFromCollection(String tag, Supplier<Collection<T>> c)
     {
-        return new DynamicElement<>(name, ()->c.get().stream());
+        return new DynamicElement<>(tag, ()->c.get().stream());
     }
-    public static <U> DynamicElement getFromArray(String name, U... items)
+    public static <T,U> DynamicElement getFromArray(String tag, T... items)
     {
-        return getFromArray(name, ()->items);
+        return getFromArray(tag, ()->items);
     }
-    public static <U> DynamicElement getFromArray(String name, Supplier<U[]> items)
+    public static <T,U> DynamicElement getFromArray(String tag, Supplier<T[]> items)
     {
-        return new DynamicElement<>(name, ()->Stream.of(items.get()));
-    }
-    
-    /**
-     * Maps T to Collection and a factory making Container from U.Mapping is possible from member of T.
-     * @param <U>
-     * @param mapper
-     * @param name
-     * @return 
-     */
-    public <U> DynamicElement<T> mapCollection(String name, Function<U,Collection<T>> mapper)
-    {
-        return mapStream(name, (U u)->mapper.apply(u).stream());
+        return new DynamicElement<>(tag, ()->Stream.of(items.get()));
     }
     /**
-     * Maps T to array U and a factory making Container from U.Mapping is possible from member of T.
-     * @param <U>
-     * @param mapper
-     * @param name
+     * Makes child element with identity mapping
+     * @param tag
      * @return 
      */
-    public <U> DynamicElement<T> mapArray(String name, Function<U,T[]> mapper)
+    public DynamicElement<T,T> child(String tag)
     {
-        return mapStream(name, (U u)->Stream.of(mapper.apply(u)));
+        return childFromStream(tag, (T t)->Stream.of(t));
     }
     /**
-     * Maps T to Stream and a factory making Container from U.Mapping is possible from member of T.
-     * @param <U>
+     * Makes child element mapping to collection
      * @param mapper
-     * @param name
+     * @param tag
      * @return 
      */
-    public <U> DynamicElement<T> mapStream(String name, Function<U,Stream<T>> mapper)
+    public <V> DynamicElement<V,T> childFromCollection(String tag, Function<T,Collection<V>> mapper)
     {
-        DynamicElement<T> builder = new DynamicElement(name, mapper);
+        return childFromStream(tag, (T t)->mapper.apply(t).stream());
+    }
+    /**
+     * Makes child element mapping to array
+     * @param mapper
+     * @param tag
+     * @return 
+     */
+    public <V> DynamicElement<V,T> childFromArray(String tag, Function<T,V[]> mapper)
+    {
+        return childFromStream(tag, (T t)->Stream.of(mapper.apply(t)));
+    }
+    /**
+     * Makes child element mapping to stream
+     * @param mapper
+     * @param tag
+     * @return 
+     */
+    public <V> DynamicElement<V,T> childFromStream(String tag, Function<T,Stream<V>> mapper)
+    {
+        DynamicElement<V,T> builder = new DynamicElement(tag, mapper);
         content.add((DynamicElement) builder);
         return builder;
     }
+
     @Override
     public void append(Appendable out) throws IOException
     {
-        Stream<T> c = streamSupplier.get();
+        append(out, null);
+    }
+    @Override
+    public void append(Appendable out, U u) throws IOException
+    {
+        Stream<T> c = getStream(u);
         c.forEach((t)->
         {
             try
@@ -147,7 +158,7 @@ public final class DynamicElement<T> implements Renderer
                 {
                     try
                     {
-                        b.append(out);
+                        b.append(out, (U) t);
                     }
                     catch (IOException ex)
                     {
@@ -165,7 +176,7 @@ public final class DynamicElement<T> implements Renderer
         });
     }
     
-    public DynamicElement<T> addClasses(String... cls)
+    public DynamicElement<T,U> addClasses(String... cls)
     {
         for (String s : cls)
         {
@@ -178,7 +189,7 @@ public final class DynamicElement<T> implements Renderer
      * @param cls
      * @return this
      */
-    public DynamicElement<T> addClasses(Function<T,String> ... cls)
+    public DynamicElement<T,U> addClasses(Function<T,String> ... cls)
     {
         if (cls.length > 0)
         {
@@ -194,7 +205,7 @@ public final class DynamicElement<T> implements Renderer
         }
         return this;
     }
-    public DynamicElement<T> setText(Function<T,String> textSupplier)
+    public DynamicElement<T,U> setText(Function<T,String> textSupplier)
     {
         this.textSupplier = textSupplier;
         return this;
@@ -206,7 +217,7 @@ public final class DynamicElement<T> implements Renderer
      * @param value
      * @return this
      */
-    public <A> DynamicElement<T> setAttr(String name, A value)
+    public <A> DynamicElement<T,U> setAttr(String name, A value)
     {
         return setAttr(name, (T t)->value);
     }
@@ -217,17 +228,17 @@ public final class DynamicElement<T> implements Renderer
      * @param value
      * @return 
      */
-    public <A> DynamicElement<T> setAttr(String name, Function<T,A> value)
+    public <A> DynamicElement<T,U> setAttr(String name, Function<T,A> value)
     {
         return setAttr(new FunctionAttribute<>(name, value));
     }
 
-    public <A> DynamicElement<T> setDataAttr(String name, A value)
+    public <A> DynamicElement<T,U> setDataAttr(String name, A value)
     {
         return setDataAttr(name, (T t)->value);
     }
 
-    public <A> DynamicElement<T> setDataAttr(String name, Function<T,A> value)
+    public <A> DynamicElement<T,U> setDataAttr(String name, Function<T,A> value)
     {
         return setAttr(DataAttributeName.name(name), value);
     }
@@ -238,7 +249,7 @@ public final class DynamicElement<T> implements Renderer
      * @param attr
      * @return this
      */
-    public <A> DynamicElement<T> setAttr(Attribute<A> attr)
+    public <A> DynamicElement<T,U> setAttr(Attribute<A> attr)
     {
         if (attributes == null)
         {
@@ -246,6 +257,18 @@ public final class DynamicElement<T> implements Renderer
         }
         attributes.put(attr.getName(), attr);
         return this;
+    }
+
+    private Stream<T> getStream(U u)
+    {
+        if (u == null)
+        {
+            return streamSupplier.get();
+        }
+        else
+        {
+            return mapper.apply(u);
+        }
     }
 
     private class ClassAttr implements Attribute, BoundAppendable<T>
