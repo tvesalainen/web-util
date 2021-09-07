@@ -22,7 +22,15 @@ $(document).ready(function () {
     id = data.node.id;
     if (!id.endsWith('*'))
     {
-        $('#mbean').load('ajax_nodes.html', { 'id' : data.node.id })
+        $('#mbean').load('ajax_nodes.html', { 'id' : data.node.id }, function(responseTxt, statusTxt, xhr){
+            $('.attributeValue').each(function(index, element){
+                $(this).load('ajax_nodes.html', { 'id' : $(this).attr('data-objectname'), 'attribute' : this.id }, function(responseTxt, statusTxt, xhr){
+                    $('input').change(function(){
+                        a = this;
+                    })
+                });
+            })
+        })
     }
   })
 .jstree({
