@@ -24,9 +24,13 @@ $(document).ready(function () {
     {
         $('#mbean').load('ajax_nodes.html', { 'id' : data.node.id }, function(responseTxt, statusTxt, xhr){
             $('.attributeValue').each(function(index, element){
-                $(this).load('ajax_nodes.html', { 'id' : $(this).attr('data-objectname'), 'attribute' : this.id }, function(responseTxt, statusTxt, xhr){
-                    $('input').change(function(){
-                        a = this;
+                var objectname = $(this).attr('data-objectname');
+                var id = this.id;
+                $(this).load('ajax_nodes.html', { 'id' : objectname, 'attribute' : id }, function(responseTxt, statusTxt, xhr){
+                    $('.attributeInput').change(function(){
+                        $.post('ajax_nodes.html', $('form').serialize()), function(responseTxt, statusTxt, xhr){
+                            a = this;
+                        };
                     })
                 });
             })
