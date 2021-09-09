@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ import org.vesalainen.util.CollectionHelp;
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  * @param <T> Stream item
  */
-public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
+public final class DynamicElement<T,U> implements AttributedContent, BoundAppendable<U>
 {
     private static final long serialVersionUID = 1L;
     private Supplier<Stream<T>> streamSupplier;
@@ -43,6 +45,8 @@ public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
     protected ClassAttr classes;
     protected Function<T,String> textSupplier;
     private final List<DynamicElement<T,U>> content = new ArrayList<>();
+    private final List<BiConsumer<T,AttributedContent>> attributors = new ArrayList<>();
+    private Content parent;
 
     /**
      * Creates root builder with tag
@@ -131,6 +135,7 @@ public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
         {
             try
             {
+                attributors.forEach((a)->a.accept(t,this));
                 out.append('<');
                 out.append(name);
                 if (attributes != null)
@@ -175,7 +180,36 @@ public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
             }
         });
     }
+
+    @Override
+    public Content getParent()
+    {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Content parent)
+    {
+        this.parent = parent;
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+    /**
+     * Add consumer for manipulating attributes before rendering
+     * @param attributor
+     * @return 
+     */
+    public DynamicElement<T,U> attribute(BiConsumer<T,AttributedContent> attributor)
+    {
+        attributors.add(attributor);
+        return this;
+    }
     
+    @Override
     public DynamicElement<T,U> addClasses(String... cls)
     {
         for (String s : cls)
@@ -217,6 +251,7 @@ public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
      * @param value
      * @return this
      */
+    @Override
     public <A> DynamicElement<T,U> setAttr(String name, A value)
     {
         return setAttr(name, (T t)->value);
@@ -233,6 +268,7 @@ public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
         return setAttr(new FunctionAttribute<>(name, value));
     }
 
+    @Override
     public <A> DynamicElement<T,U> setDataAttr(String name, A value)
     {
         return setDataAttr(name, (T t)->value);
@@ -249,6 +285,7 @@ public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
      * @param attr
      * @return this
      */
+    @Override
     public <A> DynamicElement<T,U> setAttr(Attribute<A> attr)
     {
         if (attributes == null)
@@ -257,6 +294,37 @@ public final class DynamicElement<T,U> implements Renderer, BoundAppendable<U>
         }
         attributes.put(attr.getName(), attr);
         return this;
+    }
+
+    @Override
+    public Attribute<?> getAttr(String name)
+    {
+        return attributes.get(name);
+    }
+
+    @Override
+    public AttributedContent removeAttr(String name)
+    {
+        attributes.remove(name);
+        return this;
+    }
+
+    @Override
+    public <A> AttributedContent setAttr(String name, Supplier<A> value)
+    {
+        return setAttr(name, (t)->value.get());
+    }
+
+    @Override
+    public <A> AttributedContent setDataAttr(String name, Supplier<A> value)
+    {
+        return setDataAttr(name, (t)->value.get());
+    }
+
+    @Override
+    public boolean hasAttr(String name)
+    {
+        return attributes.containsKey(name);
     }
 
     private Stream<T> getStream(U u)

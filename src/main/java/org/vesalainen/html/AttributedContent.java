@@ -65,7 +65,14 @@ public interface AttributedContent extends Content, NamedContent
      */
     <T> AttributedContent setAttr(Attribute<T> attr);
     
-    AttributedContent setAttr(Collection<Attribute> all);
+    default AttributedContent setAttr(Collection<Attribute> all)
+    {
+        for (Attribute at : all)
+        {
+            setAttr(at);
+        }
+        return this;
+    }
     
     AttributedContent removeAttr(String name);
     /**

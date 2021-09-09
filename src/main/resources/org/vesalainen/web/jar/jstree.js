@@ -34,6 +34,11 @@ $(document).ready(function () {
                     })
                 });
             })
+            $('.operationInvoke').click(function(){
+                parent = $(this).parent();
+                target = $(this).attr('value');
+                $('#'+target).load('ajax_nodes.html', parent.serialize());
+            })
         })
     }
   })

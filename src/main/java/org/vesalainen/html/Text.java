@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 import static org.vesalainen.html.Encoder.encode;
 
 /**
@@ -27,19 +28,25 @@ import static org.vesalainen.html.Encoder.encode;
 public class Text<T> extends AbstractContent
 {
     private static final long serialVersionUID = 1L;
-    private final T text;
+    private final Supplier<String> text;
 
     public Text(Content parent, T text)
+    {
+        this(parent, ()->text.toString());
+    }
+
+    public Text(Content parent, Supplier<String> text)
     {
         super(parent);
         this.text = text;
     }
+    
     @Override
     public void append(Appendable out) throws IOException
     {
         if (text != null)
         {
-            encode(out, text.toString());
+            encode(out, text.get());
         }
     }
 

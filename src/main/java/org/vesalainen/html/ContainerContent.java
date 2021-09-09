@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  *
@@ -51,6 +52,14 @@ public class ContainerContent extends AbstractContent implements Container
         addContent(new Text(this, text));
         return this;
     }
+
+    @Override
+    public <T> ContainerContent addText(Supplier<String> func)
+    {
+        addContent(new Text(this, func));
+        return this;
+    }
+    
     /**
      * Add new Tag
      * @param tagName

@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 /**
  *
@@ -51,5 +52,5 @@ public interface Container extends Content
     Element addElement(String element);
     Tag addTag(String tagName);
     <T> ContainerContent addText(T text);
-    
+    <T> ContainerContent addText(Supplier<String> text);
 }
