@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var source;
+
 $(document).ready(function () {
     $('#jstree')
   // listen for event
@@ -35,9 +37,19 @@ $(document).ready(function () {
                 });
             })
             $('.operationInvoke').click(function(){
-                parent = $(this).parent();
+                form = $(this).parent();
                 target = $(this).attr('value');
-                $('#'+target).load('ajax_nodes.html', parent.serialize());
+                $('#'+target).load('ajax_nodes.html', form.serialize());
+            })
+            $('.subscribeNotification').click(function(){
+                $( "#dialog" ).dialog( "open" );
+                form = $(this).parent();
+                query = form.serialize();
+                url = 'ajax_nodes.html?'+query;
+                source = new EventSource(url);
+                source.onmessage = function(event) {
+                  document.getElementById("dialogTable").innerHTML += event.data;
+                };
             })
         })
     }
@@ -52,6 +64,14 @@ $(document).ready(function () {
         }
       }
     });
+    $( "#dialog" ).dialog({ autoOpen: false });
+    $( "#dialog" ).on( "dialogclose", function( event, ui ) {
+        if (source)
+        {
+            source.close();
+        }
+    } );
+
 });
 
 
