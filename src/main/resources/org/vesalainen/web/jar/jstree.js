@@ -48,7 +48,7 @@ $(document).ready(function () {
                 url = 'ajax_nodes.html?'+query;
                 source = new EventSource(url);
                 source.onmessage = function(event) {
-                  document.getElementById("dialogTable").innerHTML += event.data;
+                  $("#dialogTable").append(event.data);
                 };
             })
         })
@@ -69,6 +69,7 @@ $(document).ready(function () {
         if (source)
         {
             source.close();
+            $('#dialogTable').empty();
         }
     } );
 
