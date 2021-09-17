@@ -137,6 +137,10 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
         {
             try
             {
+                if (t == null)
+                {
+                    throw new IllegalArgumentException("null not accepted");
+                }
                 attributors.forEach((a)->a.accept(t,this));
                 out.append('<');
                 out.append(name);
