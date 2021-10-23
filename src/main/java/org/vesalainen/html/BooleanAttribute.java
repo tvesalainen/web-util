@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 /**
  * Implements HTML boolean attribute. Boolean attribute shows only name when
@@ -24,18 +25,23 @@ import java.io.IOException;
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  * @param <T>
  */
-public class BooleanAttribute<T> extends SimpleAttribute<T>
+public class BooleanAttribute<T> extends SimpleAttribute<Supplier<T>>
 {
     private static final long serialVersionUID = 1L;
     public BooleanAttribute(String name, T value)
     {
-        super(name, value);
+        super(name, ()->value);
+    }
+
+    public BooleanAttribute(String string, Supplier<T> splr)
+    {
+        super(string, splr);
     }
     
     @Override
     public void append(Appendable out) throws IOException
     {
-        if (value != null && "true".equals(value.toString()))
+        if (value != null && "true".equals(value.get().toString()))
         {
             out.append(name);
         }

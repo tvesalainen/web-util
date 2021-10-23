@@ -52,9 +52,14 @@ public class FunctionAttribute<T,U> implements Attribute<Function<T,U>>, Seriali
     {
         out.append(name);
         out.append("=\"");
-        if (value != null)
+        U u = value.apply(t);
+        if (u != null)
         {
-            encode(out, value.apply(t).toString());
+            encode(out, u.toString());
+        }
+        else
+        {
+            System.err.println();
         }
         out.append("\"");
     }
