@@ -21,6 +21,7 @@ import java.io.IOException;
 /**
  *
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
+ * @param <T>
  */
 public interface BoundAppendable<T>
 {

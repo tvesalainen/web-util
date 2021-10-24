@@ -44,6 +44,7 @@ public class Tag extends AbstractContent implements AttributedContent
         this.name = name;
     }
 
+    @Override
     public String getName()
     {
         return name;

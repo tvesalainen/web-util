@@ -44,7 +44,7 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
     protected Map<String,Attribute<?>> attributes;
     protected ClassAttr classes;
     protected Function<T,String> textSupplier;
-    private final List<DynamicElement<T,U>> content = new ArrayList<>();
+    private final List<BoundAppendable<U>> content = new ArrayList<>();
     private final List<BiConsumer<T,AttributedContent>> attributors = new ArrayList<>();
     private Content parent;
 
@@ -123,7 +123,16 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
         content.add((DynamicElement) builder);
         return builder;
     }
-
+    /**
+     * Adds child element that can be dynamic.
+     * @param element
+     * @return 
+     */
+    public DynamicElement<T, U> addContent(BoundAppendable<U> element)
+    {
+        content.add(element);
+        return this;
+    }
     @Override
     public void append(Appendable out) throws IOException
     {
