@@ -44,7 +44,7 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
     protected Map<String,Attribute<?>> attributes;
     protected ClassAttr classes;
     protected Function<T,String> textSupplier;
-    private final List<BoundAppendable<U>> content = new ArrayList<>();
+    private final List<BoundAppendable<T>> content = new ArrayList<>();
     private final List<BiConsumer<T,AttributedContent>> attributors = new ArrayList<>();
     private Content parent;
 
@@ -94,7 +94,7 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
     /**
      * Makes child element mapping to collection
      * @param mapper
-     * @param tag
+     * @param tag If tag is null only content is rendered
      * @return 
      */
     public <V> DynamicElement<V,T> childFromCollection(String tag, Function<T,Collection<V>> mapper)
@@ -104,7 +104,7 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
     /**
      * Makes child element mapping to array
      * @param mapper
-     * @param tag
+     * @param tag If tag is null only content is rendered
      * @return 
      */
     public <V> DynamicElement<V,T> childFromArray(String tag, Function<T,V[]> mapper)
@@ -114,7 +114,7 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
     /**
      * Makes child element mapping to stream
      * @param mapper
-     * @param tag
+     * @param tag If tag is null only content is rendered
      * @return 
      */
     public <V> DynamicElement<V,T> childFromStream(String tag, Function<T,Stream<V>> mapper)
@@ -128,7 +128,7 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
      * @param element
      * @return 
      */
-    public DynamicElement<T, U> addContent(BoundAppendable<U> element)
+    public DynamicElement<T, U> addContent(BoundAppendable<T> element)
     {
         content.add(element);
         return this;
@@ -151,43 +151,49 @@ public final class DynamicElement<T,U> implements AttributedContent, BoundAppend
                     throw new IllegalArgumentException("null not accepted");
                 }
                 attributors.forEach((a)->a.accept(t,this));
-                out.append('<');
-                out.append(name);
-                if (attributes != null)
+                if (name != null)
                 {
-                    for (Attribute<?> attr : attributes.values())
+                    out.append('<');
+                    out.append(name);
+                    if (attributes != null)
                     {
-                        out.append(' ');
-                        if (attr instanceof BoundAppendable)
+                        for (Attribute<?> attr : attributes.values())
                         {
-                            BoundAppendable<T> a = (BoundAppendable<T>) attr;
-                            a.append(out, t);
-                        }
-                        else
-                        {
-                            attr.append(out);
+                            out.append(' ');
+                            if (attr instanceof BoundAppendable)
+                            {
+                                BoundAppendable<T> a = (BoundAppendable<T>) attr;
+                                a.append(out, t);
+                            }
+                            else
+                            {
+                                attr.append(out);
+                            }
                         }
                     }
-                }
-                out.append('>');
-                if (textSupplier != null)
-                {
-                    out.append(textSupplier.apply(t));
+                    out.append('>');
+                    if (textSupplier != null)
+                    {
+                        out.append(textSupplier.apply(t));
+                    }
                 }
                 content.forEach((b)->
                 {
                     try
                     {
-                        b.append(out, (U) t);
+                        b.append(out, t);
                     }
                     catch (IOException ex)
                     {
                         throw new RuntimeException(ex);
                     }
                 });
-                out.append("</");
-                out.append(name);
-                out.append('>');
+                if (name != null)
+                {
+                    out.append("</");
+                    out.append(name);
+                    out.append('>');
+                }
             }
             catch (IOException ex)
             {

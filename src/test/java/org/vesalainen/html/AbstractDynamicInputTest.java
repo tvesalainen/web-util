@@ -47,7 +47,7 @@ public class AbstractDynamicInputTest
         @Override
         public void append(Appendable out, Integer t) throws IOException
         {
-            append(out, Integer.class, t);
+            append(out, t, Integer.class, t);
         }
         
     }

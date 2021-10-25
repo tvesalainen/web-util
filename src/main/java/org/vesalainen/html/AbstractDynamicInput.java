@@ -17,6 +17,7 @@
 package org.vesalainen.html;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 /**
  * Subclass must implements abstract append method which must call typed append.
@@ -33,7 +34,7 @@ public abstract class AbstractDynamicInput<T> extends Tag implements BoundAppend
         super("input");
     }
 
-    public void append(Appendable out, Class<?> type, Object value) throws IOException
+    public void append(Appendable out, T t, Class<?> type, Object value) throws IOException
     {
         out.append('<');
         out.append(name);
@@ -44,11 +45,29 @@ public abstract class AbstractDynamicInput<T> extends Tag implements BoundAppend
             for (Attribute<?> attr : attributes.values())
             {
                 out.append(' ');
-                attr.append(out);
+                if (attr instanceof BoundAppendable)
+                {
+                    BoundAppendable<T> a = (BoundAppendable<T>) attr;
+                    a.append(out, t);
+                }
+                else
+                {
+                    attr.append(out);
+                }
             }
         }
         out.append('>');
     }
+    public <A> Tag setAttr(String name, Function<T,A> value)
+    {
+        return setAttr(new FunctionAttribute<>(name, value));
+    }
+
+    public <A> Tag setDataAttr(String name, Function<T,A> value)
+    {
+        return setAttr(DataAttributeName.name(name), value);
+    }
+    
     private void appendType(Appendable out, Class<?> type) throws IOException
     {
         switch (type.getSimpleName())
