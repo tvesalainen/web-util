@@ -18,6 +18,11 @@ package org.vesalainen.web.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -27,18 +32,50 @@ import org.vesalainen.util.MimeTypes;
 import org.vesalainen.util.ThreadSafeTemporary;
 
 /**
- *
+ * AbstractJarServlet is a base servlet for retrieving files from application
+ * jars.
  * @author Timo Vesalainen <timo.vesalainen@iki.fi>
  */
 public abstract class AbstractJarServlet extends HttpServlet
 {
-    
     protected static final int BUFFER_SIZE = 4096;
     protected static final String ETAG = "\"" + String.valueOf(System.currentTimeMillis()) + "\"";
     protected static ThreadSafeTemporary<byte[]> BUFFER_STORE = new ThreadSafeTemporary<>(() ->
     {
         return new byte[BUFFER_SIZE];
     });
+    protected Function<String,InputStream> resource = (s)->getClass().getResourceAsStream(s);
+
+    public AbstractJarServlet()
+    {
+    }
+    /**
+     * If backup directory exist, it is used to find resource files instead of
+     * jar.
+     * @param backup 
+     */
+    public AbstractJarServlet(Path backup)
+    {
+        if (Files.exists(backup))
+        {
+            resource = (s)->
+            {
+                if (s.startsWith("/"))
+                {
+                    s = s.substring(1);
+                }
+                Path path = backup.resolve(s);
+                try
+                {
+                    return Files.newInputStream(path);
+                }
+                catch (IOException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
+            };
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -52,7 +89,7 @@ public abstract class AbstractJarServlet extends HttpServlet
         }
         response.setHeader("ETag", ETAG);
         String page = getPage(request);
-        InputStream is = getClass().getResourceAsStream(page);
+        InputStream is = resource.apply(page);
         if (is != null)
         {
             String mimeType = MimeTypes.getMimeType(page);

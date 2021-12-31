@@ -43,7 +43,7 @@ sse.register = function (e)
         }
         $.post("/ctrl-sse", a);
     }
-}
+};
 
 $(document).ready(function () {
     
