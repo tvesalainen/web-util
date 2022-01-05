@@ -103,6 +103,10 @@ public abstract class AbstractDynamicInput<T> extends Tag implements BoundAppend
                 appendAttr(out, "min", Double.MIN_VALUE);
                 appendAttr(out, "max", Double.MAX_VALUE);
                 break;
+            case "BigInteger":
+            case "BigDecimal":
+                appendAttr(out, "type", "number");
+                break;
             case "String":
                 appendAttr(out, "type", "text");
                 break;
@@ -125,6 +129,8 @@ public abstract class AbstractDynamicInput<T> extends Tag implements BoundAppend
             case "Long":
             case "Float":
             case "Double":
+            case "BigDecimal":
+            case "BigInteger":
             case "String":
                 appendAttr(out, "value", value!=null?value:"");
                 break;
