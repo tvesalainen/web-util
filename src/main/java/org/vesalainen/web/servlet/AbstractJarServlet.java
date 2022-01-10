@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -45,19 +43,21 @@ public abstract class AbstractJarServlet extends HttpServlet
         return new byte[BUFFER_SIZE];
     });
     protected Function<String,InputStream> resource = (s)->getClass().getResourceAsStream(s);
+    protected boolean development;
 
     public AbstractJarServlet()
     {
     }
     /**
-     * If backup directory exist, it is used to find resource files instead of
-     * jar.
+     * If development directory exist, it is used to find resource files instead of
+ jar.
      * @param backup 
      */
     public AbstractJarServlet(Path backup)
     {
         if (Files.exists(backup))
         {
+            development = true;
             resource = (s)->
             {
                 if (s.startsWith("/"))
@@ -81,13 +81,16 @@ public abstract class AbstractJarServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         log(request.toString());
-        String ifNoneMatch = request.getHeader("If-None-Match");
-        if (ETAG.equals(ifNoneMatch))
+        if (!development)
         {
-            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
+            String ifNoneMatch = request.getHeader("If-None-Match");
+            if (ETAG.equals(ifNoneMatch))
+            {
+                response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                return;
+            }
+            response.setHeader("ETag", ETAG);
         }
-        response.setHeader("ETag", ETAG);
         String page = getPage(request);
         InputStream is = resource.apply(page);
         if (is != null)
