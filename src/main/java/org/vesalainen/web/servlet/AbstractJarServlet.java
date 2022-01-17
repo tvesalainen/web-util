@@ -80,7 +80,7 @@ public abstract class AbstractJarServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        log(request.toString());
+        //log(request.toString());
         if (!development)
         {
             String ifNoneMatch = request.getHeader("If-None-Match");

@@ -321,7 +321,15 @@ public class JSONBuilder
             }
             catch (RuntimeException ex)
             {
-                throw (IOException)ex.getCause();
+                Throwable cause = ex.getCause();
+                if (cause != null && (cause instanceof IOException))
+                {
+                    throw (IOException)cause;
+                }
+                else
+                {
+                    throw ex;
+                }
             }
             out.append(']');
         }
@@ -365,7 +373,15 @@ public class JSONBuilder
             }
             catch (RuntimeException ex)
             {
-                throw (IOException)ex.getCause();
+                Throwable cause = ex.getCause();
+                if (cause != null && (cause instanceof IOException))
+                {
+                    throw (IOException)cause;
+                }
+                else
+                {
+                    throw ex;
+                }
             }
             out.append(']');
         }
