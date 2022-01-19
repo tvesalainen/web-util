@@ -119,9 +119,9 @@ public class JSONBuilder
             return this;
         }
         
-        public Obj stringArray(String key, Supplier<Stream<String>> stream)
+        public Obj objectArray(String key, Supplier<Stream<Object>> stream)
         {
-            StringArray array = new StringArray(stream);
+            ObjectArray array = new ObjectArray(stream);
             Member member = new Member(key, array);
             members.add(member);
             return this;
@@ -335,13 +335,13 @@ public class JSONBuilder
         }
         
     }
-    private static class StringArray extends Value
+    private static class ObjectArray extends Value
     {
-        private Supplier<Stream<String>> stringStream;
+        private Supplier<Stream<Object>> objectStream;
 
-        public StringArray(Supplier<Stream<String>> stringStream)
+        public ObjectArray(Supplier<Stream<Object>> objectStream)
         {
-            this.stringStream = stringStream;
+            this.objectStream = objectStream;
         }
 
         @Override
@@ -351,7 +351,7 @@ public class JSONBuilder
             try
             {
                 IntReference comma = new IntReference(0);
-                stringStream.get().map((s)->JSONObject.quote(s)).forEach((s)->
+                objectStream.get().forEach((o)->
                 {
                     try
                     {
@@ -363,7 +363,7 @@ public class JSONBuilder
                         {
                             comma.setValue(1);
                         }
-                        out.append(s);
+                        out.append(JSONObject.valueToString(o));
                     }
                     catch (IOException ex)
                     {

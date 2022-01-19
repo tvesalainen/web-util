@@ -17,10 +17,12 @@
 package org.vesalainen.json;
 
 import java.io.IOException;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.vesalainen.util.Lists;
 
 /**
  *
@@ -65,5 +67,18 @@ public class JSONBuilderTest
         assertEquals(true, res.isNull(2));
         assertEquals(true, res.getBoolean(3));
     }
-    
+    @Test
+    public void testObjectArray() throws IOException
+    {
+        List<Object> list = Lists.create(1, 2, 3);
+        JSONBuilder.Obj obj = JSONBuilder.object()
+                .objectArray("arr", ()->list.stream());
+        StringBuilder out = new StringBuilder();
+        obj.write(out);
+        JSONObject res = new JSONObject(out.toString());
+        JSONArray jsonArray = res.getJSONArray("arr");
+        assertEquals(1, jsonArray.getInt(0));
+        assertEquals(2, jsonArray.getInt(1));
+        assertEquals(3, jsonArray.getInt(2));
+    }    
 }
