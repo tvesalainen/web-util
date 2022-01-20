@@ -40,7 +40,7 @@ public class JSONBuilderTest
     {
         JSONBuilder.Obj string = JSONBuilder.object()
                 .number("number", ()->123)
-                .string("string", ()->"qwerty")
+                .value("string", ()->"qwerty")
                 .nul("null")
                 .bool("boolean", ()->true);
         StringBuilder out = new StringBuilder();
@@ -56,7 +56,7 @@ public class JSONBuilderTest
     {
         JSONBuilder.Array string = JSONBuilder.array()
                 .number(()->123)
-                .string(()->"qwerty")
+                .value(()->"qwerty")
                 .nul()
                 .bool(()->true);
         StringBuilder out = new StringBuilder();

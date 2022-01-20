@@ -127,7 +127,7 @@ public class JSONBuilder
             return this;
         }
         
-        public Obj string(String key, Supplier<String> string)
+        public Obj value(String key, Supplier<Object> string)
         {
             Str str = new Str(string);
             Member member = new Member(key, str);
@@ -204,7 +204,7 @@ public class JSONBuilder
             return array;
         }
         
-        public Array string(Supplier<String> string)
+        public Array value(Supplier<Object> string)
         {
             elements.add(new Str(string));
             return this;
@@ -253,17 +253,17 @@ public class JSONBuilder
     }
     private static class Str extends Value
     {
-        private Supplier<String> string;
+        private Supplier<Object> value;
 
-        public Str(Supplier<String> string)
+        public Str(Supplier<Object> string)
         {
-            this.string = string;
+            this.value = string;
         }
 
         @Override
         public void write(Appendable out) throws IOException
         {
-            out.append(JSONObject.quote(string.get()));
+            out.append(JSONObject.valueToString(value.get()));
         }
         
     }
