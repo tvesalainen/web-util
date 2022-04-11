@@ -49,11 +49,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.vesalainen.nmea</groupId>
-            <artifactId>nmea-router</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.vesalainen</groupId>
             <artifactId>test</artifactId>
         </dependency>
