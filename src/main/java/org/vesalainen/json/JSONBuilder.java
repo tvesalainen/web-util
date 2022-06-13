@@ -111,6 +111,13 @@ public class JSONBuilder
             return array;
         }
         
+        public Obj object(String key, Obj<Obj> object)
+        {
+            Member member = new Member(key, object);
+            members.add(member);
+            return this;
+        }
+        
         public Obj numberArray(String key, Supplier<DoubleStream> stream)
         {
             NumberArray array = new NumberArray(stream);
