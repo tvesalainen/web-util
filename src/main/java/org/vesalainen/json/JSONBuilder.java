@@ -19,6 +19,7 @@ package org.vesalainen.json;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -36,26 +37,42 @@ public class JSONBuilder
     
     public static final Obj<?> object()
     {
-        return new Obj(null);
+        return new Obj();
+    }
+    public static final Obj<?> object(Locale locale)
+    {
+        return new Obj(locale, null);
     }
     public static final Array<?> array()
     {
-        return new Array(null);
+        return new Array();
+    }
+    public static final Array<?> array(Locale locale)
+    {
+        return new Array(locale, null);
     }
     public static abstract class Element<P extends Element>
     {
         private P parent;
+        protected Locale locale;
 
         public Element()
         {
+            this(Locale.getDefault(), null);
         }
 
         public Element(P parent)
         {
+            this(Locale.getDefault(), parent);
+        }
+
+        public Element(Locale locale, P parent)
+        {
+            this.locale = locale;
             this.parent = parent;
         }
         
-        public abstract void write(Appendable out) throws IOException;
+        public abstract void write(Locale locale, Appendable out) throws IOException;
         
         public P end()
         {
@@ -78,11 +95,11 @@ public class JSONBuilder
         }
 
         @Override
-        public void write(Appendable out) throws IOException
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append(key);
             out.append(':');
-            element.write(out);
+            element.write(locale, out);
         }
         
     }
@@ -90,9 +107,18 @@ public class JSONBuilder
     {
         private List<Member> members = new ArrayList<>();
 
+        public Obj()
+        {
+        }
+
         public Obj(P parent)
         {
             super(parent);
+        }
+
+        public Obj(Locale locale, P parent)
+        {
+            super(locale, parent);
         }
         
         public Obj<Obj> object(String key)
@@ -150,6 +176,14 @@ public class JSONBuilder
             return this;
         }
         
+        public Obj format(String key, String format, DoubleSupplier number)
+        {
+            Format n = new Format(format, number);
+            Member member = new Member(key, n);
+            members.add(member);
+            return this;
+        }
+        
         public Obj bool(String key, BooleanSupplier b)
         {
             Bool n = new Bool(b);
@@ -165,8 +199,12 @@ public class JSONBuilder
             return this;
         }
         
-        @Override
         public void write(Appendable out) throws IOException
+        {
+            write(locale, out);
+        }
+        @Override
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append('{');
             boolean comma = false;
@@ -182,7 +220,7 @@ public class JSONBuilder
                     comma = true;
                 }
                 Member m = members.get(ii);
-                m.write(out);
+                m.write(locale, out);
             }
             out.append('}');
         }
@@ -192,9 +230,18 @@ public class JSONBuilder
     {
         private List<Element> elements = new ArrayList<>();
 
+        public Array()
+        {
+        }
+
         public Array(P parent)
         {
             super(parent);
+        }
+
+        public Array(Locale locale, P parent)
+        {
+            super(locale, parent);
         }
         
         public Obj<Array> object()
@@ -223,6 +270,12 @@ public class JSONBuilder
             return this;
         }
         
+        public Array format(String format, DoubleSupplier number)
+        {
+            elements.add(new Format(format, number));
+            return this;
+        }
+        
         public Array bool(BooleanSupplier b)
         {
             elements.add(new Bool(b));
@@ -235,8 +288,12 @@ public class JSONBuilder
             return this;
         }
         
-        @Override
         public void write(Appendable out) throws IOException
+        {
+            write(locale, out);
+        }
+        @Override
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append('[');
             boolean comma = false;
@@ -252,7 +309,7 @@ public class JSONBuilder
                     comma = true;
                 }
                 Element m = elements.get(ii);
-                m.write(out);
+                m.write(locale, out);
             }
             out.append(']');
         }
@@ -268,7 +325,7 @@ public class JSONBuilder
         }
 
         @Override
-        public void write(Appendable out) throws IOException
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append(JSONObject.valueToString(value.get()));
         }
@@ -284,9 +341,27 @@ public class JSONBuilder
         }
 
         @Override
-        public void write(Appendable out) throws IOException
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append(JSONObject.doubleToString(number.getAsDouble()));
+        }
+        
+    }
+    private static class Format extends Value
+    {
+        private final String format;
+        private DoubleSupplier number;
+
+        public Format(String format, DoubleSupplier number)
+        {
+            this.format = format;
+            this.number = number;
+        }
+
+        @Override
+        public void write(Locale locale, Appendable out) throws IOException
+        {
+            out.append(JSONObject.valueToString(String.format(locale, format, number.getAsDouble())));
         }
         
     }
@@ -300,7 +375,7 @@ public class JSONBuilder
         }
 
         @Override
-        public void write(Appendable out) throws IOException
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append('[');
             try
@@ -352,7 +427,7 @@ public class JSONBuilder
         }
 
         @Override
-        public void write(Appendable out) throws IOException
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append('[');
             try
@@ -404,7 +479,7 @@ public class JSONBuilder
         }
 
         @Override
-        public void write(Appendable out) throws IOException
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append(Boolean.toString(is.getAsBoolean()));
         }
@@ -418,7 +493,7 @@ public class JSONBuilder
         }
 
         @Override
-        public void write(Appendable out) throws IOException
+        public void write(Locale locale, Appendable out) throws IOException
         {
             out.append("null");
         }
