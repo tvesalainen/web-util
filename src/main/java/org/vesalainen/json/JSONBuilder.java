@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -368,10 +369,17 @@ public class JSONBuilder
     private static class NumberArray extends Value
     {
         private Supplier<DoubleStream> numberStream;
+        private Function<Double,String> format;
 
         public NumberArray(Supplier<DoubleStream> numberStream)
         {
+            this(numberStream, JSONObject::doubleToString);
+        }
+
+        public NumberArray(Supplier<DoubleStream> numberStream, Function<Double, String> format)
+        {
             this.numberStream = numberStream;
+            this.format = format;
         }
 
         @Override
@@ -381,7 +389,7 @@ public class JSONBuilder
             try
             {
                 IntReference comma = new IntReference(0);
-                numberStream.get().mapToObj((d)->JSONObject.doubleToString(d)).forEach((s)->
+                numberStream.get().mapToObj((d)->format.apply(d)).forEach((s)->
                 {
                     try
                     {
