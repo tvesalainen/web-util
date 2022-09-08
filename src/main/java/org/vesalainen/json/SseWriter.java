@@ -17,9 +17,8 @@
 package org.vesalainen.json;
 
 import java.io.IOException;
-import org.vesalainen.json.JSONBuilder.Array;
+import java.util.Locale;
 import org.vesalainen.json.JSONBuilder.Element;
-import org.vesalainen.json.JSONBuilder.Obj;
 
 /**
  *
@@ -36,13 +35,13 @@ public class SseWriter
         this.element = element;
     }
     
-    public void write(Appendable writer) throws IOException
+    public void write(Locale locale, Appendable writer) throws IOException
     {
         writer.append("event:");
         writer.append(event);
         writer.append("\n");
         writer.append("data:");
-        element.write(writer);
+        element.write(locale, writer);
         writer.append("\n\n");
     }
 }
